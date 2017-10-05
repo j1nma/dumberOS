@@ -11,7 +11,7 @@ Docker is used as host development environment.
 ## Features
 
 * System calls
-
+	System calls are the interface between user and kernel space. The system must provide system calls for the processes (explained later) to interact with the kernel. The same mechanism developed in the Computer Architecture project (software interruptions) is used.
 
 
 * Physical Memory Management
