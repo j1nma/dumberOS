@@ -1,4 +1,4 @@
-# IPC 
+# OS Kernel Construction
 
 This project consists of building a simple kernel based on a separate project about computer architecture. IPC,   Memory Management, Scheduling and Memory Protection will be implemented.
 
