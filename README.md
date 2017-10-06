@@ -16,7 +16,7 @@ System calls are the interface between user and kernel space. The system must pr
 
 ### Physical Memory Management
 
-The kernel must have some simple system to reserve and release pages of at least 4 page allocator, note that this is not tied to virtual memory / pagination, the requirement is only to reserve and release blocks of physical memory. Who uses this memory can be the kernel for its internal structures, or a process in user space.
+The kernel must have some simple system to reserve and release pages of at least 4 contiguos KB (page allocator). Note that this is not tied to virtual memory / pagination: the requirement is only to reserve and release blocks of physical memory. This memory can be used by the kernel for its internal structures, or a process in user space.
 
 Syscalls involved
 - Reserve memory for the calling process
@@ -24,7 +24,8 @@ Syscalls involved
 
 ### Proccesses, Threads, Context Switching y Scheduling
 
-The system must have pre-emptive multitasking in a variable amount of processes. To do this, the system must implement some mechanism that allows suspend execution of a process and continue the execution of another (context switching), without requiring that they deliver the control of the CPU, and with some structure / algorithm that allows to select the next process (scheduler).
+The system must have pre-emptive multitasking in a variable amount of processes. To do this, the system must implement some mechanism that allows to suspend the execution of a process and continue the execution of another one (context switching), without requiring that they release the control of the CPU, and with some structure / algorithm that allows to select the next process (scheduler).
+
 It must also have threads implementation, with its own scheduler within each process.
 
 Syscalls involved
@@ -32,43 +33,43 @@ Syscalls involved
 - Create, Finish, and List threads
 
 Optional (can be used to implement IPCs later)
-- Sleep the current process until an x ​​event occurs.
+- Sleep the current process until an x event occurs.
 - Send a signal to a process x (awakens it if it is asleep)
 - Give the processor the following process (yield)
 
 ### Memory Protection
 
-Using the developed page allocator and Intel's 64-bit paging system, they must implement interprocess memory protection, ie one process should not be able to access the memory zones of another. Which memory zone occupies each process, and if those zones are dynamic or static, is at the discretion of the group.
+Using the developed page allocator and Intel's 64-bit paging system, interprocess memory protection is implemented, i.e. one process should not be able to access memory zones of another. Which memory zone occupies each process, and if those zones are dynamic or static, is an arbitrary decision.
 
 ### IPCs
 
-It must implement sending and receiving blocking messages, of fixed number of bytes, sent to a common identifier of the type of character defined between the processes to be communicated (it can be a combination of PIDs, a domain name, or something else ).
-They should also implement mutexes, they can execute their up and down operations on an agreed identifier.
+Sending and receiving blocking messages must be implemented, of a fixed number of bytes, sent to a common identifier (string of characters) defined between the processes to be communicated (a combination of PIDs, a domain name, or something else).
+
+Mutexes are also implemented: they can execute their up and down operations on an agreed identifier.
 
 Syscalls involved
-Send and Receive for messages, being the second blocker. Up and Down for mutexes. The scheduler design should contemplate these syscalls. A thread waiting for a message or mutex should not block the other threads.
+Send and Receive for messages, being the latter blocking. Up and Down for mutexes. The scheduler design should contemplate these syscalls. A thread waiting for a message or mutex should not block the other threads.
 
 ### Drivers
 
-It requires the implementation of two drivers, keyboard, and video in text mode.
+Two drivers: keyboard and video in text mode.
 
 Keyboard
-Use the keyboard driver implemented in the previous TP. Add the necessary syscalls so that a program can react immediately upon pressing a key (for example, a blocking system call that returns after a key is pressed without consuming it from the original keyboard buffer).
+Use the keyboard driver implemented in the previous PW. Add the necessary syscalls so that a program can react immediately upon pressing a key (for example, a blocking system call that returns after a key is pressed without consuming it from the original keyboard buffer).
 
 Video in text mode
-Use the video driver implemented in the previous TP.
+Use the video driver implemented in the previous PW.
 
 ### Userspace applications
 
-In order to show compliance with all the previous requirements, they must develop several applications, which show the operation of the system by calling the different system calls.
+In order to show compliance with all the previous requirements, several applications are developed, which *show the functionality of the system* by calling the different system calls.
 Mandatory applications
-- **sh**: user shell to run applications. It must have some simple mechanism to determine whether or not to forego the foreground to the process that is executed, for example, bash yields the foreground when an & is added at the end of a command.
+- **sh**: user shell to run applications. A simple mechanism determines whether or not to forego the foreground to the process that is executed, for example, bash yields the foreground when an & is added at the end of a command.
 - **ps**: shows the list of processes with their properties, PID, name, state, foreground, reserved memory, etc.
 - **philosophers**: shows a resolution of the problem of philosophers. You can increase / decrease in runtime the number of philosophers.
-- **prodcons**: shows a resolution for the consumer problem of bound buffer, can increase / decrease in runtime the number of consumers and producers.
-- **help**: displays a list of all available commands
-- It is very important that they add their own practical applications for
-demonstrate the functioning of each of the capabilities of the system, otherwise the existence of the same can not be evaluated. For example, to display memory protection, there should be an application that attempts to access an invalid zone, and is blocked by the kernel.
+- **prodcons**: shows a resolution for the consumer problem of bound buffer. You can increase / decrease in runtime the number of consumers and producers.
+- **help**: displays a list of all available commands.
+- Some extra practical applications are added to demonstrate the functioning of each of the capabilities of the system (e.g., to display memory protection, an application attempts to access an invalid zone, and is blocked by the kernel).
 
 ## Getting Started
 
