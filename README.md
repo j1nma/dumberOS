@@ -62,11 +62,11 @@ Use the video driver implemented in the previous TP.
 
 In order to show compliance with all the previous requirements, they must develop several applications, which show the operation of the system by calling the different system calls.
 Mandatory applications
-- sh: user shell to run applications. It must have some simple mechanism to determine whether or not to forego the foreground to the process that is executed, for example, bash yields the foreground when an & is added at the end of a command.
-- ps: shows the list of processes with their properties, PID, name, state, foreground, reserved memory, etc.
-- philosophers: shows a resolution of the problem of philosophers. You can increase / decrease in runtime the number of philosophers.
-- prodcons: shows a resolution for the consumer problem of bound buffer, can increase / decrease in runtime the number of consumers and producers.
-- help: displays a list of all available commands
+- **sh**: user shell to run applications. It must have some simple mechanism to determine whether or not to forego the foreground to the process that is executed, for example, bash yields the foreground when an & is added at the end of a command.
+- **ps**: shows the list of processes with their properties, PID, name, state, foreground, reserved memory, etc.
+- **philosophers**: shows a resolution of the problem of philosophers. You can increase / decrease in runtime the number of philosophers.
+- **prodcons**: shows a resolution for the consumer problem of bound buffer, can increase / decrease in runtime the number of consumers and producers.
+- **help**: displays a list of all available commands
 - It is very important that they add their own practical applications for
 demonstrate the functioning of each of the capabilities of the system, otherwise the existence of the same can not be evaluated. For example, to display memory protection, there should be an application that attempts to access an invalid zone, and is blocked by the kernel.
 
