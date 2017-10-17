@@ -135,6 +135,7 @@ irq0Handler:
 	; irqHandler 0
 
 	pushaq
+	;push flags
 
 	; save current process' RSP
 	mov rdi, rsp
@@ -153,6 +154,7 @@ irq0Handler:
 	mov al, 0x20
 	out 0x20, al
 
+	;pop flags
 	popaq
 	iretq
 

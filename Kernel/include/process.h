@@ -6,6 +6,9 @@
 struct process {
 
 	// pid_t pid
+
+	// TASK_RUNNING, TASK_INTERRUPTIBLE, TASK_UNINTERRUPTIBLE, TASK_STOPPED, TASK_ZOMBIE and TASK_DEAD
+
 	int pid;
 
 	int state;
