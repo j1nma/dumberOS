@@ -13,9 +13,11 @@ GLOBAL sysInWord
 GLOBAL sysOutWord
 GLOBAL sysOutByte
 
-
 EXTERN irqDispatcher
 EXTERN sysCallDispacher
+
+EXTERN switchUserToKernel
+EXTERN switchKernelToUser
 
 %include "./asm/macros.m"
 
@@ -130,29 +132,29 @@ sysInByte:
 
 
 irq0Handler:
-	irqHandler 0
+	; irqHandler 0
 
-	; pushaq
+	pushaq
 
 	; save current process' RSP
-	; mov rdi, rsp
+	mov rdi, rsp
 
 	; enter kernel context by setting current process' kernel-RSP
-	; call switchUserToKernel
+	call switchUserToKernel
 
-	; mov rsp, rax
+	mov rsp, rax
 
 	; schedule, get new process' RSP and load it
-	; call switchKernelToUser
+	call switchKernelToUser
 
-	; mov rsp, rax
+	mov rsp, rax
 
 	; send end of interrupt
-	; mov al, 0x20
-	; out 0x20, al
+	mov al, 0x20
+	out 0x20, al
 
-	; popaq
-	; iretq
+	popaq
+	iretq
 
 irq1Handler:
 	irqHandler 1
