@@ -30,4 +30,8 @@ void removeProcess(struct process * process);
 
 void * fillStackFrame(void * entryPoint, void * userStack);
 
+void blockMain();
+
+void unblockMain();
+
 #endif

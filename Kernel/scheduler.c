@@ -34,6 +34,13 @@ void addProcess(struct process * process) {
 	mainProcess = process;
 }
 
+void blockMain(){
+	mainProcess->state = 1;
+}
+
+void unblockMain(){
+	mainProcess->state = 0;
+}
 
 
 

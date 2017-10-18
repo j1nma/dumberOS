@@ -132,31 +132,36 @@ sysInByte:
 
 
 irq0Handler:
-	irqHandler 0
-
-	;pushaq
-	;push flags
+	
+	pushaq
 
 	; save current process' RSP
-	;mov rdi, rsp
+	mov rdi, rsp
+	call switchUserToKernel
+	mov rsp, rax ;pongo el puntero de switchUserToKernel en el stack pointer.
+	; Por alguna razon, cuando cambio al kenel stack, rompe todo.
+	; Aca no funciona pero en sysCallHandler si funciona.
 
-	; enter kernel context by setting current process' kernel-RSP
-	;call switchUserToKernel
+	mov rdi, 0
+	call irqDispatcher
 
-	;mov rsp, rax
 
-	; schedule, get new process' RSP and load it
-	;call switchKernelToUser
 
-	;mov rsp, rax
+	
+	
 
-	; send end of interrupt
-	;mov al, 0x20
-	;out 0x20, al
+	call switchKernelToUser
+	mov rsp, rax ;pongo el puntero de switchKernelToUser en el stack pointer.
 
-	;pop flags
-	;popaq
-	;iretq
+
+	mov al, 20h ; EOI
+	out 20h, al
+
+	popaq
+
+	iretq
+
+	
 
 irq1Handler:
 	irqHandler 1
@@ -172,7 +177,6 @@ sysCallHandler:
 	; Aca solamente tengo que redistribuir los registros.
 
 	pushaq
-	;pushf ;Aca pusheo todo al stack actual.
 
 	mov [reg_a], rax
 	mov [reg_b], rbx
@@ -184,6 +188,7 @@ sysCallHandler:
 	mov rdi, rsp
 	call switchUserToKernel
 	mov rsp, rax ;pongo el puntero de switchUserToKernel en el stack pointer.
+
 
 	mov rax, [reg_a]
 	mov rbx, [reg_b]
@@ -201,6 +206,11 @@ sysCallHandler:
 	mov [result], rax ; Como 'popaq' pone todos los registros en su valor original, guardo 'rax' (mi valor de retorno)
 					  ; en una variable en memoria para despues de llamar a 'popaq' volver a asignarlo a 'rax'.
 	
+	push rax
+	push rax
+	push rax
+	push rax
+	push rax
 	push rax
 	push rax
 	push rax

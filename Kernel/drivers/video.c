@@ -38,6 +38,9 @@ void newLine(){
  */
 int read(char *str){
 
+	// if (bufferIndex == 0)
+	// 	return 0;
+
 	startBuffering = TRUE; //Cuando se llama a read, startBuffering se pone en true, lo que hacer que la funcion "write" guarde todo en el buffer.
 
 	int i = 0;

@@ -120,6 +120,11 @@ int sysCallDispacher(int function, char* segundo, int tercero, int cuarto){
 		case SYSCALL_READ:{
 			switch ( cuarto ) {
 				case DESCRIPTOR_CLI: {
+					// int ret;
+					// while ((ret = read(segundo)) == 0){
+					// 	blockMain();
+					// }
+					// return ret;
 					return read(segundo);
 					break;
 				}
@@ -264,12 +269,17 @@ int main(){
 	process->userStack = toStackAddress(malloc(0x1000));
 	process->kernelStack = toStackAddress(malloc(0x1000));
 	process->userStack = fillStackFrame(sampleCodeModuleAddress, process->userStack);
-	process->kernelStack = fillStackFrame(sampleCodeModuleAddress, process->kernelStack);
+	//process->kernelStack = fillStackFrame(sampleCodeModuleAddress, process->kernelStack);
 
 	addProcess(process);
 
+	setPicMaster(0x04);
+
 	// UserLand Init
 	((EntryPoint)sampleCodeModuleAddress)();
+
+
+
 
 	return 0;
 
