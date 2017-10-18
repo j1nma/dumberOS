@@ -273,7 +273,7 @@ PCI_CONFIG_ADDRESS	EQU	0x0CF8
 PCI_CONFIG_DATA		EQU	0x0CFC
 
 section .data
-	result dq 0
+	result dq 0 ;Esto es dq en vez de dd porque rax es de 64 bits, dd es de 32, y dq es de 64. Se pierde info.
 	reg_a  dq 0
 	reg_b  dq 0
 	reg_c  dq 0
