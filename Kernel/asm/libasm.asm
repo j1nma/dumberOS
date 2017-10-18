@@ -132,37 +132,38 @@ sysInByte:
 
 
 irq0Handler:
-	; irqHandler 0
+	irqHandler 0
 
-	pushaq
+	;pushaq
 	;push flags
 
 	; save current process' RSP
-	mov rdi, rsp
+	;mov rdi, rsp
 
 	; enter kernel context by setting current process' kernel-RSP
-	call switchUserToKernel
+	;call switchUserToKernel
 
-	mov rsp, rax
+	;mov rsp, rax
 
 	; schedule, get new process' RSP and load it
-	call switchKernelToUser
+	;call switchKernelToUser
 
-	mov rsp, rax
+	;mov rsp, rax
 
 	; send end of interrupt
-	mov al, 0x20
-	out 0x20, al
+	;mov al, 0x20
+	;out 0x20, al
 
 	;pop flags
-	popaq
-	iretq
+	;popaq
+	;iretq
 
 irq1Handler:
 	irqHandler 1
 
 irq2Handler:
 	irqHandlerSlave 2
+
 
 sysCallHandler:
 
@@ -171,18 +172,45 @@ sysCallHandler:
 	; Aca solamente tengo que redistribuir los registros.
 
 	pushaq
-	mov r8, rdx
+	;pushf ;Aca pusheo todo al stack actual.
 
+	mov [reg_a], rax
+	mov [reg_b], rbx
+	mov [reg_c], rcx
+	mov [reg_d], rdx ;Guardo las variables pasadas por la syscall en memoria ya que al
+					 ; cambiar de stack, las puedo perder. Mas facil asi.
+	
+	; save current process' RSP
+	mov rdi, rsp
+	call switchUserToKernel
+	mov rsp, rax ;pongo el puntero de switchUserToKernel en el stack pointer.
+
+	mov rax, [reg_a]
+	mov rbx, [reg_b]
+	mov rcx, [reg_c]
+	mov rdx, [reg_d] ;Vuelvo a levantar los registros de memoria.
+
+	mov r8, rdx
 	mov rdi, rax
 	mov rsi, rbx
 	mov rdx, rcx
-	mov rcx, r8
-	
+	mov rcx, r8 ; Todo esto mapea C a asm en el handling de los parametros.
+
 	call sysCallDispacher
 	
 	mov [result], rax ; Como 'popaq' pone todos los registros en su valor original, guardo 'rax' (mi valor de retorno)
 					  ; en una variable en memoria para despues de llamar a 'popaq' volver a asignarlo a 'rax'.
+	
+	push rax
+	push rax
+	push rax
+	push rax ; Aca pusheo muchas cosas al stack, para mostrar que cuando vuelvo al stack
+			 ; del user, esta limpio y todos los registros estan bien :)
+
+	call switchKernelToUser
+	mov rsp, rax ;pongo el puntero de switchKernelToUser en el stack pointer.
 	popaq
+
 	mov rax, [result]
 
 	iretq
@@ -245,5 +273,10 @@ PCI_CONFIG_ADDRESS	EQU	0x0CF8
 PCI_CONFIG_DATA		EQU	0x0CFC
 
 section .data
-	result dd 0
+	result dq 0
+	reg_a  dq 0
+	reg_b  dq 0
+	reg_c  dq 0
+	reg_d  dq 0
+
 

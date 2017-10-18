@@ -28,4 +28,6 @@ void addProcess(struct process * process);
 
 void removeProcess(struct process * process);
 
+void * fillStackFrame(void * entryPoint, void * userStack);
+
 #endif
