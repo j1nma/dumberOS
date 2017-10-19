@@ -19,6 +19,8 @@ void * swap(void * from_rsp, void * to_rsp);
 struct scheduler {
 
 	struct process_node * current;
+	struct process_node * first;
+	struct process_node * last;
 
 };
 
