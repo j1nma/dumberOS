@@ -18,6 +18,9 @@ void * switchUserToKernel(void * esp) {
 
 void * switchKernelToUser() {
 	// ncPrintChar(mainProcess->userStack);
+
+	//  scheduler->schedule();
+
 	return scheduler->current->process->userStack;
 }
 
@@ -31,41 +34,67 @@ void * swap(void * from_rsp, void * to_rsp) {
 
 void * schedule() {
 
+	// TODO: mandar el current a null??
+
+	scheduler->current = scheduler->current->next;
+
 }
 
 void addProcess(struct process * process) {
+
 	process->pid = pid;
 	pid++;
 
-
 	struct process_node * newNode;
-	newNode->process = process; 
-	scheduler->current = newNode;
-	return;
-	
-	// struct process_node * aux = scheduler->first;
+	newNode->process = process;
 
-	// struct process_node * newNode;	
-	// newNode->process = process;
+	// if (scheduler->current == nullptr) { // TODO: NO LO HACE BIEN, CHEQUEAR NULLPTR
 
-	// scheduler->first = newNode;
+		scheduler->current = newNode;
+		scheduler->current->next = newNode;
 
-	// if (!scheduler->last) {
-	// 	scheduler->last = newNode;
+	// } else {
+
+		struct process_node * next = scheduler->current->next;
+		scheduler->current->next = newNode;
+		newNode->next = next;
+
 	// }
-
-	// scheduler->last->next = scheduler->first;
-
-	// scheduler->first->next = aux;
 
 	// scheduler->current = scheduler->first; //Esto hay que pensarlo.
 }
 
-void blockMain(){
+// Copyright (c) 2015, Rodrigo Rearden
+
+//TODO: ver que funcione como esperado
+/*void removeProcess(struct process * process) {
+	struct process_node * previous = scheduler->current;
+	struct process_node * nodeToRemove = scheduler->current->next;
+
+	if (scheduler->current == nullptr) {
+		return;
+	} else if (previous == nodeToRemove && process == current->process) {
+		// delete current;
+		scheduler->current = nullptr;
+		// TODO: aborta si saco el current?
+		return;
+	}
+
+	while(nodeToRemove->process != process) {
+		previous = nodeToRemove;
+		nodeToRemove = nodeToRemove->next;
+	}
+
+	previous->next = nodeToRemove->next;
+	scheduler->current = nullptr;
+	// delete nodeToRemove;
+}*/
+
+void blockMain() {
 	//mainProcess->state = 1;
 }
 
-void unblockMain(){
+void unblockMain() {
 	// mainProcess->state = 0;
 }
 
