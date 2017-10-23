@@ -22,7 +22,7 @@ struct scheduler {
 
 };
 
-void * schedule();
+void schedule();
 
 void addProcess(struct process * process);
 
@@ -33,5 +33,11 @@ void * fillStackFrame(void * entryPoint, void * userStack);
 void blockMain();
 
 void unblockMain();
+
+int getCurrentPid();
+
+int getCurrentSP();
+
+void initScheduler();
 
 #endif

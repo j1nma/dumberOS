@@ -155,6 +155,10 @@ int sysCallDispacher(int function, char* segundo, int tercero, int cuarto){
 			getTime(segundo);
 			break;
 		}
+		case SYSCALL_PID:{
+			return getCurrentPid();
+			break;
+		}
 		default:{
 			ncPrint("SysCall not found.");
 			break;
@@ -218,27 +222,8 @@ struct StackFrame {
 
 void * fillStackFrame(void * entryPoint, void * userStack) {
 	struct StackFrame *frame = (struct StackFrame *)userStack - 1;
-	frame->r15 =	0x003;
-	frame->r14 =	0x004;
-	frame->r13 =	0x005;
-	frame->r12 =	0x006;
-	frame->r11 =	0x007;
-	frame->r10 =	0x008;
-	frame->r9 =		0x009;
-	frame->r8 =		0x00A;
-	frame->rsi =	0x00B;
-	frame->rdi =	0x00C;
-	frame->rbp =	0x00D;
-	frame->rdx =	0x00E;
-	frame->rcx =	0x00F;
-	frame->rbx =	0x010;
-	frame->rax =	0x011;
+
 	frame->rip =	(uint64_t)entryPoint;
-	frame->cs =		0x008;
-	frame->eflags = 0x202;
-	frame->rsp =	(uint64_t)&(frame->base);
-	frame->ss = 	0x000;
-	frame->base =	0x000;
 
 	return frame;
 }
@@ -248,6 +233,8 @@ void * toStackAddress(void * page) {
 }
 
 int main(){
+
+	// cleanScreen();
 
 	// Kernel INIT
 	init_interruptions();
@@ -259,19 +246,43 @@ int main(){
 	dma_start();
 	net_start();
 
+	initScheduler();
+
 
 	//Process * process = new Process((void*)sampleCodeModuleAddress);
-	static struct process * process;
+	struct process * process1;
 
+	process1 = malloc(sizeof(struct process));
 
 	
-	process->entryPoint = sampleCodeModuleAddress;
-	process->userStack = toStackAddress(malloc(0x1000));
-	process->kernelStack = toStackAddress(malloc(0x1000));
-	process->userStack = fillStackFrame(sampleCodeModuleAddress, process->userStack);
-	//process->kernelStack = fillStackFrame(sampleCodeModuleAddress, process->kernelStack);
+	process1->entryPoint = sampleCodeModuleAddress;
+	process1->userStack = toStackAddress(malloc(0x1000));
+	process1->kernelStack = toStackAddress(malloc(0x1000));
+	process1->userStack = fillStackFrame(sampleCodeModuleAddress, process1->userStack);
 
-	addProcess(process);
+	addProcess(process1);
+
+
+	struct process * process2;
+	process2 = (struct process *)malloc(sizeof(struct process));
+	
+	process2->entryPoint = sampleCodeModuleAddress;
+	process2->userStack = toStackAddress(malloc(0x1000));
+	process2->kernelStack = toStackAddress(malloc(0x1000));
+	// process2->userStack = fillStackFrame(sampleCodeModuleAddress, process2->userStack);
+	pushIPtoStack(&(process2->userStack), sampleCodeModuleAddress);
+	//process2->kernelStack = fillStackFrame(sampleCodeModuleAddress, process2->kernelStack);
+
+	addProcess(process2); //Hay que leer como llenar el stack del user del proceso 2.
+	// El problema es el siguiente:
+	// Cuando levantamos el proceso1, y lo llamamos con ((EntryPoint)sampleCodeModuleAddress)();
+	// el stack se llena solo cuando lo interumpimos, con stack me refiero al rip o return
+	// Esto tiene un formato especial, eso lo arma rodrigo con el fillStackFrame
+	// Todo rompe cuando el scheduler interumpe con el tick, cambia el rsp y trata de hacer el iretq
+	// con el stack del process2 que esta todo vacio, pone basura en los reguistros y rompe todo.
+
+	// return 1;
+
 
 	setPicMaster(0x04);
 

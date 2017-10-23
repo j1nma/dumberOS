@@ -10,7 +10,9 @@ int main() {
 
 	
 	// OS welcome
-	initWelcome();
+	// initWelcome();
+
+	printf("Hola %d\n", getPid());
 	
 	// Loop shell until user exits OS
 	while(!exit){

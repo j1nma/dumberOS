@@ -38,6 +38,13 @@ void halt(){
 	haltAsm();
 }
 
+
+/**
+Llama al syscall get time con un puntero a string.
+*/
+int getPid(){
+	syscall(SYSCALL_PID, 0, 0, 0);
+}
 /**
 Llama al syscall get time con un puntero a string.
 */

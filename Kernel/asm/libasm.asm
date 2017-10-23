@@ -12,16 +12,53 @@ GLOBAL sysInByte
 GLOBAL sysInWord
 GLOBAL sysOutWord
 GLOBAL sysOutByte
+GLOBAL pushIPtoStack
 
 EXTERN irqDispatcher
 EXTERN sysCallDispacher
 
 EXTERN switchUserToKernel
 EXTERN switchKernelToUser
+EXTERN schedule
 
 %include "./asm/macros.m"
 
 section .text
+
+
+pushIPtoStack:
+	
+
+	mov rax, rsp ;Guardo el stack original
+
+
+	mov rsp, rdi ;Entro al stack pasado
+	
+	push rsi ;Pusheo el ip
+	push rsi ;Pusheo el ip
+	push rsi ; ;Pusheo el ip
+	push rsi ;Pusheo el ip
+	push rsi ;Pusheo el ip
+	push rsi ; ;Pusheo el ip
+	push rsi ;Pusheo el ip
+	push rsi ;Pusheo el ip
+	push rsi ;Pusheo el ip
+	push rsi ;Pusheo el ip
+	push rsi ;Pusheo el ip
+	push rsi ;Pusheo el ip
+	push rsi ;Pusheo el ip
+	push rsi ;Pusheo el ip
+	push rsi ;Pusheo el ip
+
+	push rsi ;Pusheo el ip
+	push rsi ;Pusheo el ip	
+	push rsi ;Pusheo el ip
+	push rsi ;Pusheo el ip
+	push rsi ;Pusheo el ip
+	push rsi ;Pusheo el ip
+
+	mov rsp, rax ;Vuelvo al stack original
+	ret
 
 ; Los nombres de sysOutLong, sysOutWord, sysOutByte, sysInLong, sysOutWord y sysInByte son sacados de OSDev.
 ; Esta funcion habla con los perifericos.
@@ -145,10 +182,8 @@ irq0Handler:
 	mov rdi, 0
 	call irqDispatcher
 
+	call schedule
 
-
-	
-	
 
 	call switchKernelToUser
 	mov rsp, rax ;pongo el puntero de switchKernelToUser en el stack pointer.

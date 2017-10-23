@@ -61,7 +61,7 @@ void irqDispatcher(int irq) {
 char *video = (char *) 0xB8000;
 static int videoIndex = 10;
 void tickHandler() {
-	video[10] = videoIndex++;	
+	video[10] = '0' + getCurrentPid();	
 
 }
 

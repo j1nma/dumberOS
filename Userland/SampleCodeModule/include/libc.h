@@ -21,3 +21,4 @@ void free(void *ptr);
 void getTime(char *ptr);
 void haltAsm();
 void halt();
+int getPid();
