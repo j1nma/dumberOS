@@ -14,9 +14,9 @@ int main() {
 
 	int k = 0;
 	while (1) {
-
+		if (k % 10000000 == 0){
 			printf("Hola: %d\n", getPid());
-
+		}
 		k++;
 	}
 	
