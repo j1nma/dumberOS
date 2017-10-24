@@ -19,10 +19,15 @@ void * swap(void * from_rsp, void * to_rsp);
 struct scheduler {
 
 	struct process_node * current;
+	struct process_node * ready;
 
 };
 
 void schedule();
+
+void queueProcess(struct process * process);
+
+void forzeProcess(struct process * process);
 
 void addProcess(struct process * process);
 

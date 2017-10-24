@@ -13,6 +13,9 @@ GLOBAL sysInWord
 GLOBAL sysOutWord
 GLOBAL sysOutByte
 GLOBAL pushIPtoStack
+GLOBAL switchStackAndJump
+GLOBAL getRSP
+GLOBAL endInter
 
 EXTERN irqDispatcher
 EXTERN sysCallDispacher
@@ -26,6 +29,18 @@ EXTERN schedule
 section .text
 
 
+getRSP:
+	mov rax, rsp
+	ret
+
+
+switchStackAndJump:
+	mov rsp, rdi
+	;mov rbp, rdi
+	call rsi ;o jmp?????
+	ret
+
+
 pushIPtoStack:
 	
 
@@ -36,10 +51,10 @@ pushIPtoStack:
 	
 	push rsi ;Pusheo el ip
 	push rsi ;Pusheo el ip
-	push rsi ; ;Pusheo el ip
 	push rsi ;Pusheo el ip
 	push rsi ;Pusheo el ip
-	push rsi ; ;Pusheo el ip
+	push rsi ;Pusheo el ip
+	push rsi ;Pusheo el ip
 	push rsi ;Pusheo el ip
 	push rsi ;Pusheo el ip
 	push rsi ;Pusheo el ip
@@ -176,11 +191,11 @@ irq0Handler:
 	mov rdi, rsp
 	call switchUserToKernel
 	mov rsp, rax ;pongo el puntero de switchUserToKernel en el stack pointer.
-	; Por alguna razon, cuando cambio al kenel stack, rompe todo.
-	; Aca no funciona pero en sysCallHandler si funciona.
+	
 
 	mov rdi, 0
 	call irqDispatcher
+
 
 	call schedule
 
@@ -197,6 +212,11 @@ irq0Handler:
 	iretq
 
 	
+endInter:
+	mov al, 20h ; EOI
+	out 20h, al
+	sti
+	ret
 
 irq1Handler:
 	irqHandler 1

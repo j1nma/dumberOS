@@ -12,19 +12,25 @@ int main() {
 	// OS welcome
 	// initWelcome();
 
-	printf("Hola %d\n", getPid());
-	
-	// Loop shell until user exits OS
-	while(!exit){
-		char f[100];
-		printf("dummyOS $ ");
-		scanf("%s", &f);
-		char** params = str_split(f);
-		exit = runCommand(parseCommand(params[0]), params);
-	}
+	int k = 0;
+	while (1) {
 
-	printf("bye! :(\n");
-	halt();
+			printf("Hola: %d\n", getPid());
+
+		k++;
+	}
+	
+	// // Loop shell until user exits OS
+	// while(!exit){
+	// 	char f[100];
+	// 	printf("dummyOS $ ");
+	// 	scanf("%s", &f);
+	// 	char** params = str_split(f);
+	// 	exit = runCommand(parseCommand(params[0]), params);
+	// }
+
+	// printf("bye! :(\n");
+	// halt();
 
 	return 0;
 }

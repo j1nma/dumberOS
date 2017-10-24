@@ -229,7 +229,7 @@ void * fillStackFrame(void * entryPoint, void * userStack) {
 }
 
 void * toStackAddress(void * page) {
-	return page;
+	return page + 0x1000 - 0x10;
 }
 
 int main(){
@@ -249,6 +249,9 @@ int main(){
 	initScheduler();
 
 
+	void * kernelStack = toStackAddress(malloc(0x1000));
+
+
 	//Process * process = new Process((void*)sampleCodeModuleAddress);
 	struct process * process1;
 
@@ -257,23 +260,24 @@ int main(){
 	
 	process1->entryPoint = sampleCodeModuleAddress;
 	process1->userStack = toStackAddress(malloc(0x1000));
-	process1->kernelStack = toStackAddress(malloc(0x1000));
-	process1->userStack = fillStackFrame(sampleCodeModuleAddress, process1->userStack);
-
-	addProcess(process1);
+	process1->kernelStack = kernelStack;//toStackAddress(malloc(0x1000));
+	//process1->userStack = fillStackFrame(sampleCodeModuleAddress, process1->userStack);
+	
+	queueProcess(process1);
 
 
 	struct process * process2;
-	process2 = (struct process *)malloc(sizeof(struct process));
+	
+	process2 = malloc(sizeof(struct process));
 	
 	process2->entryPoint = sampleCodeModuleAddress;
 	process2->userStack = toStackAddress(malloc(0x1000));
-	process2->kernelStack = toStackAddress(malloc(0x1000));
+	process2->kernelStack = kernelStack;//toStackAddress(malloc(0x1000));
 	// process2->userStack = fillStackFrame(sampleCodeModuleAddress, process2->userStack);
-	pushIPtoStack(&(process2->userStack), sampleCodeModuleAddress);
+	// pushIPtoStack(&(process2->userStack), sampleCodeModuleAddress);
 	//process2->kernelStack = fillStackFrame(sampleCodeModuleAddress, process2->kernelStack);
-
-	addProcess(process2); //Hay que leer como llenar el stack del user del proceso 2.
+	// setPicMaster(0x04);
+	forzeProcess(process2); //Hay que leer como llenar el stack del user del proceso 2.
 	// El problema es el siguiente:
 	// Cuando levantamos el proceso1, y lo llamamos con ((EntryPoint)sampleCodeModuleAddress)();
 	// el stack se llena solo cuando lo interumpimos, con stack me refiero al rip o return
@@ -281,15 +285,23 @@ int main(){
 	// Todo rompe cuando el scheduler interumpe con el tick, cambia el rsp y trata de hacer el iretq
 	// con el stack del process2 que esta todo vacio, pone basura en los reguistros y rompe todo.
 
+	// Capaz lo que se puede hacer, es tener una queue de ready en el scheduler y llamarlos como se hace
+	// aca. 
+
+	// Cuando queramos levantar un proceso por primera vez, primero cambiamos a su stack,
+	// despues lo llamamos, eso haria que cuando retorne el main del proceso, vuelva a la direccion
+	// del kernel, porque lo primero que seria guardado en el stack del user es la dir de retorno
+	// de lo que lo llamo, en este caso, el stack.
+
 	// return 1;
 
 
-	setPicMaster(0x04);
+	
 
 	// UserLand Init
-	((EntryPoint)sampleCodeModuleAddress)();
+	//((EntryPoint)sampleCodeModuleAddress)();
 
-
+	// while (1);
 
 
 	return 0;

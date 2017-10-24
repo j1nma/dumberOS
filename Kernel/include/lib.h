@@ -21,6 +21,9 @@ uint16_t sysInWord(uint16_t addr);
 uint8_t sysInByte(uint16_t addr);
 
 void pushIPtoStack(void *s, void *ip);
+void switchStackAndJump(void *s, void *j);
+void * getRSP();
+void endInter();
 
 int mystrlen(char *s);
 
