@@ -123,10 +123,14 @@ int sysCallDispacher(int function, char* segundo, int tercero, int cuarto){
 					int res = 0;
 					if (res == 0) {
 						blockCurrent(KEYBOARD_BLOCK);
+						// ncPrint("Test");
+						unflip();
 					}
-					char sux[] = "test\n";
-					segundo = sux;
-					return 5;
+					// char sux[] = "test";
+					// for (int i = 0; i < 5; i++) {
+					// 	segundo[i] = sux[i];
+					// }
+					return read(segundo);
 					break;
 				}
 				case DESCRIPTOR_NET: {

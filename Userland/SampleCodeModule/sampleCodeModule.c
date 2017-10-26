@@ -15,15 +15,15 @@ int main() {
 	if (getPid() != 0) {
 		
 		while (1) {
-			printf("Hola: %d\n", getPid());
+			printf("Soy el proceso: %d, espero teclado...\n", getPid());
 			scanf("%s", &f);
-			printf("Sucess: %s\n", f);
+			printf("Volvi con: %s!!!\n", f);
 		}		
 	}else {
 		int k = 0;
 		while (1) {
 			if (k % 200000000 == 0){
-				printf("Hola: %d!!!\n", getPid());
+				printf("Soy el proceso: %d!!!\n", getPid());
 			}
 			k++;
 		}

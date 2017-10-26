@@ -184,19 +184,17 @@ void scanf(char *format, ...){
 	va_list ap;
 	va_start(ap, 1);
 	char *d = va_arg(ap, char*);
-	
 
-	d[0] = 'h';
-	d[1] = 'e';
-	d[2] = 'l';
-	d[3] = 'l';
-	d[4] = 'o';
-	d[5] = 0;
 
 	// printf("Test\n");
 
 	// *d = buffer[0];
-	int lon = syscall(SYSCALL_READ, format, 0, DESCRIPTOR_CLI);
+	char buffer[80];
+	int indexStr = syscall(SYSCALL_READ, buffer, 0, DESCRIPTOR_CLI);
+
+
+	for (int i = 0; i < indexStr + 1; i++) //El +1 es para que meta el 0 al final.
+		d[i] = buffer[i];
 
 	return;
 

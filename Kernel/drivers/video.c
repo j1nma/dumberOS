@@ -9,7 +9,7 @@
  */
 
 char buffer[500];
-int startBuffering = FALSE;
+int startBuffering = TRUE;
 int bufferIndex = 0;
 
 
@@ -47,7 +47,7 @@ int read(char *str){
 	for (i = 0; i < bufferIndex; i++){ //Este for copia el buffer al vector de parametro.
 		str[i] = buffer[i];
 		if (buffer[i] == '\n'){ //Si encuentro un '\n' significa que el usuario presiono "return" entonces pongo el flag de buffer en false.
-			startBuffering = FALSE;
+			//startBuffering = FALSE;
 		}
 	}
 	str[i] = 0; //Pongo un 0 al final del vector del usuario para que sea leible en C.
@@ -65,12 +65,19 @@ void write(char *str, int length){
 	if (startBuffering == FALSE){
 		lcPrint(str);
 	}else{
-		for (int i = 0; i < length; i++){
-			if (startBuffering){ //Si startBuffering esta en true entonces guardo todo lo impreso.
-				buffer[bufferIndex++] = str[i];
-			}
+		if (length == 1){
+			lcPrintChar(str[0]); //Si start buffering esta en TRUE entonces los characteres entran por teclado, o sea de a uno.
+			for (int i = 0; i < length; i++){
+				if (startBuffering){ //Si startBuffering esta en true entonces guardo todo lo impreso.
+					buffer[bufferIndex++] = str[i];
+				}
+			}	
+		}else{
+			lcPrint(str);
 		}
-		lcPrintChar(str[0]); //Si start buffering esta en TRUE entonces los characteres entran por teclado, o sea de a uno.
+
+		
+
 	}
 }
 

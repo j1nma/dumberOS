@@ -25,6 +25,8 @@ struct scheduler {
 
 };
 
+void unflip();
+
 void schedule();
 
 void queueProcess(struct process * process);

@@ -27,14 +27,23 @@ int getCurrentSP() {
 
 void * switchUserToKernel(void * esp) {
 
-	scheduler->current->process->userStack = esp;
-	return scheduler->current->process->kernelStack;
+	if (scheduler->current->process->fliped == 15) {
+		scheduler->current->process->kernelStack = esp;
+		return scheduler->current->process->userStack;
+	}else{
+		scheduler->current->process->userStack = esp;
+		return scheduler->current->process->kernelStack;
+	}
+	
 }
 
 
 void * switchKernelToUser() {
-	
-	return scheduler->current->process->userStack;
+	if (scheduler->current->process->fliped == 15) {
+		return scheduler->current->process->kernelStack;
+	}else{
+		return scheduler->current->process->userStack;
+	}
 }
 
 void * switch_stack(void * from_rsp, void * to_rsp) { //Cambiar a camelcase
@@ -45,12 +54,20 @@ void * swap(void * from_rsp, void * to_rsp) {
 
 }
 
+void unflip(){
+	scheduler->current->process->fliped = 0;
+}
+
+void next() {
+	scheduler->current = scheduler->current->next;
+}
+
 void schedule() {
 
 	if (isempty()) {
-		scheduler->current = scheduler->current->next;
+		next();
 		while (scheduler->current->process->state != RUNNING)
-			scheduler->current = scheduler->current->next;
+			next();
 	}else{
 	
 		struct process * process1 = pop();
@@ -103,9 +120,6 @@ void unblock(int code) {
 	struct process_node *current = scheduler->current;
 	for (int i = 0; i < pid; i++) {
 		if (current->process->state == code) {
-			void * aux = current->process->userStack;
-			current->process->userStack = current->process->kernelStack;
-			current->process->kernelStack = aux;
 			current->process->state = RUNNING;
 			break;
 		}else{
@@ -115,14 +129,14 @@ void unblock(int code) {
 }
 
 void blockCurrent(int code) {
-	void * aux = scheduler->current->process->userStack;
-	scheduler->current->process->userStack = scheduler->current->process->kernelStack;
-	scheduler->current->process->kernelStack = aux;
+
 	scheduler->current->process->state = KEYBOARD_BLOCK;
-	enableTickInter();
-	endInter();
-	// int20();
-	schedule();
+	scheduler->current->process->fliped = 15;
+	// enableTickInter();
+	// endInter();
+	int20();
+	// schedule();
+	// irq0Handler();
 }
 
 

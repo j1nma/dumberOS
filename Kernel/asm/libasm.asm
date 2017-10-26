@@ -266,17 +266,7 @@ sysCallHandler:
 	mov [result], rax ; Como 'popaq' pone todos los registros en su valor original, guardo 'rax' (mi valor de retorno)
 					  ; en una variable en memoria para despues de llamar a 'popaq' volver a asignarlo a 'rax'.
 	
-	push rax
-	push rax
-	push rax
-	push rax
-	push rax
-	push rax
-	push rax
-	push rax
-	push rax ; Aca pusheo muchas cosas al stack, para mostrar que cuando vuelvo al stack
-			 ; del user, esta limpio y todos los registros estan bien :)
-
+	
 	call switchKernelToUser
 	mov rsp, rax ;pongo el puntero de switchKernelToUser en el stack pointer.
 	popaq
