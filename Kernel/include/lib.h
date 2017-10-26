@@ -29,4 +29,6 @@ int mystrlen(char *s);
 
 void getTime(void *ptr);
 
+void int20();
+
 #endif

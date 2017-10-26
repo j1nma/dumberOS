@@ -11,16 +11,28 @@ int main() {
 	
 	// OS welcome
 	// initWelcome();
-
-	int k = 0;
-	while (1) {
-		if (k % 10000000 == 0){
+	char f[100];
+	if (getPid() != 0) {
+		
+		while (1) {
 			printf("Hola: %d\n", getPid());
+			scanf("%s", &f);
+			printf("Sucess: %s\n", f);
+		}		
+	}else {
+		int k = 0;
+		while (1) {
+			if (k % 200000000 == 0){
+				printf("Hola: %d!!!\n", getPid());
+			}
+			k++;
 		}
-		k++;
 	}
 	
-	// // Loop shell until user exits OS
+
+	
+	
+	// Loop shell until user exits OS
 	// while(!exit){
 	// 	char f[100];
 	// 	printf("dummyOS $ ");

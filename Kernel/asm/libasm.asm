@@ -16,6 +16,7 @@ GLOBAL pushIPtoStack
 GLOBAL switchStackAndJump
 GLOBAL getRSP
 GLOBAL endInter
+GLOBAL int20
 
 EXTERN irqDispatcher
 EXTERN sysCallDispacher
@@ -40,6 +41,10 @@ switchStackAndJump:
 	call rsi ;o jmp?????
 	ret
 
+
+int20: 
+	int 20h
+	ret
 
 pushIPtoStack:
 	

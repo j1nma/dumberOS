@@ -9,6 +9,7 @@ void irqDispatcher(int irq);
 void sti();
 void setPicMaster(uint16_t);
 void setPicSlave(uint16_t);
+void enableTickInter();
 
 void tickHandler();
 void irq0Handler();

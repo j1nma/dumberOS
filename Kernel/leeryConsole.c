@@ -126,9 +126,11 @@ void printString(char *str, char color){
 		if (str[index] == '\n'){ //Si a console le llega un '\n', hace un newline.
 			lcNewLine();
 			currentPointer = 0;
+			break;
 		}else if (str[index] == '\b'){ //Si a console le llega un '\b' hace un backspace.
 			lcBackSpace();
 			currentPointer--;
+			break; //WHAT
 		}else{
 			putCharacter(str[index], color);
 			currentPointer++;
@@ -218,5 +220,3 @@ void lcBackSpace(){ //Este backspace es solo en el video, no cambia nada del buf
 
 
 }
-
-

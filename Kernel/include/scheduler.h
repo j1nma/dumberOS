@@ -4,6 +4,9 @@
 #include "process.h"
 #include "process_node.h"
 
+#define KEYBOARD_BLOCK 4
+#define RUNNING 0
+
 /* Context switching */
 
 void * switchUserToKernel(void * esp);
@@ -19,7 +22,6 @@ void * swap(void * from_rsp, void * to_rsp);
 struct scheduler {
 
 	struct process_node * current;
-	struct process_node * ready;
 
 };
 
@@ -27,7 +29,7 @@ void schedule();
 
 void queueProcess(struct process * process);
 
-void forzeProcess(struct process * process);
+void startProcess(struct process * process);
 
 void addProcess(struct process * process);
 
@@ -35,9 +37,9 @@ void removeProcess(struct process * process);
 
 void * fillStackFrame(void * entryPoint, void * userStack);
 
-void blockMain();
+void blockCurrent(int code);
 
-void unblockMain();
+void unblock(int code);
 
 int getCurrentPid();
 

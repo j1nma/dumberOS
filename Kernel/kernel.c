@@ -120,12 +120,13 @@ int sysCallDispacher(int function, char* segundo, int tercero, int cuarto){
 		case SYSCALL_READ:{
 			switch ( cuarto ) {
 				case DESCRIPTOR_CLI: {
-					// int ret;
-					// while ((ret = read(segundo)) == 0){
-					// 	blockMain();
-					// }
-					// return ret;
-					return read(segundo);
+					int res = 0;
+					if (res == 0) {
+						blockCurrent(KEYBOARD_BLOCK);
+					}
+					char sux[] = "test\n";
+					segundo = sux;
+					return 5;
 					break;
 				}
 				case DESCRIPTOR_NET: {
@@ -171,7 +172,6 @@ int sysCallDispacher(int function, char* segundo, int tercero, int cuarto){
 
 
 void miCallbacldeTeclado(uint8_t c, int function){
-
 	switch(function){
 		case RESPONSE_CHARACTER:{
 			write(&c, 1); //RESPONSE_CHARACTER es cuando el usuario presiona una tecla imprimible. Llamo a write del driver de video.
@@ -182,6 +182,7 @@ void miCallbacldeTeclado(uint8_t c, int function){
 			break;
 		}
 		case RESPONSE_ENTER:{
+			unblock(KEYBOARD_BLOCK);
 			newLine(); //RESPONSE_ENTER es cuando el usuario presiona "return". Llamo a "newLine" del driver de video.
 			break;
 		}
@@ -191,50 +192,11 @@ void miCallbacldeTeclado(uint8_t c, int function){
 	}
 }
 
-struct StackFrame {
-	//Registers restore context
-	// uint64_t gs;
-	// uint64_t fs;
-	uint64_t r15;
-	uint64_t r14;
-	uint64_t r13;
-	uint64_t r12;
-	uint64_t r11;
-	uint64_t r10;
-	uint64_t r9;
-	uint64_t r8;
-	uint64_t rsi;
-	uint64_t rdi;
-	uint64_t rbp;
-	uint64_t rdx;
-	uint64_t rcx;
-	uint64_t rbx;
-	uint64_t rax;
-
-	//iretq hook
-	uint64_t rip;
-	uint64_t cs;
-	uint64_t eflags;
-	uint64_t rsp;
-	uint64_t ss;
-	uint64_t base;
-};
-
-void * fillStackFrame(void * entryPoint, void * userStack) {
-	struct StackFrame *frame = (struct StackFrame *)userStack - 1;
-
-	frame->rip =	(uint64_t)entryPoint;
-
-	return frame;
-}
-
 void * toStackAddress(void * page) {
 	return page + 0x1000 - 0x10;
 }
 
 int main(){
-
-	// cleanScreen();
 
 	// Kernel INIT
 	init_interruptions();
@@ -246,86 +208,43 @@ int main(){
 	dma_start();
 	net_start();
 
+
 	initScheduler();
 
 
-	void * kernelStack = toStackAddress(malloc(0x1000));
 
-
-	//Process * process = new Process((void*)sampleCodeModuleAddress);
 	struct process * process1;
-
 	process1 = malloc(sizeof(struct process));
-
-	
 	process1->entryPoint = sampleCodeModuleAddress;
 	process1->userStack = toStackAddress(malloc(0x1000));
-	process1->kernelStack = kernelStack;//toStackAddress(malloc(0x1000));
-	//process1->userStack = fillStackFrame(sampleCodeModuleAddress, process1->userStack);
-	
+	process1->kernelStack = toStackAddress(malloc(0x1000));
 	queueProcess(process1);
 
 
 	struct process * process3;
-
 	process3 = malloc(sizeof(struct process));
-
-	
 	process3->entryPoint = sampleCodeModuleAddress;
 	process3->userStack = toStackAddress(malloc(0x1000));
-	process3->kernelStack = kernelStack;//toStackAddress(malloc(0x1000));
-	//process1->userStack = fillStackFrame(sampleCodeModuleAddress, process1->userStack);
-	
-	queueProcess(process3);
+	process3->kernelStack = toStackAddress(malloc(0x1000));
+	// queueProcess(process3);
 
 
 	struct process * process4;
-
-	process4 = malloc(sizeof(struct process));
-
-	
+	process4 = malloc(sizeof(struct process));	
 	process4->entryPoint = sampleCodeModuleAddress;
 	process4->userStack = toStackAddress(malloc(0x1000));
-	process4->kernelStack = kernelStack;//toStackAddress(malloc(0x1000));
-	//process1->userStack = fillStackFrame(sampleCodeModuleAddress, process1->userStack);
-	
-	queueProcess(process4);
+	process4->kernelStack = toStackAddress(malloc(0x1000));
+	// queueProcess(process4);
 
 
 	struct process * process2;
-	
 	process2 = malloc(sizeof(struct process));
-	
 	process2->entryPoint = sampleCodeModuleAddress;
 	process2->userStack = toStackAddress(malloc(0x1000));
-	process2->kernelStack = kernelStack;//toStackAddress(malloc(0x1000));
-	// process2->userStack = fillStackFrame(sampleCodeModuleAddress, process2->userStack);
-	// pushIPtoStack(&(process2->userStack), sampleCodeModuleAddress);
-	//process2->kernelStack = fillStackFrame(sampleCodeModuleAddress, process2->kernelStack);
-	// setPicMaster(0x04);
-	forzeProcess(process2); //Hay que leer como llenar el stack del user del proceso 2.
-	// El problema es el siguiente:
-	// Cuando levantamos el proceso1, y lo llamamos con ((EntryPoint)sampleCodeModuleAddress)();
-	// el stack se llena solo cuando lo interumpimos, con stack me refiero al rip o return
-	// Esto tiene un formato especial, eso lo arma rodrigo con el fillStackFrame
-	// Todo rompe cuando el scheduler interumpe con el tick, cambia el rsp y trata de hacer el iretq
-	// con el stack del process2 que esta todo vacio, pone basura en los reguistros y rompe todo.
-
-	// Capaz lo que se puede hacer, es tener una queue de ready en el scheduler y llamarlos como se hace
-	// aca. 
-
-	// Cuando queramos levantar un proceso por primera vez, primero cambiamos a su stack,
-	// despues lo llamamos, eso haria que cuando retorne el main del proceso, vuelva a la direccion
-	// del kernel, porque lo primero que seria guardado en el stack del user es la dir de retorno
-	// de lo que lo llamo, en este caso, el stack.
-
-	// return 1;
-
-
+	process2->kernelStack = toStackAddress(malloc(0x1000));
 	
-
-	// UserLand Init
-	// ((EntryPoint)sampleCodeModuleAddress)();
+	startProcess(process2);
+	
 
 	while (1);
 

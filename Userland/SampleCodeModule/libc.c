@@ -181,69 +181,88 @@ Read formated string from the cli descriptor
 */
 void scanf(char *format, ...){
 
-	//TODO: Revisar que el string sea valido y implementar que scan devuelva los valores en los punteros ingresados.
-
-	char str[200]; //Este buffer es el input entero del user.
-	char end = 0;
-	char buffer[10]; //Buffer es un pequeño buffer de los valores que devuelve el syscall read, como lo estoy llamando adentro
-					 //de un loop este buffer nunca se va a llenar mucho entonces su tamaño no es importante.
-					 //Para que este buffer se llene el usuario tiene que apretar 10 teclas a mas rapido de lo que el kernel 
-					 //tarde en responder el syscall.
-
-	int indexStr = 0;
-
-	while(!end){
-		int lon = syscall(SYSCALL_READ, buffer, 0, DESCRIPTOR_CLI); //Llamo a la syscall, me devuelve la longitud de lo devuelto en 'buffer'.
-		for (int i = 0; i < lon; i++){
-			str[indexStr++] = buffer[i]; //Concateno buffer al final de 'str'.
-			if (buffer[i] == '\n'){
-				end = 1; //Si encontre un '\n' entonces el usuario apreto "return", puedo terminar.
-			}
-			if (buffer[i] == '\b'){ //Si aca llega un '\b' significa que el usuario apreto backspace y en la consola, visualmente, ya se elimino el character.
-				indexStr--;
-				indexStr--;//Menos 2 porque en caso que haya un backspace en el buffer, tengo que volver a la original del loop y eliminar la anterior.
-			}
-		}
-	}
-	str[indexStr] = 0; //Pongo un 0 al final del string del usuario para que funcione bien en C.
-
-
 	va_list ap;
 	va_start(ap, 1);
+	char *d = va_arg(ap, char*);
+	
 
-	int index = 0; //Este es el index del string de formato.
-	while(format[index] != 0){
-		if (format[index] == '%'){ //Si el character es un '%' entonces el proximo character es el formato.
-			char type = format[++index]; //Aca tomo el proximo.
-			switch(type){
-				case 'c':{ //Tipo char.
-					char *d = va_arg(ap, char*);
-					*d = str[0];
-					break;
-				}
-				case 'd':{ //Tipo integer.
-					int *d = va_arg(ap, int*);
-					int a = stringToInt(str, indexStr-1); //indexStr es mas largo que el valor porque toma en cuenta el 0.
-					*d = a;
-					break;
-				}
-				case 's':{ //Tipo String.
-					char *d = va_arg(ap, char*);
-					for (int i = 0; i < indexStr + 1; i++) //El +1 es para que meta el 0 al final.
-						d[i] = str[i];
-					break;
-				}
-				case 'f':{ //Tipo float.
-					break;
-				}
-				case 'u':{ //Tipo unsigned.
-					break;
-				}
-			}
+	d[0] = 'h';
+	d[1] = 'e';
+	d[2] = 'l';
+	d[3] = 'l';
+	d[4] = 'o';
+	d[5] = 0;
 
-		}
-		index++;
-	}
+	// printf("Test\n");
+
+	// *d = buffer[0];
+	int lon = syscall(SYSCALL_READ, format, 0, DESCRIPTOR_CLI);
+
+	return;
+
+	// //TODO: Revisar que el string sea valido y implementar que scan devuelva los valores en los punteros ingresados.
+
+	// char str[200]; //Este buffer es el input entero del user.
+	// char end = 0;
+	// char buffer[10]; //Buffer es un pequeño buffer de los valores que devuelve el syscall read, como lo estoy llamando adentro
+	// 				 //de un loop este buffer nunca se va a llenar mucho entonces su tamaño no es importante.
+	// 				 //Para que este buffer se llene el usuario tiene que apretar 10 teclas a mas rapido de lo que el kernel 
+	// 				 //tarde en responder el syscall.
+
+	// int indexStr = 0;
+
+	// while(!end){
+	// 	int lon = syscall(SYSCALL_READ, buffer, 0, DESCRIPTOR_CLI); //Llamo a la syscall, me devuelve la longitud de lo devuelto en 'buffer'.
+	// 	for (int i = 0; i < lon; i++){
+	// 		str[indexStr++] = buffer[i]; //Concateno buffer al final de 'str'.
+	// 		if (buffer[i] == '\n'){
+	// 			end = 1; //Si encontre un '\n' entonces el usuario apreto "return", puedo terminar.
+	// 		}
+	// 		if (buffer[i] == '\b'){ //Si aca llega un '\b' significa que el usuario apreto backspace y en la consola, visualmente, ya se elimino el character.
+	// 			indexStr--;
+	// 			indexStr--;//Menos 2 porque en caso que haya un backspace en el buffer, tengo que volver a la original del loop y eliminar la anterior.
+	// 		}
+	// 	}
+	// }
+	// str[indexStr] = 0; //Pongo un 0 al final del string del usuario para que funcione bien en C.
+
+
+	// va_list ap;
+	// va_start(ap, 1);
+
+	// int index = 0; //Este es el index del string de formato.
+	// while(format[index] != 0){
+	// 	if (format[index] == '%'){ //Si el character es un '%' entonces el proximo character es el formato.
+	// 		char type = format[++index]; //Aca tomo el proximo.
+	// 		switch(type){
+	// 			case 'c':{ //Tipo char.
+	// 				char *d = va_arg(ap, char*);
+	// 				*d = str[0];
+	// 				break;
+	// 			}
+	// 			case 'd':{ //Tipo integer.
+	// 				int *d = va_arg(ap, int*);
+	// 				int a = stringToInt(str, indexStr-1); //indexStr es mas largo que el valor porque toma en cuenta el 0.
+	// 				*d = a;
+	// 				break;
+	// 			}
+	// 			case 's':{ //Tipo String.
+	// 				char *d = va_arg(ap, char*);
+	// 				for (int i = 0; i < indexStr + 1; i++) //El +1 es para que meta el 0 al final.
+	// 					d[i] = str[i];
+	// 				break;
+	// 			}
+	// 			case 'f':{ //Tipo float.
+	// 				break;
+	// 			}
+	// 			case 'u':{ //Tipo unsigned.
+	// 				break;
+	// 			}
+	// 		}
+
+	// 	}
+	// 	index++;
+	// }
 
 
 }

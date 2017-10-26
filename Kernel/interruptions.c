@@ -25,6 +25,10 @@ handler_t handlers[] = {tickHandler, keyboardHandler, rtlHandler};
 
 
 
+void enableTickInter() {
+	setPicMaster(0x04);
+}
+
 void init_interruptions() {
 
 	setPicMaster(0x01); //Sin el tick es 0x01
@@ -59,9 +63,12 @@ void irqDispatcher(int irq) {
 
 
 char *video = (char *) 0xB8000;
-static int videoIndex = 10;
+static int videoIndex = 0;
 void tickHandler() {
-	video[0] = '0' + getCurrentPid();	
+	video[videoIndex] = '0' + getCurrentPid();
+	videoIndex += 2;
+	if (videoIndex > 80)
+		videoIndex = 0;
 
 }
 
