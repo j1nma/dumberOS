@@ -69,8 +69,9 @@ void schedule() {
 				ncPrint("Next kernelStack: ");ncPrintHex(scheduler->current->process->kernelStack);ncNewline();
 				endInter();
 				ncPrint("End inter");
+				k = 0;
 				switchStackAndJump((process1->userStack), (process1->entryPoint)); //Salto a el.
-			}
+			}	// Crear una clase que haga todo lo mas hardware, el switchstackandjump, setPicMaster, etc...0
 			k++;
 	}
 

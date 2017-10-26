@@ -266,6 +266,32 @@ int main(){
 	queueProcess(process1);
 
 
+	struct process * process3;
+
+	process3 = malloc(sizeof(struct process));
+
+	
+	process3->entryPoint = sampleCodeModuleAddress;
+	process3->userStack = toStackAddress(malloc(0x1000));
+	process3->kernelStack = kernelStack;//toStackAddress(malloc(0x1000));
+	//process1->userStack = fillStackFrame(sampleCodeModuleAddress, process1->userStack);
+	
+	queueProcess(process3);
+
+
+	struct process * process4;
+
+	process4 = malloc(sizeof(struct process));
+
+	
+	process4->entryPoint = sampleCodeModuleAddress;
+	process4->userStack = toStackAddress(malloc(0x1000));
+	process4->kernelStack = kernelStack;//toStackAddress(malloc(0x1000));
+	//process1->userStack = fillStackFrame(sampleCodeModuleAddress, process1->userStack);
+	
+	queueProcess(process4);
+
+
 	struct process * process2;
 	
 	process2 = malloc(sizeof(struct process));
@@ -299,9 +325,9 @@ int main(){
 	
 
 	// UserLand Init
-	//((EntryPoint)sampleCodeModuleAddress)();
+	// ((EntryPoint)sampleCodeModuleAddress)();
 
-	// while (1);
+	while (1);
 
 
 	return 0;
