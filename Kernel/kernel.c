@@ -35,10 +35,10 @@ void clearBSS(void * bssAddress, uint64_t bssSize)
 void * getStackBase()
 {
 	return (void*)(
-		(uint64_t)&endOfKernel
-		+ PageSize * 8				//The size of the stack itself, 32KiB
-		- sizeof(uint64_t)			//Begin at the top of the stack
-	);
+	           (uint64_t)&endOfKernel
+	           + PageSize * 8				//The size of the stack itself, 32KiB
+	           - sizeof(uint64_t)			//Begin at the top of the stack
+	       );
 }
 
 void * initializeKernelBinary()
@@ -96,103 +96,102 @@ Dispatch syscalls to the corresponding functions
 @param	tercero	Length
 @param	cuarto Decryptor to use
 */
-int sysCallDispacher(int function, char* segundo, int tercero, int cuarto){
+int sysCallDispatcher(int function, char* segundo, int tercero, int cuarto) {
 
-	switch(function){
-		case SYSCALL_WRITE:{
-			switch ( cuarto ) {
-				case DESCRIPTOR_CLI: {
-					write(segundo, tercero);
-					break;
-				}
-				case DESCRIPTOR_NET: {
-					int i = 0;
-					net_send(segundo);
-					break;
-				}
-				default: {
-					ncPrint("SysCall not found.");
-					break;
-				}
-			}
+	switch (function) {
+	case SYSCALL_WRITE: {
+		switch ( cuarto ) {
+		case DESCRIPTOR_CLI: {
+			write(segundo, tercero);
 			break;
 		}
-		case SYSCALL_READ:{
-			switch ( cuarto ) {
-				case DESCRIPTOR_CLI: {
-					int res = 0;
-					if (res == 0) {
-						blockCurrent(KEYBOARD_BLOCK);
-						// ncPrint("Test");
-						unflip();
-					}
-					// char sux[] = "test";
-					// for (int i = 0; i < 5; i++) {
-					// 	segundo[i] = sux[i];
-					// }
-					return read(segundo);
-					break;
-				}
-				case DESCRIPTOR_NET: {
-					return net_read(segundo);
-					break;
-				}
-				default: {
-					ncPrint("SysCall not found.");
-					break;
-				}
-			}
+		case DESCRIPTOR_NET: {
+			net_send(segundo);
 			break;
 		}
-		case SYSCALL_MALLOC:{
-			return malloc(tercero);
-			break;
-		}
-		case SYSCALL_CALLOC:{
-			return calloc(tercero);
-			break;	
-		}
-		case SYSCALL_FREE:{
-			free(segundo);
-			break;	
-		}
-		case SYSCALL_TIME:{
-			getTime(segundo);
-			break;
-		}
-		case SYSCALL_PID:{
-			return getCurrentPid();
-			break;
-		}
-		default:{
+		default: {
 			ncPrint("SysCall not found.");
 			break;
 		}
+		}
+		break;
+	}
+	case SYSCALL_READ: {
+		switch ( cuarto ) {
+		case DESCRIPTOR_CLI: {
+			int res = 0;
+			if (res == 0) {
+				blockCurrent(KEYBOARD_BLOCK);
+				// ncPrint("Test");
+				unflip();
+			}
+			// char sux[] = "test";
+			// for (int i = 0; i < 5; i++) {
+			// 	segundo[i] = sux[i];
+			// }
+			return read(segundo);
+			break;
+		}
+		case DESCRIPTOR_NET: {
+			return net_read(segundo);
+			break;
+		}
+		default: {
+			ncPrint("SysCall not found.");
+			break;
+		}
+		}
+		break;
+	}
+	case SYSCALL_MALLOC: {
+		return malloc(tercero);
+		break;
+	}
+	case SYSCALL_CALLOC: {
+		return calloc(tercero);
+		break;
+	}
+	case SYSCALL_FREE: {
+		free(segundo);
+		break;
+	}
+	case SYSCALL_TIME: {
+		getTime(segundo);
+		break;
+	}
+	case SYSCALL_PID: {
+		return getCurrentPid();
+		break;
+	}
+	default: {
+		ncPrint("SysCall not found.");
+		break;
+	}
 	}
 	return 0;
-	
+
 }
 
 
 
-void miCallbacldeTeclado(uint8_t c, int function){
-	switch(function){
-		case RESPONSE_CHARACTER:{
-			write(&c, 1); //RESPONSE_CHARACTER es cuando el usuario presiona una tecla imprimible. Llamo a write del driver de video.
-			break;
-		}
-		case RESPONSE_BACKSPACE:{
-			backspace();
-			break;
-		}
-		case RESPONSE_ENTER:{
-			unblock(KEYBOARD_BLOCK);
-			newLine(); //RESPONSE_ENTER es cuando el usuario presiona "return". Llamo a "newLine" del driver de video.
-			break;
-		}
-		case RESPONSE_ARROWS:{
-			break;
-		}
+void miCallbackDeTeclado(uint8_t c, int function) {
+	switch (function) {
+	case RESPONSE_CHARACTER: {
+		write(&c, 1); //RESPONSE_CHARACTER es cuando el usuario presiona una tecla imprimible. Llamo a write del driver de video.
+		break;
+	}
+	case RESPONSE_BACKSPACE: {
+		backspace();
+		break;
+	}
+	case RESPONSE_ENTER: {
+		unblock(KEYBOARD_BLOCK);
+		newLine(); //RESPONSE_ENTER es cuando el usuario presiona "return". Llamo a "newLine" del driver de video.
+		break;
+	}
+	case RESPONSE_ARROWS: {
+		break;
+	}
 	}
 }
 
@@ -200,13 +199,13 @@ void * toStackAddress(void * page) {
 	return page + 0x1000 - 0x10;
 }
 
-int main(){
+int main() {
 
 	// Kernel INIT
-	init_interruptions();
+	dma_start();
 
 	// Kernel Operations
-	setKeyboardCallback(miCallbacldeTeclado);	
+	setKeyboardCallback(miCallbackDeTeclado);
 
 	// Net Init
 	dma_start();
@@ -234,7 +233,7 @@ int main(){
 
 
 	struct process * process4;
-	process4 = malloc(sizeof(struct process));	
+	process4 = malloc(sizeof(struct process));
 	process4->entryPoint = sampleCodeModuleAddress;
 	process4->userStack = toStackAddress(malloc(0x1000));
 	process4->kernelStack = toStackAddress(malloc(0x1000));
@@ -246,9 +245,9 @@ int main(){
 	process2->entryPoint = sampleCodeModuleAddress;
 	process2->userStack = toStackAddress(malloc(0x1000));
 	process2->kernelStack = toStackAddress(malloc(0x1000));
-	
+
 	startProcess(process2);
-	
+
 
 	while (1);
 

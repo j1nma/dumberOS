@@ -10,4 +10,6 @@ void lcNewLine();
 void lcBackSpace();
 void lcPrintHex(uint16_t value);
 
+void writeCharacter(char c, int x, int y, char color);
+
 #endif

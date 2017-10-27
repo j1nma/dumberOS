@@ -1,4 +1,3 @@
-//interruptions.c
 #include <interruptions.h>
 #include <drivers.h>
 

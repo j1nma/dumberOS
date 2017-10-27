@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+void init_interruptions();
 void iSetHandler(int index, uint64_t handler);
 void irqDispatcher(int irq);
 

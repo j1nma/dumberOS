@@ -19,7 +19,7 @@ GLOBAL endInter
 GLOBAL int20
 
 EXTERN irqDispatcher
-EXTERN sysCallDispacher
+EXTERN sysCallDispatcher
 
 EXTERN switchUserToKernel
 EXTERN switchKernelToUser
@@ -261,7 +261,7 @@ sysCallHandler:
 	mov rdx, rcx
 	mov rcx, r8 ; Todo esto mapea C a asm en el handling de los parametros.
 
-	call sysCallDispacher
+	call sysCallDispatcher
 	
 	mov [result], rax ; Como 'popaq' pone todos los registros en su valor original, guardo 'rax' (mi valor de retorno)
 					  ; en una variable en memoria para despues de llamar a 'popaq' volver a asignarlo a 'rax'.

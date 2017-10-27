@@ -1,5 +1,9 @@
 #include <stdint.h>
 
+extern uint8_t sysInByte(uint16_t rdi);
+extern void sysOutByte(uint16_t rdi, uint16_t rsi);
+extern uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base);
+
 void getTime(char *ptr){
 
 	sysOutByte(0x70, 0x0B);

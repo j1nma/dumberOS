@@ -15,13 +15,11 @@ void newLine();
 void backspace();
 
 // Divers Network
-
 void net_start();
 void net_send(char *msg);
 int net_read(char *b);
 
 //Drivers memoria
-
 void *malloc(int size);
 void *calloc(int size);
 void free(void *ptr);
