@@ -13,7 +13,7 @@ void * switchUserToKernel(void * esp);
 
 void * switchKernelToUser();
 
-void * switch_stack(void * from_rsp, void * to_rsp);
+void * switchStack(void * from_rsp, void * to_rsp);
 
 void * swap(void * from_rsp, void * to_rsp);
 
@@ -37,15 +37,13 @@ void addProcess(struct process * process);
 
 void removeProcess(struct process * process);
 
-void * fillStackFrame(void * entryPoint, void * userStack);
-
 void blockCurrent(int code);
 
 void unblock(int code);
 
 int getCurrentPid();
 
-int getCurrentSP();
+void * getCurrentSP();
 
 void initScheduler();
 

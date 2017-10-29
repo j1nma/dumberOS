@@ -2,6 +2,7 @@
 #include <drivers.h>
 #include "process.h"
 #include "stack.h"
+#include "interruptions.h"
 
 static struct scheduler * scheduler;
 
@@ -13,14 +14,14 @@ typedef int (*EntryPoint)();
 static int pid = 0;
 
 void initScheduler() {
-	scheduler = (struct scheduler *)malloc(sizeof(struct scheduler)); 
+	scheduler = (struct scheduler *)malloc(sizeof(struct scheduler));
 }
 
 int getCurrentPid() {
 	return scheduler->current->process->pid;
 }
 
-int getCurrentSP() {
+void * getCurrentSP() {
 	return scheduler->current->process->userStack;
 }
 
@@ -30,23 +31,23 @@ void * switchUserToKernel(void * esp) {
 	if (scheduler->current->process->fliped == 15) {
 		scheduler->current->process->kernelStack = esp;
 		return scheduler->current->process->userStack;
-	}else{
+	} else {
 		scheduler->current->process->userStack = esp;
 		return scheduler->current->process->kernelStack;
 	}
-	
+
 }
 
 
 void * switchKernelToUser() {
 	if (scheduler->current->process->fliped == 15) {
 		return scheduler->current->process->kernelStack;
-	}else{
+	} else {
 		return scheduler->current->process->userStack;
 	}
 }
 
-void * switch_stack(void * from_rsp, void * to_rsp) { //Cambiar a camelcase
+void * switchStack(void * from_rsp, void * to_rsp) {
 
 }
 
@@ -54,7 +55,7 @@ void * swap(void * from_rsp, void * to_rsp) {
 
 }
 
-void unflip(){
+void unflip() {
 	scheduler->current->process->fliped = 0;
 }
 
@@ -64,12 +65,12 @@ void next() {
 
 void schedule() {
 
-	if (isempty()) {
+	if (isEmpty()) {
 		next();
 		while (scheduler->current->process->state != RUNNING)
 			next();
-	}else{
-	
+	} else {
+
 		struct process * process1 = pop();
 
 		addProcess(process1); //Lo pongo como next.
@@ -83,9 +84,9 @@ void startProcess(struct process * process) {
 	process->state = RUNNING;
 
 	addProcess(process); //Lo pongo como next.
-	
+
 	scheduler->current = scheduler->current->next; //Paso al next, lo pongo como current.
-	
+
 	enableTickInter(); // Lo hago aca, porque es posible que el primer tick, entre antes que hayan procesos en el schedueler.
 
 	callProcess(process);
@@ -97,19 +98,19 @@ void queueProcess(struct process * process) {
 }
 
 void addProcess(struct process * process) {
-	
-	
+
+
 	struct process_node * newNode; //Creo un node nuevo
 	newNode = (struct process_node *)malloc(sizeof(struct process_node)); //Lo aloco
-	
+
 	newNode->process = process; //Le asigno el proceso
 	newNode->process->pid = pid; //Le asigno el pid
 
-	
+
 	if (pid == 0) { //Es el primero?
 		scheduler->current = newNode;
 		scheduler->current->next = newNode; //Lo pongo como current y el que le sigue a current
-	}else{	
+	} else {
 		newNode->next = scheduler->current->next;
 		scheduler->current->next = newNode; //Lo pongo como el siguiente al current y cambio las referencias del siguiente previo.
 	}
@@ -122,7 +123,7 @@ void unblock(int code) {
 		if (current->process->state == code) {
 			current->process->state = RUNNING;
 			break;
-		}else{
+		} else {
 			current = current->next;
 		}
 	}

@@ -26,7 +26,6 @@ struct process {
 	// prio_array_t *array
 };
 
-void callProcess(struct process *process);
-
+void callProcess(struct process * process);
 
 #endif
