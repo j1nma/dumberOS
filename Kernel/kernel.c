@@ -214,6 +214,8 @@ int main() {
 
 	initScheduler();
 
+	init_interruptions();
+
 
 
 	struct process * process1;

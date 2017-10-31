@@ -1,5 +1,6 @@
 // buddy allocation
 // include memalloc.h
+#include "memoryAllocation.h"
 
 struct buddyAllocator myAllocation;
 

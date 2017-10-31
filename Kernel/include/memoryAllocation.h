@@ -15,7 +15,7 @@ struct buddyTreeNode {
 struct buddyAllocator {
 	struct buddyTree * root;
 	int size;
-};
+} buddyAllocator;
 
 void * allocPage(int size);
 
