@@ -28,7 +28,7 @@ void * getCurrentSP() {
 
 void * switchUserToKernel(void * esp) {
 
-	if (scheduler->current->process->fliped == 15) {
+	if (scheduler->current->process->flipped == 15) {
 		scheduler->current->process->kernelStack = esp;
 		return scheduler->current->process->userStack;
 	} else {
@@ -40,7 +40,7 @@ void * switchUserToKernel(void * esp) {
 
 
 void * switchKernelToUser() {
-	if (scheduler->current->process->fliped == 15) {
+	if (scheduler->current->process->flipped == 15) {
 		return scheduler->current->process->kernelStack;
 	} else {
 		return scheduler->current->process->userStack;
@@ -56,7 +56,7 @@ void * swap(void * from_rsp, void * to_rsp) {
 }
 
 void unflip() {
-	scheduler->current->process->fliped = 0;
+	scheduler->current->process->flipped = 0;
 }
 
 void next() {
@@ -87,7 +87,7 @@ void startProcess(struct process * process) {
 
 	scheduler->current = scheduler->current->next; //Paso al next, lo pongo como current.
 
-	enableTickInter(); // Lo hago aca, porque es posible que el primer tick, entre antes que hayan procesos en el schedueler.
+	enableTickInter(); // Lo hago aca, porque es posible que el primer tick, entre antes que hayan procesos en el scheduler.
 
 	callProcess(process);
 }
@@ -132,7 +132,7 @@ void unblock(int code) {
 void blockCurrent(int code) {
 
 	scheduler->current->process->state = KEYBOARD_BLOCK;
-	scheduler->current->process->fliped = 15;
+	scheduler->current->process->flipped = 15;
 	// enableTickInter();
 	// endInter();
 	int20();

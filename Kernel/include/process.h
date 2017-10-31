@@ -21,7 +21,7 @@ struct process {
 
 	void * entryPoint;
 
-	int fliped;
+	int flipped;
 
 	// prio_array_t *array
 };

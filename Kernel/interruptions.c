@@ -25,10 +25,10 @@ handler_t handlers[] = {tickHandler, keyboardHandler, rtlHandler};
 
 
 void enableTickInter() {
-	setPicMaster(0x04);
+	setPicMaster(0xFC);
 }
 
-void init_interruptions() {
+init_interruptions() {
 
 	setPicMaster(0x01); //Sin el tick es 0x01
 	setPicSlave(0x00);

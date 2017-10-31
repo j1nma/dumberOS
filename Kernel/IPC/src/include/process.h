@@ -23,7 +23,7 @@ struct process {
 
 	void * entryPoint;
 
-	int fliped;
+	int flipped;
 
 	Queue blocked_waiting_processes;
 

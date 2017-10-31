@@ -4,12 +4,21 @@
 #define UNLOCKED 0
 #define LOCKED 1
 
-// long lock = UNLOCKED;
+long lock = UNLOCKED;
+
+void up() {
+  while (lock == LOCKED);
+  lock = LOCKED;
+}
+
+void down() {
+  lock = UNLOCKED;
+}
 
 // void Acquire(void) {
 //    while(lock == LOCKED);
 //    lock = LOCKED;
-// }   Acquire 
+// }   Acquire
 
 // void Relinquish(void) {
 //    lock = UNLOCKED;
