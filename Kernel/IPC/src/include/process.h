@@ -1,7 +1,11 @@
-#ifndef PROCESS_H
-#define PROCESS_H
+#ifndef _PROCESS_H
+#define _PROCESS_H
 
-#include "queue.h"
+#include "circular_buffer.h"
+
+#define RUNNING 0
+#define MESSAGE_BLOCK 4
+#define MESSAGE_UNBLOCK 5
 
 // https://unix.stackexchange.com/questions/80038/what-is-the-structure-of-a-linux-process
 
@@ -25,15 +29,11 @@ struct process {
 
 	int flipped;
 
-	Queue blocked_waiting_processes;
+	circular_buffer blocked_waiting_processes;
 
 	// prio_array_t *array
 };
 
 void callProcess(struct process * process);
-
-int topWaitQueue(struct process * process);
-
-int popWaitQueue(struct process * process);
 
 #endif

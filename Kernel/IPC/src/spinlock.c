@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include "mutex.h"
 
 /* Shared variables */
 long total = 0;
@@ -27,8 +28,6 @@ long iters;
 long thread_count;
 
 void* Thread_work(void* rank);
-void Acquire(void);
-void Relinquish(void);
 
 int main(int argc, char* argv[]) {
    long thread;
@@ -60,29 +59,11 @@ void* Thread_work(void* rank) {
    long i;
 
    for (i = 0; i < iters; i++) {
-      Acquire();
+      down();
       total++;
-      Relinquish();
+      up();
    }
 
    return NULL;
 }  /* Thread_work */
-
-
-#ifdef ALL_IN_C
-
-#define UNLOCKED 0
-#define LOCKED 1
-
-long lock = UNLOCKED;
-
-void Acquire(void) {
-   while(lock == LOCKED);
-   lock = LOCKED;
-}  /* Acquire */
-
-void Relinquish(void) {
-   lock = UNLOCKED;
-}  /* Relinquish */
-#endif
 

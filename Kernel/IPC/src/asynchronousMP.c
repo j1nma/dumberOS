@@ -1,61 +1,73 @@
+#include <stdlib.h>
 #include "message.h"
+#include "mutex.h"
+#include "process.h"
 #include "circular_buffer.h"
-
-#define UNLOCKED 0
-#define LOCKED 1
-
-long lock = UNLOCKED;
-
-void up() {
-  while (lock == LOCKED);
-  lock = LOCKED;
-}
-
-void down() {
-  lock = UNLOCKED;
-}
-
-// void Acquire(void) {
-//    while(lock == LOCKED);
-//    lock = LOCKED;
-// }   Acquire
-
-// void Relinquish(void) {
-//    lock = UNLOCKED;
-// }  /* Relinquish */
-
-void asyncSend(struct message * msg);
-
-struct message * asyncRecieve();
-
-void disableTaskSwitch();
-
-void enableTaskSwitch();
-
-void wait_and_lock_mutex();
-
-void unlock_mutex();
+#include "queue.h"
 
 void disableTaskSwitch() {
-
+  down();
 }
 
 void enableTaskSwitch() {
-
+  up();
 }
 
-void wait_and_lock_mutex() {
-
+void blockProcess(struct process * process) {
+  process->state = MESSAGE_BLOCK;
 }
 
-void unlock_mutex() {
-
+void unblockProcess(struct process * process) {
+  process->state = MESSAGE_UNBLOCK;
 }
+
+int isBlocked(struct process * process) {
+  return process->state == MESSAGE_BLOCK;
+}
+
+int topWaitQueue(struct process * process) {
+  Queue q = process->blocked_waiting_processes;
+
+  int ans;
+
+  queuePeek(&q, &ans);
+
+  return ans;
+}
+
+void pushWaitQueue(struct process * receiver, struct process * sender) {
+  enqueue(&receiver->blocked_waiting_processes, &sender->pid);
+}
+
+
+int popWaitQueue(struct process * process) {
+  Queue q = process->blocked_waiting_processes;
+
+  int ans;
+
+  dequeue(&q, &ans);
+
+  return ans;
+}
+
+static circular_buffer buff;
+
+static struct process * current_process;
 
 void asyncSend(struct message * msg) {
+
   disableTaskSwitch();
-  // msg.src = current_process; //we must not rely on it's set
-  // tmpbuff = map_buffer(msg.dst); //temporarily map destination's buffer into sender process' address space
+
+  msg->source = current_process; //we must not rely on it's set
+
+  // circular_buffer tmpbuff = map_buffer(msg->destination); //temporarily map destination's buffer into sender process' address space
+
+  circular_buffer tmpbuff;
+
+  cbInit(&tmpbuff, sizeof(struct message));
+
+  tmpbuff = msg->destination->blocked_waiting_processes; //temporarily map destination's buffer into sender process' address space
+
   // if (tmpbuff.count == MAXITEMS) { //if receiver buffer is full, block
   //   pushwaitqueue(msg.dst, current_process); //record this process in dst's sender queue
   //   block(current_process);
@@ -63,10 +75,9 @@ void asyncSend(struct message * msg) {
   // push(tmpbuff, msg);
   // if (isblocked(msg.dst)) awake(msg.dst); //if destination process is blocked for receiving, awake it
   // unmap_buffer();
+
   enableTaskSwitch();
 }
-
-static circular_buffer buff;
 
 struct message * asyncRecieve() {
   // message tmp=NULL;

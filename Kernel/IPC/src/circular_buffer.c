@@ -8,12 +8,11 @@
 Copied from https://stackoverflow.com/a/827749/1815727 27, October 2017 02:56 AM
 */
 
-void cbInit(circular_buffer *cb, size_t capacity, size_t sz) {
-    cb->buffer = malloc(capacity * sz);
+void cbInit(circular_buffer *cb, size_t sz) {
+    cb->buffer = malloc(MAXITEMS * sz);
     if (cb->buffer == NULL)
         // handle error
-        cb->buffer_end = (char *)cb->buffer + capacity * sz;
-    cb->capacity = capacity;
+        cb->buffer_end = (char *)cb->buffer + MAXITEMS * sz;
     cb->count = 0;
     cb->sz = sz;
     cb->head = cb->buffer;
@@ -26,7 +25,7 @@ void cbFree(circular_buffer *cb) {
 }
 
 void cbPushBack(circular_buffer *cb, const void *item) {
-    if (cb->count == cb->capacity) {
+    if (cb->count == MAXITEMS) {
         // handle error
     }
     memcpy(cb->head, item, cb->sz);
