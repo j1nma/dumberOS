@@ -7,14 +7,11 @@
 #include <naiveConsole.h>
 #include "Queue.h"
 
-#define FLIPED 5
+#define FLIPPED 5
 
 static struct scheduler * scheduler;
 
 typedef int (*EntryPoint)();
-
-// static struct process * mainProcess;
-// static struct process * processes[10];
 
 static int pid = 0;
 
@@ -36,32 +33,28 @@ void * getCurrentSP() {
 
 void * switchUserToKernel(void * esp) {
 
-	if (scheduler->current->process->flipped != FLIPED) {
+	if (scheduler->current->process->flipped != FLIPPED) { //Si no esta volteado, funciona normal.
 		scheduler->current->process->userStack = esp;
 		return scheduler->current->process->kernelStack;
 	} else {
-		scheduler->current->process->kernelStack = esp;
-		return scheduler->current->process->testStack;
+		scheduler->current->process->kernelStack = esp; //Si esta volteado, devolve el stack especial de flipped.
+		return scheduler->current->process->flippedStack;
 	}
 }
 
 
 void * switchKernelToUser(void * esp) {
-	if (scheduler->current->process->flipped != FLIPED) {
+	if (scheduler->current->process->flipped != FLIPPED) { //Si no esta volteado, funciona normal.
 		scheduler->current->process->kernelStack = esp;
 		return scheduler->current->process->userStack;
 	} else {
-		scheduler->current->process->testStack = esp;
+		scheduler->current->process->flippedStack = esp; //Si esta volteado, guarda el SP del volteado y devolve el kernelStack.
 		return scheduler->current->process->kernelStack;
 	}
 }
 
-void * switchStack(void * from_rsp, void * to_rsp) {
-
-}
-
-void * swap(void * from_rsp, void * to_rsp) {
-
+void flip() {
+	scheduler->current->process->flipped = FLIPPED;
 }
 
 void unflip() {
@@ -71,37 +64,22 @@ void unflip() {
 void next() {
 	scheduler->current = scheduler->current->next;
 	while (scheduler->current->process->state != RUNNING){
-		progress();
 		scheduler->current = scheduler->current->next;
 	}
-}
-
-char *vid = (char *) 0xB8000;
-int proC = 0;
-void progress() {
-	char pro[] = {'\\', '|', '/', '-'};
-	vid[158] = pro[proC%4];
-	proC++;
 }
 
 void schedule() {
 
 	if (isEmpty()) {
 		next();
-		
-
 	} else {
-
 		struct process * process1 = pop();
-
 		addProcess(process1); //Lo pongo como next.
 		next(); //Paso al next, lo pongo como current.
 		callProcess(process1);
 	}
 }
 
-// El problema es que bloqueo a un proceso y despues levanto un proceso con el call.
-// Eso rompe bastante todo.
 void startProcess(struct process * process) {
 
 	process->state = RUNNING;
@@ -142,45 +120,21 @@ void addProcess(struct process * process) {
 }
 
 void unblock(int code) {
-	// if (!ioIsEmpty()){
-		struct process * ready;// = ioPop();
-	// 	ncPrintHex(ready->pid); //<=--=-=-=-=-=-=-=-=-=-=<<<
-	// 	ready->state = RUNNING;
-	// 	// ready->flipped = 0;
-	// }else{
-	// 	ncPrint(":(!!!!!!!!!!!!!!!!");
-	// }
-	if(getQueueSize(&q) > 0)
-    {
+
+	struct process * ready;
+	if(getQueueSize(&q) > 0) {
         dequeue(&q, &ready);
         ready->state = RUNNING;
     }
-}
-
-void flip() {
-	scheduler->current->process->flipped = FLIPED;
 }
 
 void blockCurrent(int code) {
 
 	scheduler->current->process->state = KEYBOARD_BLOCK;
 
-
-	// ioPush(scheduler->current->process);
 	enqueue(&q, &(scheduler->current->process));
 
-	// while(1);
-	
-	// enableTickInter();
-	// endInter();
-	// pushAQ();
-	// schedule();
-
-	ncPrint("Salio");
-
 	int20();
-	
-	// irq0Handler();
 }
 
 

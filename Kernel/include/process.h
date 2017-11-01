@@ -19,13 +19,11 @@ struct process {
 
 	void * kernelStack;
 
-	void * testStack;
+	void * flippedStack;
 
 	void * entryPoint;
 
 	int flipped;
-
-	// prio_array_t *array
 };
 
 void callProcess(struct process * process);

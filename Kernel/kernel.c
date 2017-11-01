@@ -120,8 +120,8 @@ int sysCallDispatcher(int function, char* segundo, int tercero, int cuarto) {
 		switch ( cuarto ) {
 		case DESCRIPTOR_CLI: {
 
-			ncPrint("Entro: ");
-			ncPrintDec(segundo);
+			// ncPrint("Entro: ");
+			// ncPrintDec(segundo);
 			
 			// while(1);
 			flip();
@@ -218,51 +218,32 @@ int main() {
 	initScheduler();
 
 	
+	void * flippedStack = toStackAddress(malloc(0x1000));
 
 
-
-	struct process * process1;
-	process1 = malloc(sizeof(struct process));
-	process1->entryPoint = sampleCodeModuleAddress;
-	process1->userStack = toStackAddress(malloc(0x1000));
-	process1->kernelStack = toStackAddress(malloc(0x1000));
-	process1->testStack = toStackAddress(malloc(0x1000));
-	queueProcess(process1);
-
-
-	struct process * process3;
-	process3 = malloc(sizeof(struct process));
-	process3->entryPoint = sampleCodeModuleAddress;
-	process3->userStack = toStackAddress(malloc(0x1000));
-	process3->kernelStack = toStackAddress(malloc(0x1000));
-	process3->testStack = toStackAddress(malloc(0x1000));
-	queueProcess(process3);
-
-
-	struct process * process4;
-	process4 = malloc(sizeof(struct process));
-	process4->entryPoint = sampleCodeModuleAddress;
-	process4->userStack = toStackAddress(malloc(0x1000));
-	process4->kernelStack = toStackAddress(malloc(0x1000));
-	process4->testStack = toStackAddress(malloc(0x1000));
-	queueProcess(process4);
-
-
-	struct process * process2;
-	process2 = malloc(sizeof(struct process));
-	process2->entryPoint = sampleCodeModuleAddress;
-	process2->userStack = toStackAddress(malloc(0x1000));
-	process2->kernelStack = toStackAddress(malloc(0x1000));
-	process2->testStack = toStackAddress(malloc(0x1000));
-
+	for (int i = 0; i < 5; ++i) {
+		struct process * processN;
+		processN = malloc(sizeof(struct process));
+		processN->entryPoint = sampleCodeModuleAddress;
+		processN->userStack = toStackAddress(malloc(0x1000));
+		processN->kernelStack = toStackAddress(malloc(0x1000));
+		processN->flippedStack = flippedStack;
+		processN->flipped = 0;
+		queueProcess(processN);
+	}
 
 
 	init_interruptions();
 
-	startProcess(process2);
+	struct process * process0;
+	process0 = malloc(sizeof(struct process));
+	process0->entryPoint = sampleCodeModuleAddress;
+	process0->userStack = toStackAddress(malloc(0x1000));
+	process0->kernelStack = toStackAddress(malloc(0x1000));
+	process0->flippedStack = flippedStack;
+	process0->flipped = 0;
+	startProcess(process0);
 
-
-	// while (1);
 
 
 	return 0;
