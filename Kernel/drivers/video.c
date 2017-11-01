@@ -48,6 +48,7 @@ int read(char *str){
 		str[i] = buffer[i];
 		if (buffer[i] == '\n'){ //Si encuentro un '\n' significa que el usuario presiono "return" entonces pongo el flag de buffer en false.
 			//startBuffering = FALSE;
+			// break;
 		}
 	}
 	str[i] = 0; //Pongo un 0 al final del vector del usuario para que sea leible en C.

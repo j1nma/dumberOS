@@ -11,7 +11,7 @@
 
 void * switchUserToKernel(void * esp);
 
-void * switchKernelToUser();
+void * switchKernelToUser(void * esp);
 
 void * switchStack(void * from_rsp, void * to_rsp);
 
@@ -24,6 +24,8 @@ struct scheduler {
 	struct process_node * current;
 
 };
+
+void flip();
 
 void unflip();
 

@@ -31,4 +31,10 @@ void getTime(void *ptr);
 
 void int20();
 
+void pushAQ();
+void popAQ();
+
+void sti();
+void cli();
+
 #endif

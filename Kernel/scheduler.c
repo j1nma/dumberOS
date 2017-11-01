@@ -3,6 +3,10 @@
 #include "process.h"
 #include "stack.h"
 #include "interruptions.h"
+#include "ioBlocked.h"
+#include <naiveConsole.h>
+
+#define FLIPED 5
 
 static struct scheduler * scheduler;
 
@@ -28,22 +32,23 @@ void * getCurrentSP() {
 
 void * switchUserToKernel(void * esp) {
 
-	if (scheduler->current->process->flipped == 15) {
-		scheduler->current->process->kernelStack = esp;
-		return scheduler->current->process->userStack;
-	} else {
+	if (scheduler->current->process->flipped != FLIPED) {
 		scheduler->current->process->userStack = esp;
 		return scheduler->current->process->kernelStack;
+	} else {
+		scheduler->current->process->kernelStack = esp;
+		return scheduler->current->process->testStack;
 	}
-
 }
 
 
-void * switchKernelToUser() {
-	if (scheduler->current->process->flipped == 15) {
-		return scheduler->current->process->kernelStack;
-	} else {
+void * switchKernelToUser(void * esp) {
+	if (scheduler->current->process->flipped != FLIPED) {
+		scheduler->current->process->kernelStack = esp;
 		return scheduler->current->process->userStack;
+	} else {
+		scheduler->current->process->testStack = esp;
+		return scheduler->current->process->kernelStack;
 	}
 }
 
@@ -61,31 +66,45 @@ void unflip() {
 
 void next() {
 	scheduler->current = scheduler->current->next;
+	while (scheduler->current->process->state != RUNNING){
+		progress();
+		scheduler->current = scheduler->current->next;
+	}
+}
+
+char *vid = (char *) 0xB8000;
+int proC = 0;
+void progress() {
+	char pro[] = {'\\', '|', '/', '-'};
+	vid[158] = pro[proC%4];
+	proC++;
 }
 
 void schedule() {
 
 	if (isEmpty()) {
 		next();
-		while (scheduler->current->process->state != RUNNING)
-			next();
+		
+
 	} else {
 
 		struct process * process1 = pop();
 
 		addProcess(process1); //Lo pongo como next.
-		scheduler->current = scheduler->current->next; //Paso al next, lo pongo como current.
+		next(); //Paso al next, lo pongo como current.
 		callProcess(process1);
 	}
 }
 
+// El problema es que bloqueo a un proceso y despues levanto un proceso con el call.
+// Eso rompe bastante todo.
 void startProcess(struct process * process) {
 
 	process->state = RUNNING;
 
 	addProcess(process); //Lo pongo como next.
 
-	scheduler->current = scheduler->current->next; //Paso al next, lo pongo como current.
+	next(); //Paso al next, lo pongo como current.
 
 	enableTickInter(); // Lo hago aca, porque es posible que el primer tick, entre antes que hayan procesos en el scheduler.
 
@@ -103,6 +122,7 @@ void addProcess(struct process * process) {
 	struct process_node * newNode; //Creo un node nuevo
 	newNode = (struct process_node *)malloc(sizeof(struct process_node)); //Lo aloco
 
+
 	newNode->process = process; //Le asigno el proceso
 	newNode->process->pid = pid; //Le asigno el pid
 
@@ -118,25 +138,38 @@ void addProcess(struct process * process) {
 }
 
 void unblock(int code) {
-	struct process_node *current = scheduler->current;
-	for (int i = 0; i < pid; i++) {
-		if (current->process->state == code) {
-			current->process->state = RUNNING;
-			break;
-		} else {
-			current = current->next;
-		}
+	if (!ioIsEmpty()){
+		struct process * ready = ioPop();
+		ncPrintHex(ready->pid); //<=--=-=-=-=-=-=-=-=-=-=<<<
+		ready->state = RUNNING;
+		// ready->flipped = 0;
+	}else{
+		ncPrint(":(!!!!!!!!!!!!!!!!");
 	}
+}
+
+void flip() {
+	scheduler->current->process->flipped = FLIPED;
 }
 
 void blockCurrent(int code) {
 
 	scheduler->current->process->state = KEYBOARD_BLOCK;
-	scheduler->current->process->flipped = 15;
+
+
+	ioPush(scheduler->current->process);
+
+	// while(1);
+	
 	// enableTickInter();
 	// endInter();
-	int20();
+	// pushAQ();
 	// schedule();
+
+	ncPrint("Salio");
+
+	int20();
+	
 	// irq0Handler();
 }
 

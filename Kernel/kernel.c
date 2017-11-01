@@ -119,17 +119,20 @@ int sysCallDispatcher(int function, char* segundo, int tercero, int cuarto) {
 	case SYSCALL_READ: {
 		switch ( cuarto ) {
 		case DESCRIPTOR_CLI: {
-			int res = 0;
-			if (res == 0) {
-				blockCurrent(KEYBOARD_BLOCK);
-				// ncPrint("Test");
-				unflip();
-			}
-			// char sux[] = "test";
-			// for (int i = 0; i < 5; i++) {
-			// 	segundo[i] = sux[i];
-			// }
-			return read(segundo);
+
+			ncPrint("Entro: ");
+			ncPrintDec(segundo);
+			
+			// while(1);
+			flip();
+			blockCurrent(KEYBOARD_BLOCK);
+			unflip();
+
+			int test = read(segundo);
+			// ncPrint("Salio: ");
+			// ncPrintDec(segundo);
+
+			return test;
 			break;
 		}
 		case DESCRIPTOR_NET: {
@@ -214,7 +217,7 @@ int main() {
 
 	initScheduler();
 
-	init_interruptions();
+	
 
 
 
@@ -223,6 +226,7 @@ int main() {
 	process1->entryPoint = sampleCodeModuleAddress;
 	process1->userStack = toStackAddress(malloc(0x1000));
 	process1->kernelStack = toStackAddress(malloc(0x1000));
+	process1->testStack = toStackAddress(malloc(0x1000));
 	queueProcess(process1);
 
 
@@ -231,7 +235,8 @@ int main() {
 	process3->entryPoint = sampleCodeModuleAddress;
 	process3->userStack = toStackAddress(malloc(0x1000));
 	process3->kernelStack = toStackAddress(malloc(0x1000));
-	// queueProcess(process3);
+	process3->testStack = toStackAddress(malloc(0x1000));
+	queueProcess(process3);
 
 
 	struct process * process4;
@@ -239,7 +244,8 @@ int main() {
 	process4->entryPoint = sampleCodeModuleAddress;
 	process4->userStack = toStackAddress(malloc(0x1000));
 	process4->kernelStack = toStackAddress(malloc(0x1000));
-	// queueProcess(process4);
+	process4->testStack = toStackAddress(malloc(0x1000));
+	queueProcess(process4);
 
 
 	struct process * process2;
@@ -247,11 +253,16 @@ int main() {
 	process2->entryPoint = sampleCodeModuleAddress;
 	process2->userStack = toStackAddress(malloc(0x1000));
 	process2->kernelStack = toStackAddress(malloc(0x1000));
+	process2->testStack = toStackAddress(malloc(0x1000));
+
+
+
+	init_interruptions();
 
 	startProcess(process2);
 
 
-	while (1);
+	// while (1);
 
 
 	return 0;

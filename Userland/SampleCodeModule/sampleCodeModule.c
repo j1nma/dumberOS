@@ -13,20 +13,18 @@ int main() {
 	// initWelcome();
 	char f[100];
 	if (getPid() != 0) {
+		int pid = getPid();
+		while (1) {
+		for (int i = 0; i < pid * 0000000; i++)
+			;
 
-		while (1) {
-			printf("Soy el proceso: %d, espero teclado...\n", getPid());
-			scanf("%s", &f);
-			printf("Volvi con: %s!!!\n", f);
+		printf("Soy el proceso: %d, espero teclado...\n", getPid());
+		scanf("%s", &f);
+		printf("Soy: %d, volvi con: %s!!!\n", getPid(), f);
 		}
+		iam();
 	} else {
-		int k = 0;
-		while (1) {
-			if (k % 200000000 == 0) {
-				printf("Soy el proceso: %d!!!\n", getPid());
-			}
-			k++;
-		}
+		iam();
 	}
 
 
@@ -45,6 +43,16 @@ int main() {
 	// halt();
 
 	return 0;
+}
+
+void iam() {
+	int k = 0;
+	while (1) {
+		if (k % 200000000 == 0) {
+			printf("Soy el proceso: %d!!!\n", getPid());
+		}
+		k++;
+	}
 }
 
 /**
