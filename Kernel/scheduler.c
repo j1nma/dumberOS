@@ -5,6 +5,7 @@
 #include "interruptions.h"
 #include "ioBlocked.h"
 #include <naiveConsole.h>
+#include "Queue.h"
 
 #define FLIPED 5
 
@@ -17,8 +18,11 @@ typedef int (*EntryPoint)();
 
 static int pid = 0;
 
+static Queue q;
+
 void initScheduler() {
 	scheduler = (struct scheduler *)malloc(sizeof(struct scheduler));
+	queueInit(&q, sizeof(struct process *));
 }
 
 int getCurrentPid() {
@@ -138,14 +142,19 @@ void addProcess(struct process * process) {
 }
 
 void unblock(int code) {
-	if (!ioIsEmpty()){
-		struct process * ready = ioPop();
-		ncPrintHex(ready->pid); //<=--=-=-=-=-=-=-=-=-=-=<<<
-		ready->state = RUNNING;
-		// ready->flipped = 0;
-	}else{
-		ncPrint(":(!!!!!!!!!!!!!!!!");
-	}
+	// if (!ioIsEmpty()){
+		struct process * ready;// = ioPop();
+	// 	ncPrintHex(ready->pid); //<=--=-=-=-=-=-=-=-=-=-=<<<
+	// 	ready->state = RUNNING;
+	// 	// ready->flipped = 0;
+	// }else{
+	// 	ncPrint(":(!!!!!!!!!!!!!!!!");
+	// }
+	if(getQueueSize(&q) > 0)
+    {
+        dequeue(&q, &ready);
+        ready->state = RUNNING;
+    }
 }
 
 void flip() {
@@ -157,7 +166,8 @@ void blockCurrent(int code) {
 	scheduler->current->process->state = KEYBOARD_BLOCK;
 
 
-	ioPush(scheduler->current->process);
+	// ioPush(scheduler->current->process);
+	enqueue(&q, &(scheduler->current->process));
 
 	// while(1);
 	
