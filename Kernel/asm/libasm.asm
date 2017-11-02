@@ -28,6 +28,9 @@ EXTERN switchUserToKernel
 EXTERN switchKernelToUser
 EXTERN schedule
 
+EXTERN enableTickInter
+EXTERN disableTickInter
+
 %include "./asm/macros.m"
 
 section .text
@@ -199,6 +202,8 @@ sysInByte:
 
 
 irq0Handler:
+
+	call disableTickInter
 	
 	pushaq
 
@@ -215,6 +220,9 @@ irq0Handler:
 	call schedule
 
 
+	call enableTickInter
+
+
 	mov rdi, rsp
 	call switchKernelToUser
 	mov rsp, rax ;pongo el puntero de switchKernelToUser en el stack pointer.
@@ -224,6 +232,7 @@ irq0Handler:
 	out 20h, al
 
 	popaq
+
 
 	iretq
 

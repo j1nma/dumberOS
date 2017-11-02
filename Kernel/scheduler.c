@@ -15,11 +15,8 @@ typedef int (*EntryPoint)();
 
 static int pid = 0;
 
-static Queue q;
-
 void initScheduler() {
 	scheduler = (struct scheduler *)malloc(sizeof(struct scheduler));
-	queueInit(&q, sizeof(struct process *));
 }
 
 int getCurrentPid() {
@@ -122,8 +119,10 @@ void addProcess(struct process * process) {
 void unblock(int code) {
 
 	struct process * ready;
-	if(getQueueSize(&q) > 0) {
-        dequeue(&q, &ready);
+	if(!isQueueEmpty()) {
+		ready = queueRemove();
+		int t = ready->pid;
+		// ncPrint("Desencolo: ");ncPrintDec(t);
         ready->state = RUNNING;
     }
 }
@@ -131,8 +130,11 @@ void unblock(int code) {
 void blockCurrent(int code) {
 
 	scheduler->current->process->state = KEYBOARD_BLOCK;
+	int t = scheduler->current->process->pid;
+	// ncPrint("Encolo: ");ncPrintDec(t);
+	queueInsert(scheduler->current->process);
 
-	enqueue(&q, &(scheduler->current->process));
+	enableTickInter();
 
 	int20();
 }

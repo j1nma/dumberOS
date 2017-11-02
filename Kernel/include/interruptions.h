@@ -11,6 +11,7 @@ void sti();
 void setPicMaster(uint16_t);
 void setPicSlave(uint16_t);
 void enableTickInter();
+void disableTickInter();
 
 void tickHandler();
 void irq0Handler();
