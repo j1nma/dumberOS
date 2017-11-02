@@ -1,9 +1,9 @@
-// Copyright https://codereview.stackexchange.com/questions/141238/implementing-a-generic-queue-in-c
-
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include "Queue.h"
+#include "queue.h"
+#include "drivers.h"
+
+// Copyright https://codereview.stackexchange.com/questions/141238/implementing-a-generic-queue-in-c
 
 void queueInit(Queue * q, size_t memSize) {
   q->sizeOfQueue = 0;

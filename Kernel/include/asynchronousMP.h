@@ -8,20 +8,14 @@ void disableTaskSwitch();
 
 void enableTaskSwitch();
 
-void blockProcess(struct process * process);
-
-void awakeProcess(struct process * process);
-
-int isBlocked(struct process * process);
-
 int peekWaitQueue(struct process * process);
 
 void pushWaitQueue(struct process * receiver, struct process * sender);
 
 int popWaitQueue(struct process * process);
 
-void asyncSend(struct message * msg);
+void asyncSend(char * message, int destination_pid);
 
-struct message * asyncRecieve(struct process * current_process, circular_buffer * cb);
+char * asyncRecieve();
 
 #endif

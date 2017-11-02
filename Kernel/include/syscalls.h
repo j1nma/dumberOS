@@ -5,6 +5,10 @@
 #define SYSCALL_FREE 4
 #define SYSCALL_TIME 5
 #define SYSCALL_PID 6
+#define SYSCALL_UP 7
+#define SYSCALL_DOWN 8
+#define SYSCALL_SEND 9
+#define SYSCALL_RECEIVE 10
 
 
 #define DESCRIPTOR_CLI 0

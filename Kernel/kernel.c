@@ -9,6 +9,9 @@
 #include <process.h>
 #include <scheduler.h>
 
+#include "mutex.h"
+#include "asynchronousMP.h"
+
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -161,6 +164,22 @@ int sysCallDispatcher(int function, char* segundo, int tercero, int cuarto) {
 	}
 	case SYSCALL_PID: {
 		return getCurrentPid();
+		break;
+	}
+	case SYSCALL_UP: {
+		up();
+		break; 
+	}
+	case SYSCALL_DOWN: {
+		down();
+		break;
+	}
+	case SYSCALL_SEND: {
+		asyncSend(segundo, tercero);
+		break;
+	}
+	case SYSCALL_RECEIVE: {
+		// asyncReceive(); TODO: debe retornar un char *
 		break;
 	}
 	default: {

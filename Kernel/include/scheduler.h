@@ -47,4 +47,12 @@ void * getCurrentSP();
 
 void initScheduler();
 
+/* IPC */
+
+void blockProcess(struct process * process);
+
+void awakeProcess(int pid);
+
+int isBlocked(struct process * process);
+
 #endif
