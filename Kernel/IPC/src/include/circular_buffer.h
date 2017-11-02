@@ -11,7 +11,7 @@
 
 typedef struct circular_buffer {
 
-	struct message buffer[MAXITEMS]; //buffer to hold messages
+	void * buffer; //buffer to hold messages
 
 	void * buffer_end; // end of data buffer
 	size_t count;     // number of items in the buffer

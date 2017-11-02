@@ -17,7 +17,7 @@ void blockProcess(struct process * process) {
   process->state = MESSAGE_BLOCK;
 }
 
-void unblockProcess(struct process * process) {
+void awakeProcess(struct process * process) {
   process->state = MESSAGE_UNBLOCK;
 }
 
@@ -25,66 +25,91 @@ int isBlocked(struct process * process) {
   return process->state == MESSAGE_BLOCK;
 }
 
-int topWaitQueue(struct process * process) {
-  Queue q = process->blocked_waiting_processes;
+int peekWaitQueue(struct process * process) {
+  Queue q;
+  queueInit(&q, sizeof(int));
 
-  int ans;
+  q = process->sender_waiting_processes;
 
+  int ans = -1;
   queuePeek(&q, &ans);
 
   return ans;
 }
 
 void pushWaitQueue(struct process * receiver, struct process * sender) {
-  enqueue(&receiver->blocked_waiting_processes, &sender->pid);
+  Queue q;
+  queueInit(&q, sizeof(int));
+
+  q = receiver->sender_waiting_processes;
+
+  enqueue(&q, &(sender->pid));
 }
 
 
 int popWaitQueue(struct process * process) {
-  Queue q = process->blocked_waiting_processes;
+  Queue q;
+  queueInit(&q, sizeof(int));
+
+  q = process->sender_waiting_processes;
 
   int ans;
-
   dequeue(&q, &ans);
 
   return ans;
 }
 
-static circular_buffer buff;
-
 static struct process * current_process;
 
+/*
+Now let's start with sending a message, and not care about. This could lead to losing a message, 
+which we can't afford, so we'll do a trick here.
+Despite of being asynchronous, we will block if receiver buffer is full,
+and we'll continue only after there's space for our message.
+*/
 void asyncSend(struct message * msg) {
 
   disableTaskSwitch();
 
   msg->source = current_process; //we must not rely on it's set
 
-  // circular_buffer tmpbuff = map_buffer(msg->destination); //temporarily map destination's buffer into sender process' address space
+  circular_buffer * tmpbuff;
+  cbInit(tmpbuff, sizeof(struct message));
 
-  circular_buffer tmpbuff;
+  tmpbuff = msg->destination->receiver_buffer; //temporarily map destination's buffer into sender process' address space
 
-  cbInit(&tmpbuff, sizeof(struct message));
+  if (tmpbuff->count == MAXITEMS) { //if receiver buffer is full, block
+    pushWaitQueue(msg->destination, current_process); //record this process in dst's sender queue
+    blockProcess(current_process);
+  }
 
-  tmpbuff = msg->destination->blocked_waiting_processes; //temporarily map destination's buffer into sender process' address space
-
-  // if (tmpbuff.count == MAXITEMS) { //if receiver buffer is full, block
-  //   pushwaitqueue(msg.dst, current_process); //record this process in dst's sender queue
-  //   block(current_process);
-  // }
-  // push(tmpbuff, msg);
-  // if (isblocked(msg.dst)) awake(msg.dst); //if destination process is blocked for receiving, awake it
-  // unmap_buffer();
+  cbPushBack(tmpbuff, msg);
+  if (isBlocked(msg->destination)) awakeProcess(msg->destination); //if destination process is blocked for receiving, awake it
+  cbFree(tmpbuff); // unmap_buffer();
 
   enableTaskSwitch();
+
 }
 
-struct message * asyncRecieve() {
-  // message tmp=NULL;
-  // disable_task_switch();
-  // if (buff.count==0) block(current_process); //if there's nothing to get, block
-  // tmp=pop(buff);
-  // while(topwaitqueue()!=NULL) awake(popwaitqueue()); //awake blocked processes waiting to send
-  // enable_task_switch();
-  // return (tmp);
+/*
+Doesn't matter whether it's synchronized or not,
+receiver must block if it's message queue is empty,
+and there's nothing to process.
+*/
+struct message * asyncRecieve(struct process * current_process, circular_buffer * cb) {
+  
+  struct message * tmp;
+
+  disableTaskSwitch();
+
+  if (cb->count == 0) blockProcess(current_process); //if there's nothing to get, block
+
+  cbPopFront(cb, tmp);
+ 
+
+  while (peekWaitQueue()! = -1) awakeProcess(popWaitQueue()); //awake blocked processes waiting to send
+
+  enableTaskSwitch();
+
+  return tmp;
 }

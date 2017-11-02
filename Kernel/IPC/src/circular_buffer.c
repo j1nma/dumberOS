@@ -8,7 +8,7 @@
 Copied from https://stackoverflow.com/a/827749/1815727 27, October 2017 02:56 AM
 */
 
-void cbInit(circular_buffer *cb, size_t sz) {
+void cbInit(circular_buffer * cb, size_t sz) {
     cb->buffer = malloc(MAXITEMS * sz);
     if (cb->buffer == NULL)
         // handle error
@@ -19,12 +19,12 @@ void cbInit(circular_buffer *cb, size_t sz) {
     cb->tail = cb->buffer;
 }
 
-void cbFree(circular_buffer *cb) {
+void cbFree(circular_buffer * cb) {
     free(cb->buffer);
     // clear out other fields too, just to be safe
 }
 
-void cbPushBack(circular_buffer *cb, const void *item) {
+void cbPushBack(circular_buffer * cb, const void * item) {
     if (cb->count == MAXITEMS) {
         // handle error
     }
@@ -35,7 +35,7 @@ void cbPushBack(circular_buffer *cb, const void *item) {
     cb->count++;
 }
 
-void cbPopFront(circular_buffer *cb, void *item) {
+void cbPopFront(circular_buffer * cb, void * item) {
     if (cb->count == 0) {
         // handle error
     }

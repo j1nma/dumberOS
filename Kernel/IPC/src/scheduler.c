@@ -151,7 +151,7 @@
 
 // 		if (current->process->pid == recvpid) {
 
-// 			Queue aux = current->process->blocked_waiting_processes;
+// 			Queue aux = current->process->sender_waiting_processes;
 
 // 			enqueue(&aux, sendpid); 
 
