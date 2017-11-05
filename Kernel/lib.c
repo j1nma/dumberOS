@@ -1,10 +1,13 @@
 #include <stdint.h>
 
-extern uint8_t sysInByte(uint16_t rdi);
-extern void sysOutByte(uint16_t rdi, uint16_t rsi);
-extern uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base);
+#include "lib.h"
+#include "drivers.h"
 
-void getTime(char *ptr){
+// extern uint8_t sysInByte(uint16_t rdi);
+// extern void sysOutByte(uint16_t rdi, uint16_t rsi);
+// extern uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base);
+
+void getTime(char *ptr) {
 
 	sysOutByte(0x70, 0x0B);
 	uint16_t RTCConfig = sysInByte(0x71);
@@ -13,11 +16,11 @@ void getTime(char *ptr){
 	sysOutByte(0x71, RTCConfig);
 
 
-	
+
 	sysOutByte((uint16_t)0x70, (uint16_t)0x00);
 	unsigned int seconds = 0;
 	seconds = sysInByte((uint16_t)0x71);
-	
+
 	sysOutByte((uint16_t)0x70, (uint16_t)0x02);
 	unsigned int minutes = 0;
 	minutes = sysInByte((uint16_t)0x71);
@@ -35,7 +38,7 @@ void getTime(char *ptr){
 
 	char hoursString[3];
 	uintToBase(hours, hoursString, 10);
-	
+
 
 	ptr[0] = hoursString[0];
 	ptr[1] = hoursString[1];
@@ -51,13 +54,13 @@ void getTime(char *ptr){
 	ptr[7] = secondsString[1];
 
 	ptr[8] = 0;
-	
+
 }
 
 
-int mystrlen(char *s){
+int mystrlen(char *s) {
 	int c = 0;
-	while(*(s++) != 0){
+	while (*(s++) != 0) {
 		c++;
 	}
 
@@ -69,7 +72,7 @@ void * memset(void * destination, int32_t c, uint64_t length)
 	uint8_t chr = (uint8_t)c;
 	char * dst = (char*)destination;
 
-	while(length--)
+	while (length--)
 		dst[length] = chr;
 
 	return destination;
@@ -92,8 +95,8 @@ void * memcpy(void * destination, const void * source, uint64_t length)
 	uint64_t i;
 
 	if ((uint64_t)destination % sizeof(uint32_t) == 0 &&
-		(uint64_t)source % sizeof(uint32_t) == 0 &&
-		length % sizeof(uint32_t) == 0)
+	        (uint64_t)source % sizeof(uint32_t) == 0 &&
+	        length % sizeof(uint32_t) == 0)
 	{
 		uint32_t *d = (uint32_t *) destination;
 		const uint32_t *s = (const uint32_t *)source;
@@ -111,4 +114,26 @@ void * memcpy(void * destination, const void * source, uint64_t length)
 	}
 
 	return destination;
+}
+ 
+void myMemCpy(void *dest, void *src, size_t n)
+{
+   // Typecast src and dest addresses to (char *)
+   char *csrc = (char *)src;
+   char *cdest = (char *)dest;
+ 
+   // Copy contents of src[] to dest[]
+   for (int i=0; i<n; i++)
+       cdest[i] = csrc[i];
+}
+
+char * strcpy(char * dest_ptr, const char * src_ptr) {
+	char * strresult = dest_ptr;
+	if ((NULL != dest_ptr) && (NULL != src_ptr)) {
+		while (NULL != *src_ptr) {
+			*dest_ptr++ = *src_ptr++;
+		}
+		*dest_ptr = NULL;
+	}
+	return strresult;
 }

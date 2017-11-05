@@ -1,9 +1,9 @@
-// Copyright https://codereview.stackexchange.com/questions/141238/implementing-a-generic-queue-in-c
-
 #ifndef _QUEUE_H_INCLUDED
 #define _QUEUE_H_INCLUDED
 
 #include <stddef.h>
+
+// Copyright https://codereview.stackexchange.com/questions/141238/implementing-a-generic-queue-in-c
 
 typedef struct Node {
 	void *data;

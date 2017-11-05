@@ -11,6 +11,7 @@
 
 #include "mutex.h"
 #include "asynchronousMP.h"
+#include "queue.h"
 
 
 extern uint8_t text;
@@ -22,7 +23,7 @@ extern uint8_t endOfKernel;
 
 static const uint64_t PageSize = 0x1000;
 
-char *videoDeb = (char *) 0xB8000;
+char * videoDeb = (char *) 0xB8000;
 
 static void * const sampleCodeModuleAddress = (void*)0x400000;
 static void * const sampleDataModuleAddress = (void*)0x500000;
@@ -99,7 +100,7 @@ Dispatch syscalls to the corresponding functions
 @param	tercero	Length
 @param	cuarto Decryptor to use
 */
-int sysCallDispatcher(int function, char* segundo, int tercero, int cuarto) {
+void * sysCallDispatcher(int function, char* segundo, int tercero, int cuarto) {
 
 	switch (function) {
 	case SYSCALL_WRITE: {
@@ -180,6 +181,7 @@ int sysCallDispatcher(int function, char* segundo, int tercero, int cuarto) {
 	}
 	case SYSCALL_RECEIVE: {
 		// asyncReceive(); TODO: debe retornar un char *
+		return (char *) asyncReceive();
 		break;
 	}
 	default: {
@@ -234,7 +236,6 @@ int main() {
 	initScheduler();
 
 	init_interruptions();
-
 
 
 	struct process * process1;

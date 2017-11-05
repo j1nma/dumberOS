@@ -400,3 +400,11 @@ char* strconcat(char *a, char *b) {
 	return str; 
 }
 
+void send(char * message, int pid) {
+	 syscall(SYSCALL_SEND, message, pid, 0);
+}
+
+char * receive() {
+	 return (char *) syscall(SYSCALL_RECEIVE, 0, 0, 0);
+}
+

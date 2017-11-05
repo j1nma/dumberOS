@@ -3,8 +3,8 @@
 #include "process.h"
 #include "stack.h"
 #include "interruptions.h"
-
 #include "asynchronousMP.h"
+
 
 static struct scheduler * scheduler;
 
@@ -21,6 +21,10 @@ void initScheduler() {
 
 int getCurrentPid() {
 	return scheduler->current->process->pid;
+}
+
+struct process * getCurrentProcess() {
+	return scheduler->current->process;
 }
 
 void * getCurrentSP() {
@@ -101,9 +105,8 @@ void queueProcess(struct process * process) {
 
 void addProcess(struct process * process) {
 
-
-	struct process_node * newNode; //Creo un node nuevo
-	newNode = (struct process_node *)malloc(sizeof(struct process_node)); //Lo aloco
+	struct process_node * newNode;
+	newNode = (struct process_node *)malloc(sizeof(struct process_node));
 
 	newNode->process = process; //Le asigno el proceso
 	newNode->process->pid = pid; //Le asigno el pid
@@ -120,11 +123,12 @@ void addProcess(struct process * process) {
 		newNode->next = scheduler->current->next;
 		scheduler->current->next = newNode; //Lo pongo como el siguiente al current y cambio las referencias del siguiente previo.
 	}
-	pid++; //Aumento el pid
+	pid++;
 }
 
 void unblock(int code) {
-	struct process_node *current = scheduler->current;
+	struct process_node * current = scheduler->current;
+
 	for (int i = 0; i < pid; i++) {
 		if (current->process->state == code) {
 			current->process->state = RUNNING;
@@ -137,7 +141,7 @@ void unblock(int code) {
 
 void blockCurrent(int code) {
 
-	scheduler->current->process->state = KEYBOARD_BLOCK;
+	scheduler->current->process->state = code;
 	scheduler->current->process->flipped = 15;
 	// enableTickInter();
 	// endInter();
@@ -146,77 +150,7 @@ void blockCurrent(int code) {
 	// irq0Handler();
 }
 
-
-
-
-
-
-
-/* start IPC */
-
-struct process * getProcess(int get_pid);
-
-
-void blockProcess(struct process * process) {
-	process->state = MESSAGE_BLOCK;
-}
-
-void awakeProcess(int awake_pid) {
-	struct process_node * current = scheduler->current;
-
-	for (int i = 0; i < pid; i++) {
-
-		if (current->process->pid == awake_pid) {
-
-			// current->process->state = RUNNING;
-
-			current->process->state = MESSAGE_UNBLOCK;
-
-			break;
-
-		} else {
-
-			current = current->next;
-
-		}
-	}
-
-}
-
-int isBlocked(struct process * process) {
-	return process->state == MESSAGE_BLOCK;
-}
-
-int peekWaitQueue(struct process * receiver) {
-
-	Queue * q = receiver->sender_waiting_processes;
-
-	int ans = -1;
-	queuePeek(q, &ans);
-
-	return ans;
-}
-
-void pushWaitQueue(struct process * receiver, struct process * sender) {
-
-	Queue * q = receiver->sender_waiting_processes;
-
-	enqueue(q, &(sender->pid));
-}
-
-
-int popWaitQueue(struct process * process) {
-
-	Queue * q = process->sender_waiting_processes;
-
-	int ans;
-	dequeue(q, &ans);
-
-	return ans;
-}
-
 struct process * getProcess(int get_pid) {
-
 	struct process_node * current = scheduler->current;
 
 	for (int i = 0; i < pid; i++) {
@@ -226,59 +160,39 @@ struct process * getProcess(int get_pid) {
 			current = current->next;
 		}
 	}
+
+	return NULL;
 }
 
-/*
-Now let's start with sending a message, and not care about. This could lead to losing a message,
-which we can't afford, so we'll do a trick here.
-Despite of being asynchronous, we will block if receiver buffer is full,
-and we'll continue only after there's space for our message.
-*/
-void asyncSend(char * message, int destination_pid) {
 
-	disableTaskSwitch();
+/* start IPC */
 
-	struct process * destination = getProcess(destination_pid);
+int isBlocked(struct process * process) {
+	return process->state == MESSAGE_BLOCK;
+}
 
-	circular_buffer * tmpbuff = destination->receiver_buffer; //temporarily map destination's buffer into sender process' address space
+void blockProcess(struct process * process) {
+	process->state = MESSAGE_BLOCK;
 
-	if (tmpbuff->count == MAXITEMS) { //if receiver buffer is full, block
-		pushWaitQueue(destination, scheduler->current->process); //record this process in dst's sender queue
-		blockProcess(scheduler->current->process);
+	mutex_up();
+
+	int20();
+}
+
+void awakeProcess(int awake_pid) {
+	struct process_node * current = scheduler->current;
+
+	for (int i = 0; i < pid; i++) {
+		if (current->process->pid == awake_pid) {
+			current->process->state = RUNNING;
+			// current->process->state = MESSAGE_UNBLOCK;
+			break;
+		} else {
+			current = current->next;
+		}
 	}
 
-	cbPushBack(tmpbuff, message);
-
-	if (isBlocked(destination)) awakeProcess(destination->pid); //if destination process is blocked for receiving, awake it
-	
-	enableTaskSwitch();
-
 }
 
-/*
-Doesn't matter whether it's synchronized or not,
-receiver must block if it's message queue is empty,
-and there's nothing to process.
-*/
-char * asyncRecieve() {
-
-	struct process * current_process = scheduler->current->process;
-
-	struct message * tmp;
-
-	disableTaskSwitch();
-
-	circular_buffer * cb = current_process->receiver_buffer;
-
-	if (cb->count == 0) blockProcess(current_process); //if there's nothing to get, block
-
-	cbPopFront(cb, tmp);
-
-	while (peekWaitQueue(current_process) != -1) awakeProcess(popWaitQueue(current_process)); //awake blocked processes waiting to send
-
-	enableTaskSwitch();
-
-	return tmp->message;
-}
 /* end IPC */
 

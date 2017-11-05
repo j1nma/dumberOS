@@ -1,4 +1,3 @@
-#include <syscalls_defines.h>
 #include <stdint.h>
 #include <stdarg.h>
 
@@ -22,3 +21,6 @@ void getTime(char *ptr);
 void haltAsm();
 void halt();
 int getPid();
+
+void send(char *, int pid);
+char * receive();

@@ -34,7 +34,7 @@ void newLine(){
  *Terminamos implementando read de esta forma porque cuando el usuario llama a la syscall desde una interrupcion, si queriamos que 
  *retorne solamente cuando el usuario presionaba "return" entonces la interupcion quedaba pendiente el retorno, lo que hacia que el 
  *micro no pueda recibir mas interupciones, como las del teclado, entonces no era posible hacerlo de esta forma.
- *En conclucion, el usuario tiene que hacer polling hasta que encuentre en la respuesta el character '/n'.
+ *En conclusion, el usuario tiene que hacer polling hasta que encuentre en la respuesta el character '/n'.
  */
 int read(char *str){
 
