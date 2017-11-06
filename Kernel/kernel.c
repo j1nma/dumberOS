@@ -26,6 +26,7 @@ char *videoDeb = (char *) 0xB8000;
 
 static void * const sampleCodeModuleAddress = (void*)0x400000;
 static void * const sampleDataModuleAddress = (void*)0x500000;
+static void * const buddyAllocationMemory = (void*)0x600000;
 
 typedef int (*EntryPoint)();
 
