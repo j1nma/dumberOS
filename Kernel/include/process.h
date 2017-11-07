@@ -1,7 +1,7 @@
 #ifndef _PROCESS_H
 #define _PROCESS_H
 
-#include "queue.h"
+#include "MP_queue.h"
 
 #define MESSAGE_SIZE 20
 

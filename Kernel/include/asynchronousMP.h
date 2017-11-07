@@ -1,7 +1,7 @@
 #ifndef _ASYNCHRONOUSMP_H
 #define _ASYNCHRONOUSMP_H
 
-#include "queue.h"
+#include "MP_queue.h"
 #include "process.h"
 
 void mutex_down();

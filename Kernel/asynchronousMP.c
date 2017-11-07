@@ -2,7 +2,7 @@
 #include "message.h"
 #include "mutex.h"
 #include "process.h"
-#include "queue.h"
+#include "MP_queue.h"
 #include "scheduler.h"
 
 #include "drivers.h"

@@ -11,7 +11,7 @@
 
 #include "mutex.h"
 #include "asynchronousMP.h"
-#include "queue.h"
+#include "MP_queue.h"
 
 
 extern uint8_t text;
@@ -278,7 +278,7 @@ int main() {
 	queueInit(process0->receiver_buffer, MESSAGE_SIZE * sizeof(char));
 	/* IPC */
 
-	
+
 	startProcess(process0);
 
 
