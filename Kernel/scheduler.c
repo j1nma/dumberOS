@@ -4,7 +4,6 @@
 #include "stack.h"
 #include "interruptions.h"
 #include <naiveConsole.h>
-#include "Queue.h"
 #include "MP_queue.h"
 
 #define FLIPPED 5
@@ -13,6 +12,7 @@
 
 
 static struct scheduler * scheduler;
+static Queue * blockedQueue;
 
 typedef int (*EntryPoint)();
 
@@ -20,6 +20,8 @@ static int pid = 0;
 
 void initScheduler() {
 	scheduler = (struct scheduler *)malloc(sizeof(struct scheduler));
+	blockedQueue = (Queue *)malloc(sizeof(Queue));
+	queueInit(blockedQueue, sizeof(struct process *));
 }
 
 int getCurrentPid() {
@@ -124,9 +126,9 @@ void addProcess(struct process * process) {
 void unblock(int code) {
 
 	struct process * ready;
-	if(!isQueueEmpty()) {
-		ready = queueRemove();
-		int t = ready->pid;
+	if(getQueueSize(blockedQueue) > 0) {
+		dequeue(blockedQueue, &(ready));
+		// int t = ready->pid;
 		// ncPrint("Desencolo: ");ncPrintDec(t);
         ready->state = RUNNING;
     }
@@ -136,9 +138,10 @@ void blockCurrent(int code) {
 
 
 	scheduler->current->process->state = KEYBOARD_BLOCK;
-	int t = scheduler->current->process->pid;
+	// int t = scheduler->current->process->pid;
 	// ncPrint("Encolo: ");ncPrintDec(t);
-	queueInsert(scheduler->current->process);
+	// queueInsert(scheduler->current->process);
+	enqueue(blockedQueue, &(scheduler->current->process));
 
 	enableTickInter();
 
@@ -166,19 +169,19 @@ int isBlocked(struct process * process) {
 	return process->state == MESSAGE_BLOCK;
 }
 
-void blockProcess(struct process * process) {
-	process->state = MESSAGE_BLOCK;
+// void blockProcess(struct process * process) {
+// 	process->state = MESSAGE_BLOCK;
 
-	if (process->pid) write("Blocking 1.\n", 13);
+// 	// if (process->pid) write("Blocking 1.\n", 13);
 
-	if (process->pid == 0) write("Blocking 0.\n", 13);
+// 	// if (process->pid == 0) write("Blocking 0.\n", 13);
 
-	if (process->pid == 2) write("Blocking 2.\n", 13);
+// 	// if (process->pid == 2) write("Blocking 2.\n", 13);
 
-	mutex_up();
+// 	mutex_up();
 
-	int20();
-}
+// 	int20();
+// }
 
 void awakeProcess(int awake_pid) {
 	struct process_node * current = scheduler->current;

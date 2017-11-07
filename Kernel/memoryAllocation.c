@@ -36,10 +36,10 @@ void setUpHeapOrganizer() {
 
 		for(j = elementsInLevel; j > 0; j--) {
 			struct node* actualNode = (struct node*) malloc(sizeof(struct node)); 
-			printf("%d\n", nodeNumber);
+			//printf("%d\n", nodeNumber);
 			fillInformation(actualNode, level, elementNumber, elementsInLevel, nodeNumber++); 
-			printf("%p\n", memoryBase); 
-			printf("level: %d elementNumber: %d elementsInLevel: %d nodeNumber: %d \n actualNode->level %d actualNode->state %d actualNode->base %p\n-----------------------------\n",level, elementNumber, elementsInLevel, nodeNumber, actualNode->level, actualNode->state, &actualNode->base);
+			//printf("%p\n", memoryBase); 
+			//printf("level: %d elementNumber: %d elementsInLevel: %d nodeNumber: %d \n actualNode->level %d actualNode->state %d actualNode->base %p\n-----------------------------\n",level, elementNumber, elementsInLevel, nodeNumber, actualNode->level, actualNode->state, &actualNode->base);
 
 			memoryBase[elementNumber++] = actualNode;
 		}
@@ -237,14 +237,14 @@ void freePage(void * page) {
 // int main(int argc, char const *argv[])
 // {
 // 	startHeap(); 
-// 	printf("totalLevels %d\n", totalLevels);
-// 	printf("getLevel(75) %d \n", getLevel(75));
+// 	//printf("totalLevels %d\n", totalLevels);
+// 	//printf("getLevel(75) %d \n", getLevel(75));
 // 	return 0;
 // }
 // int main(int argc, char const *argv[])			// TODO: should move call to setUpHeapOrganizer to Kernel.c when implemented in OS
 // {
 // 	setUpHeapOrganizer(); 
-// 	printf("totalLevels %d\n", totalLevels);
-// 	printf("getLevel(75) %d \n", getLevel(75));
+// 	//printf("totalLevels %d\n", totalLevels);
+// 	//printf("getLevel(75) %d \n", getLevel(75));
 // 	return 0;
 // }
