@@ -5,9 +5,9 @@
 
 struct message {
 
-	struct process * source; //the source process that sends the message
+	int source_pid; //the source process that sends the message
 
-	struct process * destination; //the destination process that receives
+	int destination_pid; //the destination process that receives
 
 	char message[MESSAGE_SIZE]; //the body of the message
 	

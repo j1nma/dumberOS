@@ -1,5 +1,12 @@
-#ifndef PROCESS_H
-#define PROCESS_H
+#ifndef _PROCESS_H
+#define _PROCESS_H
+
+#include "circular_buffer.h"
+#include "queue.h"
+
+#define RUNNING 0
+#define MESSAGE_BLOCK 4
+#define MESSAGE_UNBLOCK 5
 
 // https://unix.stackexchange.com/questions/80038/what-is-the-structure-of-a-linux-process
 
@@ -24,6 +31,7 @@ struct process {
 	void * entryPoint;
 
 	int flipped;
+
 };
 
 void callProcess(struct process * process);

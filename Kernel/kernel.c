@@ -9,6 +9,9 @@
 #include <process.h>
 #include <scheduler.h>
 
+#include "mutex.h"
+#include "asynchronousMP.h"
+
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -23,6 +26,7 @@ char *videoDeb = (char *) 0xB8000;
 
 static void * const sampleCodeModuleAddress = (void*)0x400000;
 static void * const sampleDataModuleAddress = (void*)0x500000;
+static void * const buddyAllocationMemory = (void*)0x600000;
 
 typedef int (*EntryPoint)();
 
@@ -164,6 +168,22 @@ int sysCallDispatcher(int function, char* segundo, int tercero, int cuarto) {
 	}
 	case SYSCALL_PID: {
 		return getCurrentPid();
+		break;
+	}
+	case SYSCALL_UP: {
+		up();
+		break; 
+	}
+	case SYSCALL_DOWN: {
+		down();
+		break;
+	}
+	case SYSCALL_SEND: {
+		asyncSend(segundo, tercero);
+		break;
+	}
+	case SYSCALL_RECEIVE: {
+		// asyncReceive(); TODO: debe retornar un char *
 		break;
 	}
 	default: {
