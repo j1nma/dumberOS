@@ -43,10 +43,8 @@ void asyncSend(char * message, int destination_pid) {
 
 	if (getProcess(destination_pid, &destination) == 0) {
 		mutex_up();
-		write("no process with that id.\n", 25);
 		return;
 	}
-	write("yes process with that id.\n", 26);
 
 	Queue * tmpbuff = destination->receiver_buffer;
 
@@ -56,7 +54,6 @@ void asyncSend(char * message, int destination_pid) {
 
 		if (isBlocked(destination)) {
 			awakeProcess(destination);
-			write("Awoke?\n", 8);
 		}
 	}
 
@@ -89,11 +86,9 @@ char * asyncReceive() {
 		// write("Blocking...\n", 13);
 
 		mutex_up();
-		write("DeAwaken\n", 10);
 		flip();
 		deawakeCurrent(MESSAGE_BLOCK);
 		unflip();
-		write("Awaken\n", 8);
 	}
 
 	dequeue(rb, tmp);

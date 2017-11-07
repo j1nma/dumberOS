@@ -11,25 +11,21 @@ int main() {
 
 
 	int pid = getPid();
-	printf("I am process: %d\n", getPid());
 
-	if (pid != 0) {
+	if (pid > 1) {
 		// for (int i = 0; i < 1000000000 * pid; i++);
 
 		printf("I am process: %d, sending...\n", getPid());
 
-		char * msg;
-		if (pid == 1) {
-			msg = "DESDE 1 CON AMOR\0";
-		}else if (pid == 2) {
-			msg = "DESDE 2 CON AMOR\0";
-		}
+		char msg[20];
 
-		send(msg, pid - 1);
+		scanf("%s", &msg);
+		printf("Im: %d, sending: %s.\n", getPid(), msg);
 
-		printf("Sali del send.\n");
 
-	} else {
+		send(msg, 1);
+
+	} else if (pid == 1){
 
 		// int k = 0;
 		// while (1) {
@@ -37,9 +33,8 @@ int main() {
 
 		printf("I am process: %d, receiving...\n", getPid());
 
-		printf("RECEIVED MSG n1: %s \n", receive());
-
-		printf("RECEIVED MSG n2: %s \n", receive());
+		while (1) 
+			printf("I am process 1, recieved message: %s\n", receive());
 
 	}
 
@@ -87,7 +82,7 @@ void iam() {
 	int k = 0;
 	while (1) {
 		if (k % 500000000 == 0) {
-			printf("Soy el proceso: %d!!!\n", getPid());
+			printf("I am process: %d... looping...\n", getPid());
 		}
 		k++;
 	}

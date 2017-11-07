@@ -130,19 +130,14 @@ void unblock(int code) {
 	struct process * ready;
 	if (getQueueSize(blockedQueue) > 0) {
 		dequeue(blockedQueue, &(ready));
-		// int t = ready->pid;
-		// ncPrint("Desencolo: ");ncPrintDec(t);
 		ready->state = RUNNING;
 	}
 }
 
 void blockCurrent(int code) {
 
-
 	scheduler->current->process->state = code;
-	// int t = scheduler->current->process->pid;
-	// ncPrint("Encolo: ");ncPrintDec(t);
-	// queueInsert(scheduler->current->process);
+
 	enqueue(blockedQueue, &(scheduler->current->process));
 
 	enableTickInter();
@@ -169,22 +164,10 @@ int getProcess(int get_pid, struct process ** ret) {
 /* start IPC */
 
 int isBlocked(struct process * process) {
-	return process->state == MESSAGE_BLOCK;
+	return process->state != RUNNING;
 }
 
-// void blockProcess(struct process * process) {
-// 	process->state = MESSAGE_BLOCK;
 
-// 	// if (process->pid) write("Blocking 1.\n", 13);
-
-// 	// if (process->pid == 0) write("Blocking 0.\n", 13);
-
-// 	// if (process->pid == 2) write("Blocking 2.\n", 13);
-
-// 	mutex_up();
-
-// 	int20();
-// }
 
 void deawakeCurrent(int code) {
 
@@ -198,29 +181,6 @@ void deawakeCurrent(int code) {
 void awakeProcess(struct process * sleeper) {
 
 	sleeper->state = RUNNING;
-
-	// struct process_node * current = scheduler->current;
-
-	// if (awake_pid == 0) write("Trying to awake 0.\n", 20);
-
-	// if (awake_pid == 1) write("Trying to awake 1.\n", 20);
-
-	// if (awake_pid == 2) write("Trying to awake 2.\n", 20);
-
-	// int i;
-	// for (i = 0; i < pid; i++) {
-	// 	if (current->process->pid == awake_pid) {
-	// 		current->process->state = RUNNING;
-	// 		// current->process->state = MESSAGE_UNBLOCK;
-
-	// 		write("Awoke somebody.\n", 17);
-	// 		return;
-	// 	} else {
-	// 		current = current->next;
-	// 	}
-	// }
-
-	// if (i == pid) write("Couldn't awake anybody.\n", 25);
 
 }
 
