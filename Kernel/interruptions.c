@@ -28,7 +28,7 @@ void enableTickInter() {
 	setPicMaster(0xFC);
 }
 
-init_interruptions() {
+void init_interruptions() {
 
 	setPicMaster(0x01); //Sin el tick es 0x01
 	setPicSlave(0x00);

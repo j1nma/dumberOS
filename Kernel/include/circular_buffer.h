@@ -7,7 +7,6 @@
 #include "message.h"
 
 #define MAXITEMS 1
-#define MESSAGE_SIZE 240
 
 typedef struct circular_buffer {
 

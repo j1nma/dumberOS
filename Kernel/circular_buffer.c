@@ -14,6 +14,20 @@ void cbInit(circular_buffer * cb, size_t sz) {
     if (cb->buffer == NULL)
         cb->buffer_end = (char *)cb->buffer + MAXITEMS * sz;
 
+    int i;
+
+    for (i = 0; i < MAXITEMS; i++) {
+
+        cb->buffer[i] = calloc((MESSAGE_SIZE + 1) * sizeof(char));
+
+        if (cb->buffer[i] == NULL) {
+            /* problem */
+            write("Sin memoria\n.", 13);
+            cbFree(cb);
+            break;
+        }
+    }
+
     cb->count = 0;
     cb->sz = sz;
     cb->head = cb->buffer;
@@ -21,8 +35,13 @@ void cbInit(circular_buffer * cb, size_t sz) {
 }
 
 void cbFree(circular_buffer * cb) {
+    int i;
+
+    for (i = 0; i < MAXITEMS; i++) {
+        free(cb->buffer[i]);
+    }
+
     free(cb->buffer);
-    // clear out other fields too, just to be safe
 }
 
 void cbPushBack(circular_buffer * cb, const char * item) {
@@ -31,8 +50,9 @@ void cbPushBack(circular_buffer * cb, const char * item) {
         return;
     }
 
-    myMemCpy(cb->head, item, cb->sz);
-    // strcpy(cb->head, item, cb->sz); 
+    // memcpy(cb->head, item, cb->sz);
+    strcpy(cb->head, item);
+    
     cb->head = cb->head + cb->sz;
 
     if (cb->head == cb->buffer_end)
@@ -46,14 +66,22 @@ void cbPopFront(circular_buffer * cb, char * item) {
         // handle error
         return;
     }
-    write("premem\n", 7);
-    myMemCpy(item, cb->tail, cb->sz);
-    // strcpy(item, cb->tail);
-    write("postmem\n", 8);
-    // write(item, 6);
+
+    // memcpy(item, cb->tail, cb->sz);
+    strcpy(item, cb->tail);
+
+    /* Copy the contents from tail to item */
+    // int i = 0;
+
+    // for (i = 0; i < 7; i++)
+    //     item++;
+
+    // *item++ = '\0';
 
     cb->tail = cb->tail + cb->sz;
+
     if (cb->tail == cb->buffer_end)
         cb->tail = cb->buffer;
+
     cb->count--;
 }

@@ -1,7 +1,7 @@
 #ifndef _MESSAGE_H_
 #define _MESSAGE_H_
 
-#define MESSAGE_SIZE 240
+#define MESSAGE_SIZE 20
 
 struct message {
 

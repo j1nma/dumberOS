@@ -31,6 +31,4 @@ void getTime(char *ptr);
 
 void int20();
 
-char * strcpy(char * dest_ptr, const char * src_ptr);
-
 #endif

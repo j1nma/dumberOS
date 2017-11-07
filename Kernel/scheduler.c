@@ -111,11 +111,6 @@ void addProcess(struct process * process) {
 	newNode->process = process; //Le asigno el proceso
 	newNode->process->pid = pid; //Le asigno el pid
 
-	/* IPC */
-	queueInit(newNode->process->sender_waiting_processes, sizeof(int));
-	cbInit(newNode->process->receiver_buffer, MESSAGE_SIZE);
-	/* IPC */
-
 	if (pid == 0) { //Es el primero?
 		scheduler->current = newNode;
 		scheduler->current->next = newNode; //Lo pongo como current y el que le sigue a current
@@ -174,6 +169,12 @@ int isBlocked(struct process * process) {
 void blockProcess(struct process * process) {
 	process->state = MESSAGE_BLOCK;
 
+	if (process->pid) write("Blocking 1.\n", 13);
+
+	if (process->pid == 0) write("Blocking 0.\n", 13);
+
+	if (process->pid == 2) write("Blocking 2.\n", 13);
+
 	mutex_up();
 
 	int20();
@@ -182,15 +183,26 @@ void blockProcess(struct process * process) {
 void awakeProcess(int awake_pid) {
 	struct process_node * current = scheduler->current;
 
-	for (int i = 0; i < pid; i++) {
+	if (awake_pid == 0) write("Trying to awake 0.\n", 20);
+
+	if (awake_pid == 1) write("Trying to awake 1.\n", 20);
+
+	if (awake_pid == 2) write("Trying to awake 2.\n", 20);
+
+	int i;
+	for (i = 0; i < pid; i++) {
 		if (current->process->pid == awake_pid) {
 			current->process->state = RUNNING;
 			// current->process->state = MESSAGE_UNBLOCK;
-			break;
+
+			write("Awoke somebody.\n", 17);
+			return;
 		} else {
 			current = current->next;
 		}
 	}
+
+	if (i == pid) write("Couldn't awake anybody.\n", 25);
 
 }
 

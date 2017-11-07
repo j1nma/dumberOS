@@ -9,11 +9,11 @@ void mutex_down();
 
 void mutex_up();
 
-int peekWaitQueue(struct process * receiver);
+int peekWaitQueue(Queue * sender_waiting_processes);
 
-void pushWaitQueue(struct process * receiver, struct process * sender);
+void pushWaitQueue(Queue * sender_waiting_processes, int sender_pid);
 
-int popWaitQueue(struct process * process);
+int popWaitQueue(Queue * sender_waiting_processes);
 
 void asyncSend(char * message, int destination_pid);
 

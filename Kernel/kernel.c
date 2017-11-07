@@ -169,7 +169,7 @@ void * sysCallDispatcher(int function, char* segundo, int tercero, int cuarto) {
 	}
 	case SYSCALL_UP: {
 		up();
-		break; 
+		break;
 	}
 	case SYSCALL_DOWN: {
 		down();
@@ -180,8 +180,7 @@ void * sysCallDispatcher(int function, char* segundo, int tercero, int cuarto) {
 		break;
 	}
 	case SYSCALL_RECEIVE: {
-		// asyncReceive(); TODO: debe retornar un char *
-		return (char *) asyncReceive();
+		return asyncReceive();
 		break;
 	}
 	default: {
@@ -243,6 +242,14 @@ int main() {
 	process1->entryPoint = sampleCodeModuleAddress;
 	process1->userStack = toStackAddress(malloc(0x1000));
 	process1->kernelStack = toStackAddress(malloc(0x1000));
+
+	/* IPC */
+	process1->sender_waiting_processes = (Queue *)malloc(sizeof(Queue));
+	process1->receiver_buffer = (Queue *)malloc(sizeof(Queue));
+	queueInit(process1->sender_waiting_processes, sizeof(int));
+	queueInit(process1->receiver_buffer, MESSAGE_SIZE * sizeof(char));
+	/* IPC */
+
 	queueProcess(process1);
 
 
@@ -251,7 +258,7 @@ int main() {
 	process3->entryPoint = sampleCodeModuleAddress;
 	process3->userStack = toStackAddress(malloc(0x1000));
 	process3->kernelStack = toStackAddress(malloc(0x1000));
-	// queueProcess(process3);
+	queueProcess(process3);
 
 
 	struct process * process4;
@@ -267,6 +274,13 @@ int main() {
 	process2->entryPoint = sampleCodeModuleAddress;
 	process2->userStack = toStackAddress(malloc(0x1000));
 	process2->kernelStack = toStackAddress(malloc(0x1000));
+
+	/* IPC */
+	process2->sender_waiting_processes = (Queue *)malloc(sizeof(Queue));
+	process2->receiver_buffer = (Queue *)malloc(sizeof(Queue));
+	queueInit(process2->sender_waiting_processes, sizeof(int));
+	queueInit(process2->receiver_buffer, MESSAGE_SIZE * sizeof(char));
+	/* IPC */
 
 	startProcess(process2);
 

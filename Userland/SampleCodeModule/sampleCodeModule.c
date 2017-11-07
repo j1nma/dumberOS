@@ -31,26 +31,36 @@ int main() {
 	// OS welcome
 	// initWelcome();
 
-	if (getPid() != 0) {
+	if (getPid() == 1) {
 
 		while (1) {
-			printf("Soy el proceso: %d, mandando...\n", getPid());
-			char * msg = "AZOTE\0";
+			printf("I am process: %d, sending...\n", getPid());
+
+			char * msg = "DESDE 1 CON AMOR\0";
+
 			send(msg, 0);
-			printf("Se lo mande!\n");
+
+			printf("SENT!\n");
 		}
 
 	} else if (getPid() == 0) {
 
-		// int k = 0;
-		// while (1) {
-			// if (k % 100000000 == 0) {
-				printf("Soy el proceso: %d!!!\n", getPid());
-				printf("Me mandaron: %s \n", receive());
-			// }
-			// k++;
-		// }
+		int k = 0;
+		while (1) {
+			if (k % 100000000 == 0) {
+
+				printf("I am process: %d, receiving...\n", getPid());
+
+				printf("RECEIVED: %s \n", receive());
+
+			}
+			k++;
+		}
 	}
+
+	// else {
+	// 	printf("Soy el proceso: %d\n", getPid());
+	// }
 
 	// Loop shell until user exits OS
 	// while(!exit){

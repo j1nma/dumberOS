@@ -6,6 +6,21 @@
 #include "queue.h"
 #include "scheduler.h"
 
+#include "drivers.h"
+#include "interruptions.h"
+
+void disableTaskSwitch();
+
+void disableTaskSwitch() {
+	setPicMaster(0x01);
+	setPicSlave(0x00);
+}
+
+void enableTaskSwitch() {
+	enableTickInter();
+}
+
+
 void mutex_down() {
 	down();
 }
@@ -14,24 +29,37 @@ void mutex_up() {
 	up();
 }
 
-int peekWaitQueue(struct process * receiver) {
-	Queue * q = receiver->sender_waiting_processes;
-	int ans = -1;
-	queuePeek(q, &ans);
-	return ans;
+int peekWaitQueue(Queue * sender_waiting_processes) {
+	int ans = malloc(sizeof(int));
+
+	if (queuePeek(sender_waiting_processes, &ans) == 0) {
+		free(ans);
+		return 1;
+	}
+
+	return -1;
 }
 
-void pushWaitQueue(struct process * receiver, struct process * sender) {
-	Queue * q = receiver->sender_waiting_processes;
-	enqueue(q, &(sender->pid));
+void pushWaitQueue(Queue * sender_waiting_processes, int sender_pid) {
+	if (!enqueue(sender_waiting_processes, &sender_pid)) {
+		write("Enqueued\n", 10);
+	} else {
+		write("NOT Enqueued\n", 14);
+	}
+
 }
 
 
-int popWaitQueue(struct process * process) {
-	Queue * q = process->sender_waiting_processes;
-	int ans;
-	dequeue(q, &ans);
-	return ans;
+int popWaitQueue(Queue * sender_waiting_processes) {
+	int ans = malloc(sizeof(int));
+
+	dequeue(sender_waiting_processes, &ans);
+
+	int aux = ans;
+
+	free(ans);
+
+	return aux;
 }
 
 /*
@@ -42,29 +70,51 @@ and we'll continue only after there's space for our message.
 */
 void asyncSend(char * message, int destination_pid) {
 
+	// disableTaskSwitch();
 	mutex_down();
 
 	struct process * destination = getProcess(destination_pid);
 
-	circular_buffer * tmpbuff = destination->receiver_buffer; //temporarily map destination's buffer into sender process' address space
+	Queue * tmpbuff = destination->receiver_buffer;
 
-	if (tmpbuff->count == MAXITEMS) { //if receiver buffer is full, block
-
-		struct process * current = getCurrentProcess();
-
-		pushWaitQueue(destination, current); //record this process in dst's sender queue
-
-		blockProcess(current);
-		// blockCurrent(MESSAGE_BLOCK);
+	if (tmpbuff->sizeOfQueue == 0) {
+		write("Tiene 0 msgs.\n", 15);
 	}
 
-	cbPushBack(tmpbuff, message);
+	if (tmpbuff->sizeOfQueue == 1) {
+		write("Tiene 1 msgs.\n", 15);
+	}
 
-	if (isBlocked(destination)) {
-		awakeProcess(destination->pid); //if destination process is blocked for receiving, awake it
+	if (tmpbuff->sizeOfQueue == 2) {
+		write("Tiene 2 msgs.\n", 15);
+	}
+
+	if (tmpbuff->sizeOfQueue >= 2) {
+		write("Tiene MIERDADSDA.\n", 19);
+	}
+
+	if (tmpbuff->sizeOfQueue == MAXITEMS) {
+
+		write("NO DA ABASTO\n", 14);
+
+		pushWaitQueue(destination->sender_waiting_processes, getCurrentPid());
+
+		// blockCurrent(MESSAGE_BLOCK);
+		blockProcess(getCurrentProcess());
+
+	} else {
+
+		if (!enqueue(tmpbuff, message)) write("Encole mi mensaje.\n", 20);
+
+		if (isBlocked(destination)) awakeProcess(destination->pid);
+
 	}
 
 	mutex_up();
+
+	// write("Y ahora que mierda hacemo\n", 27);
+	// enableTaskSwitch();
+
 }
 
 /*
@@ -75,24 +125,41 @@ char * asyncReceive() {
 
 	struct process * current_process = getCurrentProcess();
 
-	char * tmp = malloc(sizeof(char) * MESSAGE_SIZE);
+	char * tmp = malloc(MESSAGE_SIZE * sizeof(char));
 
+	// disableTaskSwitch();
 	mutex_down();
 
-	circular_buffer * cb = current_process->receiver_buffer;
+	Queue * rb = current_process->receiver_buffer;
 
-	if (cb->count == 0) {
-		blockProcess(current_process); //if there's nothing to get, block
+	if (rb->sizeOfQueue == 0) {
+		write("Tengo 0 msgs.\n", 15);
+	}
+
+	if (rb->sizeOfQueue == 1) {
+		write("Tengo 1 msgs.\n", 15);
+	}
+
+	if (rb->sizeOfQueue == 2) {
+		write("Tengo 2 msgs.\n", 15);
+	}
+
+	if (rb->sizeOfQueue == 0) {
+		write("Blocking...\n", 13);
+		blockProcess(current_process);
 		// blockCurrent(MESSAGE_BLOCK);
 	}
 
-	cbPopFront(cb, tmp);
+	dequeue(rb, tmp);
 
-	while (peekWaitQueue(current_process) != -1) {
-		awakeProcess(popWaitQueue(current_process)); //awake blocked processes waiting to send
-	}
+	Queue * swp = current_process->sender_waiting_processes;
+
+	while (getQueueSize(swp)) { awakeProcess(popWaitQueue(swp)); }
+
+	free(tmp);
 
 	mutex_up();
+	// enableTaskSwitch();
 
 	return tmp;
 }
