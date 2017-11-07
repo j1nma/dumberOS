@@ -3,15 +3,18 @@
 #include "process.h"
 #include "stack.h"
 #include "interruptions.h"
+#include "ioBlocked.h"
+#include <naiveConsole.h>
+#include "Queue.h"
+
+#define FLIPPED 5
+
 #include "asynchronousMP.h"
 
 
 static struct scheduler * scheduler;
 
 typedef int (*EntryPoint)();
-
-// static struct process * mainProcess;
-// static struct process * processes[10];
 
 static int pid = 0;
 
@@ -34,31 +37,28 @@ void * getCurrentSP() {
 
 void * switchUserToKernel(void * esp) {
 
-	if (scheduler->current->process->flipped == 15) {
+	if (scheduler->current->process->flipped != FLIPPED) { //Si no esta volteado, funciona normal.
+		scheduler->current->process->userStack = esp;
+		return scheduler->current->process->kernelStack;
+	} else {
+		scheduler->current->process->kernelStack = esp; //Si esta volteado, devolve el stack especial de flipped.
+		return scheduler->current->process->flippedStack;
+	}
+}
+
+
+void * switchKernelToUser(void * esp) {
+	if (scheduler->current->process->flipped != FLIPPED) { //Si no esta volteado, funciona normal.
 		scheduler->current->process->kernelStack = esp;
 		return scheduler->current->process->userStack;
 	} else {
-		scheduler->current->process->userStack = esp;
+		scheduler->current->process->flippedStack = esp; //Si esta volteado, guarda el SP del volteado y devolve el kernelStack.
 		return scheduler->current->process->kernelStack;
 	}
-
 }
 
-
-void * switchKernelToUser() {
-	if (scheduler->current->process->flipped == 15) {
-		return scheduler->current->process->kernelStack;
-	} else {
-		return scheduler->current->process->userStack;
-	}
-}
-
-void * switchStack(void * from_rsp, void * to_rsp) {
-
-}
-
-void * swap(void * from_rsp, void * to_rsp) {
-
+void flip() {
+	scheduler->current->process->flipped = FLIPPED;
 }
 
 void unflip() {
@@ -67,20 +67,19 @@ void unflip() {
 
 void next() {
 	scheduler->current = scheduler->current->next;
+	while (scheduler->current->process->state != RUNNING){
+		scheduler->current = scheduler->current->next;
+	}
 }
 
 void schedule() {
 
 	if (isEmpty()) {
 		next();
-		while (scheduler->current->process->state != RUNNING)
-			next();
 	} else {
-
 		struct process * process1 = pop();
-
 		addProcess(process1); //Lo pongo como next.
-		scheduler->current = scheduler->current->next; //Paso al next, lo pongo como current.
+		next(); //Paso al next, lo pongo como current.
 		callProcess(process1);
 	}
 }
@@ -91,7 +90,7 @@ void startProcess(struct process * process) {
 
 	addProcess(process); //Lo pongo como next.
 
-	scheduler->current = scheduler->current->next; //Paso al next, lo pongo como current.
+	next(); //Paso al next, lo pongo como current.
 
 	enableTickInter(); // Lo hago aca, porque es posible que el primer tick, entre antes que hayan procesos en el scheduler.
 
@@ -108,6 +107,7 @@ void addProcess(struct process * process) {
 	struct process_node * newNode;
 	newNode = (struct process_node *)malloc(sizeof(struct process_node));
 
+
 	newNode->process = process; //Le asigno el proceso
 	newNode->process->pid = pid; //Le asigno el pid
 
@@ -122,27 +122,27 @@ void addProcess(struct process * process) {
 }
 
 void unblock(int code) {
-	struct process_node * current = scheduler->current;
 
-	for (int i = 0; i < pid; i++) {
-		if (current->process->state == code) {
-			current->process->state = RUNNING;
-			break;
-		} else {
-			current = current->next;
-		}
-	}
+	struct process * ready;
+	if(!isQueueEmpty()) {
+		ready = queueRemove();
+		int t = ready->pid;
+		// ncPrint("Desencolo: ");ncPrintDec(t);
+        ready->state = RUNNING;
+    }
 }
 
 void blockCurrent(int code) {
 
-	scheduler->current->process->state = code;
-	scheduler->current->process->flipped = 15;
-	// enableTickInter();
-	// endInter();
+
+	scheduler->current->process->state = KEYBOARD_BLOCK;
+	int t = scheduler->current->process->pid;
+	// ncPrint("Encolo: ");ncPrintDec(t);
+	queueInsert(scheduler->current->process);
+
+	enableTickInter();
+
 	int20();
-	// schedule();
-	// irq0Handler();
 }
 
 struct process * getProcess(int get_pid) {

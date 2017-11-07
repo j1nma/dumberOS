@@ -27,6 +27,7 @@ char * videoDeb = (char *) 0xB8000;
 
 static void * const sampleCodeModuleAddress = (void*)0x400000;
 static void * const sampleDataModuleAddress = (void*)0x500000;
+static void * const buddyAllocationMemory = (void*)0x600000;
 
 typedef int (*EntryPoint)();
 
@@ -123,17 +124,20 @@ void * sysCallDispatcher(int function, char* segundo, int tercero, int cuarto) {
 	case SYSCALL_READ: {
 		switch ( cuarto ) {
 		case DESCRIPTOR_CLI: {
-			int res = 0;
-			if (res == 0) {
-				blockCurrent(KEYBOARD_BLOCK);
-				// ncPrint("Test");
-				unflip();
-			}
-			// char sux[] = "test";
-			// for (int i = 0; i < 5; i++) {
-			// 	segundo[i] = sux[i];
-			// }
-			return read(segundo);
+
+			// ncPrint("Entro: ");
+			// ncPrintDec(segundo);
+			
+			// while(1);
+			flip();
+			blockCurrent(KEYBOARD_BLOCK);
+			unflip();
+
+			int test = read(segundo);
+			// ncPrint("Salio: ");
+			// ncPrintDec(segundo);
+
+			return test;
 			break;
 		}
 		case DESCRIPTOR_NET: {
@@ -196,22 +200,22 @@ void * sysCallDispatcher(int function, char* segundo, int tercero, int cuarto) {
 
 void miCallbackDeTeclado(uint8_t c, int function) {
 	switch (function) {
-	case RESPONSE_CHARACTER: {
-		write(&c, 1); //RESPONSE_CHARACTER es cuando el usuario presiona una tecla imprimible. Llamo a write del driver de video.
-		break;
-	}
-	case RESPONSE_BACKSPACE: {
-		backspace();
-		break;
-	}
-	case RESPONSE_ENTER: {
-		unblock(KEYBOARD_BLOCK);
-		newLine(); //RESPONSE_ENTER es cuando el usuario presiona "return". Llamo a "newLine" del driver de video.
-		break;
-	}
-	case RESPONSE_ARROWS: {
-		break;
-	}
+		case RESPONSE_CHARACTER: {
+			write(&c, 1); //RESPONSE_CHARACTER es cuando el usuario presiona una tecla imprimible. Llamo a write del driver de video.
+			break;
+		}
+		case RESPONSE_BACKSPACE: {
+			backspace();
+			break;
+		}
+		case RESPONSE_ENTER: {
+			unblock(KEYBOARD_BLOCK);
+			newLine(); //RESPONSE_ENTER es cuando el usuario presiona "return". Llamo a "newLine" del driver de video.
+			break;
+		}
+		case RESPONSE_ARROWS: {
+			break;
+		}
 	}
 }
 
@@ -234,58 +238,49 @@ int main() {
 
 	initScheduler();
 
+	
+	void * flippedStack = toStackAddress(malloc(0x1000));
+
+
+	for (int i = 0; i < 10; ++i) {
+		struct process * processN;
+		processN = malloc(sizeof(struct process));
+		processN->entryPoint = sampleCodeModuleAddress;
+		processN->userStack = toStackAddress(malloc(0x1000));
+		processN->kernelStack = toStackAddress(malloc(0x1000));
+		processN->flippedStack = flippedStack;
+		processN->flipped = 0;
+
+		/* IPC */
+		processN->sender_waiting_processes = (Queue *)malloc(sizeof(Queue));
+		processN->receiver_buffer = (Queue *)malloc(sizeof(Queue));
+		queueInit(processN->sender_waiting_processes, sizeof(int));
+		queueInit(processN->receiver_buffer, MESSAGE_SIZE * sizeof(char));
+		/* IPC */
+
+		queueProcess(processN);
+	}
+
 	init_interruptions();
 
-
-	struct process * process1;
-	process1 = malloc(sizeof(struct process));
-	process1->entryPoint = sampleCodeModuleAddress;
-	process1->userStack = toStackAddress(malloc(0x1000));
-	process1->kernelStack = toStackAddress(malloc(0x1000));
-
-	/* IPC */
-	process1->sender_waiting_processes = (Queue *)malloc(sizeof(Queue));
-	process1->receiver_buffer = (Queue *)malloc(sizeof(Queue));
-	queueInit(process1->sender_waiting_processes, sizeof(int));
-	queueInit(process1->receiver_buffer, MESSAGE_SIZE * sizeof(char));
-	/* IPC */
-
-	queueProcess(process1);
-
-
-	struct process * process3;
-	process3 = malloc(sizeof(struct process));
-	process3->entryPoint = sampleCodeModuleAddress;
-	process3->userStack = toStackAddress(malloc(0x1000));
-	process3->kernelStack = toStackAddress(malloc(0x1000));
-	queueProcess(process3);
-
-
-	struct process * process4;
-	process4 = malloc(sizeof(struct process));
-	process4->entryPoint = sampleCodeModuleAddress;
-	process4->userStack = toStackAddress(malloc(0x1000));
-	process4->kernelStack = toStackAddress(malloc(0x1000));
-	// queueProcess(process4);
-
-
-	struct process * process2;
-	process2 = malloc(sizeof(struct process));
-	process2->entryPoint = sampleCodeModuleAddress;
-	process2->userStack = toStackAddress(malloc(0x1000));
-	process2->kernelStack = toStackAddress(malloc(0x1000));
+	struct process * process0;
+	process0 = malloc(sizeof(struct process));
+	process0->entryPoint = sampleCodeModuleAddress;
+	process0->userStack = toStackAddress(malloc(0x1000));
+	process0->kernelStack = toStackAddress(malloc(0x1000));
+	process0->flippedStack = flippedStack;
+	process0->flipped = 0;
 
 	/* IPC */
-	process2->sender_waiting_processes = (Queue *)malloc(sizeof(Queue));
-	process2->receiver_buffer = (Queue *)malloc(sizeof(Queue));
-	queueInit(process2->sender_waiting_processes, sizeof(int));
-	queueInit(process2->receiver_buffer, MESSAGE_SIZE * sizeof(char));
+	process0->sender_waiting_processes = (Queue *)malloc(sizeof(Queue));
+	process0->receiver_buffer = (Queue *)malloc(sizeof(Queue));
+	queueInit(process0->sender_waiting_processes, sizeof(int));
+	queueInit(process0->receiver_buffer, MESSAGE_SIZE * sizeof(char));
 	/* IPC */
 
-	startProcess(process2);
+	
+	startProcess(process0);
 
-
-	while (1);
 
 
 	return 0;

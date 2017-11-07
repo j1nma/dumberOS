@@ -1,5 +1,6 @@
 GLOBAL cpuVendor
 GLOBAL sti
+GLOBAL cli
 GLOBAL setPicMaster
 GLOBAL setPicSlave
 GLOBAL irq0Handler
@@ -17,6 +18,8 @@ GLOBAL switchStackAndJump
 GLOBAL getRSP
 GLOBAL endInter
 GLOBAL int20
+GLOBAL pushAQ
+GLOBAL popAQ
 
 EXTERN irqDispatcher
 EXTERN sysCallDispatcher
@@ -25,10 +28,20 @@ EXTERN switchUserToKernel
 EXTERN switchKernelToUser
 EXTERN schedule
 
+EXTERN enableTickInter
+EXTERN disableTickInter
+
 %include "./asm/macros.m"
 
 section .text
 
+
+popAQ:
+	popaq
+	ret
+pushAQ:
+	pushaq
+	ret
 
 getRSP:
 	mov rax, rsp
@@ -189,6 +202,8 @@ sysInByte:
 
 
 irq0Handler:
+
+	call disableTickInter
 	
 	pushaq
 
@@ -205,6 +220,10 @@ irq0Handler:
 	call schedule
 
 
+	call enableTickInter
+
+
+	mov rdi, rsp
 	call switchKernelToUser
 	mov rsp, rax ;pongo el puntero de switchKernelToUser en el stack pointer.
 
@@ -213,6 +232,7 @@ irq0Handler:
 	out 20h, al
 
 	popaq
+
 
 	iretq
 
@@ -267,6 +287,7 @@ sysCallHandler:
 					  ; en una variable en memoria para despues de llamar a 'popaq' volver a asignarlo a 'rax'.
 	
 	
+	mov rdi, rsp
 	call switchKernelToUser
 	mov rsp, rax ;pongo el puntero de switchKernelToUser en el stack pointer.
 	popaq
@@ -282,6 +303,10 @@ sysCallHandler:
 
 sti:
 	sti
+	ret
+
+cli:
+	cli
 	ret
 
 setPicSlave:

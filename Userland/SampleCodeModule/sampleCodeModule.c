@@ -34,6 +34,20 @@ int main() {
 			}
 			k++;
 		}
+
+	}
+	
+	char f[100];
+	if (getPid() != 0) {
+		int pid = getPid();
+		for (int i = 0; i < pid + 1; i++) {
+			printf("Soy el proceso: %d, espero teclado...\n", getPid());
+			scanf("%s", &f);
+			printf("Soy: %d, volvi con: %s!!!\n", getPid(), f);
+		}
+		iam();
+	} else {
+		iam();
 	}
 
 	// else {
@@ -53,6 +67,16 @@ int main() {
 	// halt();
 
 	return 0;
+}
+
+void iam() {
+	int k = 0;
+	while (1) {
+		if (k % 500000000 == 0) {
+			printf("Soy el proceso: %d!!!\n", getPid());
+		}
+		k++;
+	}
 }
 
 /**

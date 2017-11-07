@@ -28,6 +28,11 @@ void enableTickInter() {
 	setPicMaster(0xFC);
 }
 
+
+void disableTickInter() {
+	setPicMaster(0x01);
+}
+
 void init_interruptions() {
 
 	setPicMaster(0x01); //Sin el tick es 0x01

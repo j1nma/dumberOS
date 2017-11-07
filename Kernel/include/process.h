@@ -19,6 +19,8 @@ struct process {
 
 	void * kernelStack;
 
+	void * flippedStack;
+
 	void * entryPoint;
 
 	int flipped;

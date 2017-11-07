@@ -189,12 +189,16 @@ void scanf(char *format, ...){
 	// printf("Test\n");
 
 	// *d = buffer[0];
-	char buffer[80];
-	int indexStr = syscall(SYSCALL_READ, buffer, 0, DESCRIPTOR_CLI);
+	// char buffer[80];
+	// printf("Direccion desde userland(%d): %d\n", getPid(), d);
+	int indexStr = syscall(SYSCALL_READ, d, 0, DESCRIPTOR_CLI);
+	// printf("Read done, Direccion desde userland(%d): %d\n", getPid(), d);
+	// printf("Primera letra: %c\n", d[0]);
+	// printf("Segunda letra: %c\n", d[1]);
 
+	// for (int i = 0; i < indexStr + 1; i++) //El +1 es para que meta el 0 al final.
+		// d[i] = buffer[i];
 
-	for (int i = 0; i < indexStr + 1; i++) //El +1 es para que meta el 0 al final.
-		d[i] = buffer[i];
 
 	return;
 
