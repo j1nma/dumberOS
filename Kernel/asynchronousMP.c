@@ -2,7 +2,6 @@
 #include "message.h"
 #include "mutex.h"
 #include "process.h"
-#include "circular_buffer.h"
 #include "queue.h"
 #include "scheduler.h"
 
@@ -77,44 +76,14 @@ void asyncSend(char * message, int destination_pid) {
 
 	Queue * tmpbuff = destination->receiver_buffer;
 
-	if (tmpbuff->sizeOfQueue == 0) {
-		write("Tiene 0 msgs.\n", 15);
-	}
+	if (!enqueue(tmpbuff, message)) write("Encole mi mensaje.\n", 20);
 
-	if (tmpbuff->sizeOfQueue == 1) {
-		write("Tiene 1 msgs.\n", 15);
-	}
-
-	if (tmpbuff->sizeOfQueue == 2) {
-		write("Tiene 2 msgs.\n", 15);
-	}
-
-	if (tmpbuff->sizeOfQueue >= 2) {
-		write("Tiene MIERDADSDA.\n", 19);
-	}
-
-	if (tmpbuff->sizeOfQueue == MAXITEMS) {
-
-		write("NO DA ABASTO\n", 14);
-
-		pushWaitQueue(destination->sender_waiting_processes, getCurrentPid());
-
-		// blockCurrent(MESSAGE_BLOCK);
-		blockProcess(getCurrentProcess());
-
-	} else {
-
-		if (!enqueue(tmpbuff, message)) write("Encole mi mensaje.\n", 20);
-
-		if (isBlocked(destination)) awakeProcess(destination->pid);
-
-	}
+	if (isBlocked(destination)) awakeProcess(destination->pid);
 
 	mutex_up();
 
-	// write("Y ahora que mierda hacemo\n", 27);
-	// enableTaskSwitch();
 
+	// enableTaskSwitch();
 }
 
 /*

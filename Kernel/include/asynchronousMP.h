@@ -2,7 +2,6 @@
 #define _ASYNCHRONOUSMP_H
 
 #include "queue.h"
-#include "circular_buffer.h"
 #include "process.h"
 
 void mutex_down();

@@ -1,8 +1,9 @@
 #ifndef _PROCESS_H
 #define _PROCESS_H
 
-#include "circular_buffer.h"
 #include "queue.h"
+
+#define MESSAGE_SIZE 20
 
 // https://unix.stackexchange.com/questions/80038/what-is-the-structure-of-a-linux-process
 
