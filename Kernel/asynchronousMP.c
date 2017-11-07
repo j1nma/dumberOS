@@ -1,23 +1,23 @@
 #include "asynchronousMP.h"
-#include "message.h"
 #include "mutex.h"
 #include "process.h"
 #include "MP_queue.h"
 #include "scheduler.h"
 
 #include "drivers.h"
+#include "lib.h"
 #include "interruptions.h"
 
-void disableTaskSwitch();
+// void disableTaskSwitch();
 
-void disableTaskSwitch() {
-	setPicMaster(0x01);
-	setPicSlave(0x00);
-}
+// void disableTaskSwitch() {
+// 	setPicMaster(0x01);
+// 	setPicSlave(0x00);
+// }
 
-void enableTaskSwitch() {
-	enableTickInter();
-}
+// void enableTaskSwitch() {
+// 	enableTickInter();
+// }
 
 
 void mutex_down() {
@@ -26,39 +26,6 @@ void mutex_down() {
 
 void mutex_up() {
 	up();
-}
-
-int peekWaitQueue(Queue * sender_waiting_processes) {
-	int ans = malloc(sizeof(int));
-
-	if (queuePeek(sender_waiting_processes, &ans) == 0) {
-		free(ans);
-		return 1;
-	}
-
-	return -1;
-}
-
-void pushWaitQueue(Queue * sender_waiting_processes, int sender_pid) {
-	if (!enqueue(sender_waiting_processes, &sender_pid)) {
-		write("Enqueued\n", 10);
-	} else {
-		write("NOT Enqueued\n", 14);
-	}
-
-}
-
-
-int popWaitQueue(Queue * sender_waiting_processes) {
-	int ans = malloc(sizeof(int));
-
-	dequeue(sender_waiting_processes, &ans);
-
-	int aux = ans;
-
-	free(ans);
-
-	return aux;
 }
 
 /*
@@ -72,16 +39,30 @@ void asyncSend(char * message, int destination_pid) {
 	// disableTaskSwitch();
 	mutex_down();
 
-	struct process * destination = getProcess(destination_pid);
+	struct process * destination;
+
+	if (getProcess(destination_pid, &destination) == 0) {
+		mutex_up();
+		write("no process with that id.\n", 25);
+		return;
+	}
+	write("yes process with that id.\n", 26);
 
 	Queue * tmpbuff = destination->receiver_buffer;
 
-	if (!enqueue(tmpbuff, message)) write("Encole mi mensaje.\n", 20);
+	if (!enqueue(tmpbuff, message)) {
 
-	if (isBlocked(destination)) awakeProcess(destination->pid);
+		// write("Encole mi mensaje.\n", 20);
+
+		if (isBlocked(destination)) {
+			awakeProcess(destination);
+			write("Awoke?\n", 8);
+		}
+	}
 
 	mutex_up();
 
+	// blockCurrent(MESSAGE_BLOCK);
 
 	// enableTaskSwitch();
 }
@@ -92,39 +73,30 @@ is empty and there's nothing to process.
 */
 char * asyncReceive() {
 
-	struct process * current_process = getCurrentProcess();
+	// write("HI RECEIVE\n", 12);
 
-	char * tmp = malloc(MESSAGE_SIZE * sizeof(char));
 
 	// disableTaskSwitch();
 	mutex_down();
 
+	struct process * current_process = getCurrentProcess();
+
+	char * tmp = malloc((MESSAGE_SIZE + 1) * sizeof(char));
+
 	Queue * rb = current_process->receiver_buffer;
 
 	if (rb->sizeOfQueue == 0) {
-		write("Tengo 0 msgs.\n", 15);
-	}
+		// write("Blocking...\n", 13);
 
-	if (rb->sizeOfQueue == 1) {
-		write("Tengo 1 msgs.\n", 15);
-	}
-
-	if (rb->sizeOfQueue == 2) {
-		write("Tengo 2 msgs.\n", 15);
-	}
-
-	if (rb->sizeOfQueue == 0) {
-		write("Blocking...\n", 13);
-		// blockProcess(current_process);
 		mutex_up();
-		blockCurrent(MESSAGE_BLOCK);
+		write("DeAwaken\n", 10);
+		flip();
+		deawakeCurrent(MESSAGE_BLOCK);
+		unflip();
+		write("Awaken\n", 8);
 	}
 
 	dequeue(rb, tmp);
-
-	Queue * swp = current_process->sender_waiting_processes;
-
-	while (getQueueSize(swp)) { awakeProcess(popWaitQueue(swp)); }
 
 	free(tmp);
 

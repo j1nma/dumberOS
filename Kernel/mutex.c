@@ -1,12 +1,18 @@
 #include "mutex.h"
+#include "drivers.h"
 
-long lock = UNLOCKED;
+char * lock;
+
+void initMutex() {
+	lock = malloc(sizeof(char *));
+	*lock = UNLOCKED;
+}
 
 void down() {
-  while (lock == LOCKED);
-  lock = LOCKED;
+  while (*lock == LOCKED);
+  *lock = LOCKED;
 }
 
 void up() {
-  lock = UNLOCKED;
+  *lock = UNLOCKED;
 }

@@ -51,7 +51,7 @@ void * getCurrentSP();
 
 void initScheduler();
 
-struct process * getProcess(int get_pid);
+int getProcess(int get_pid, struct process ** ret);
 
 struct process * getCurrentProcess();
 
@@ -59,6 +59,7 @@ struct process * getCurrentProcess();
 
 void blockProcess(struct process * process);
 
-void awakeProcess(int pid);
+void awakeProcess(struct process * sleeper);
+void deawakeCurrent(int code);
 
 #endif

@@ -14,6 +14,7 @@
 #include "MP_queue.h"
 
 
+
 extern uint8_t text;
 extern uint8_t rodata;
 extern uint8_t data;
@@ -127,7 +128,7 @@ void * sysCallDispatcher(int function, char* segundo, int tercero, int cuarto) {
 
 			// ncPrint("Entro: ");
 			// ncPrintDec(segundo);
-			
+
 			// while(1);
 			flip();
 			blockCurrent(KEYBOARD_BLOCK);
@@ -200,22 +201,22 @@ void * sysCallDispatcher(int function, char* segundo, int tercero, int cuarto) {
 
 void miCallbackDeTeclado(uint8_t c, int function) {
 	switch (function) {
-		case RESPONSE_CHARACTER: {
-			write(&c, 1); //RESPONSE_CHARACTER es cuando el usuario presiona una tecla imprimible. Llamo a write del driver de video.
-			break;
-		}
-		case RESPONSE_BACKSPACE: {
-			backspace();
-			break;
-		}
-		case RESPONSE_ENTER: {
-			unblock(KEYBOARD_BLOCK);
-			newLine(); //RESPONSE_ENTER es cuando el usuario presiona "return". Llamo a "newLine" del driver de video.
-			break;
-		}
-		case RESPONSE_ARROWS: {
-			break;
-		}
+	case RESPONSE_CHARACTER: {
+		write(&c, 1); //RESPONSE_CHARACTER es cuando el usuario presiona una tecla imprimible. Llamo a write del driver de video.
+		break;
+	}
+	case RESPONSE_BACKSPACE: {
+		backspace();
+		break;
+	}
+	case RESPONSE_ENTER: {
+		unblock(KEYBOARD_BLOCK);
+		newLine(); //RESPONSE_ENTER es cuando el usuario presiona "return". Llamo a "newLine" del driver de video.
+		break;
+	}
+	case RESPONSE_ARROWS: {
+		break;
+	}
 	}
 }
 
@@ -238,11 +239,13 @@ int main() {
 
 	initScheduler();
 
-	
+	initMutex();
+
+
 	void * flippedStack = toStackAddress(malloc(0x1000));
 
 
-	for (int i = 0; i < 10; ++i) {
+	for (int i = 0; i < 2; i++) {
 		struct process * processN;
 		processN = malloc(sizeof(struct process));
 		processN->entryPoint = sampleCodeModuleAddress;
@@ -252,16 +255,14 @@ int main() {
 		processN->flipped = 0;
 
 		/* IPC */
-		processN->sender_waiting_processes = (Queue *)malloc(sizeof(Queue));
 		processN->receiver_buffer = (Queue *)malloc(sizeof(Queue));
-		queueInit(processN->sender_waiting_processes, sizeof(int));
-		queueInit(processN->receiver_buffer, MESSAGE_SIZE * sizeof(char));
+		queueInit(processN->receiver_buffer, (MESSAGE_SIZE + 1) * sizeof(char));
 		/* IPC */
 
 		queueProcess(processN);
 	}
 
-	init_interruptions();
+	
 
 	struct process * process0;
 	process0 = malloc(sizeof(struct process));
@@ -272,12 +273,12 @@ int main() {
 	process0->flipped = 0;
 
 	/* IPC */
-	process0->sender_waiting_processes = (Queue *)malloc(sizeof(Queue));
 	process0->receiver_buffer = (Queue *)malloc(sizeof(Queue));
-	queueInit(process0->sender_waiting_processes, sizeof(int));
-	queueInit(process0->receiver_buffer, MESSAGE_SIZE * sizeof(char));
+	queueInit(process0->receiver_buffer, (MESSAGE_SIZE + 1) * sizeof(char));
 	/* IPC */
 
+
+	init_interruptions();
 
 	startProcess(process0);
 

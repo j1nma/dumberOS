@@ -4,6 +4,8 @@
 #define UNLOCKED 0
 #define LOCKED 1
 
+void initMutex();
+
 void down();
 
 void up();

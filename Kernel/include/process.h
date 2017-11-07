@@ -25,8 +25,6 @@ struct process {
 
 	int flipped;
 
-	Queue * sender_waiting_processes;
-
 	Queue * receiver_buffer;
 };
 

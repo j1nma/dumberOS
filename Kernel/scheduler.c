@@ -69,7 +69,7 @@ void unflip() {
 
 void next() {
 	scheduler->current = scheduler->current->next;
-	while (scheduler->current->process->state != RUNNING){
+	while (scheduler->current->process->state != RUNNING) {
 		scheduler->current = scheduler->current->next;
 	}
 }
@@ -79,9 +79,11 @@ void schedule() {
 	if (isEmpty()) {
 		next();
 	} else {
+		// write("SCHEDULEANDO---\n", 17);
 		struct process * process1 = pop();
 		addProcess(process1); //Lo pongo como next.
 		next(); //Paso al next, lo pongo como current.
+		enableTickInter();
 		callProcess(process1);
 	}
 }
@@ -126,18 +128,18 @@ void addProcess(struct process * process) {
 void unblock(int code) {
 
 	struct process * ready;
-	if(getQueueSize(blockedQueue) > 0) {
+	if (getQueueSize(blockedQueue) > 0) {
 		dequeue(blockedQueue, &(ready));
 		// int t = ready->pid;
 		// ncPrint("Desencolo: ");ncPrintDec(t);
-        ready->state = RUNNING;
-    }
+		ready->state = RUNNING;
+	}
 }
 
 void blockCurrent(int code) {
 
 
-	scheduler->current->process->state = KEYBOARD_BLOCK;
+	scheduler->current->process->state = code;
 	// int t = scheduler->current->process->pid;
 	// ncPrint("Encolo: ");ncPrintDec(t);
 	// queueInsert(scheduler->current->process);
@@ -148,18 +150,19 @@ void blockCurrent(int code) {
 	int20();
 }
 
-struct process * getProcess(int get_pid) {
+int getProcess(int get_pid, struct process ** ret) {
 	struct process_node * current = scheduler->current;
 
 	for (int i = 0; i < pid; i++) {
 		if (current->process->pid == get_pid) {
-			return current->process;
+			*(ret) = current->process;
+			return 1;
 		} else {
 			current = current->next;
 		}
 	}
 
-	return NULL;
+	return 0;
 }
 
 
@@ -183,29 +186,41 @@ int isBlocked(struct process * process) {
 // 	int20();
 // }
 
-void awakeProcess(int awake_pid) {
-	struct process_node * current = scheduler->current;
+void deawakeCurrent(int code) {
 
-	if (awake_pid == 0) write("Trying to awake 0.\n", 20);
+	scheduler->current->process->state = code;
 
-	if (awake_pid == 1) write("Trying to awake 1.\n", 20);
+	enableTickInter();
 
-	if (awake_pid == 2) write("Trying to awake 2.\n", 20);
+	int20();
+}
 
-	int i;
-	for (i = 0; i < pid; i++) {
-		if (current->process->pid == awake_pid) {
-			current->process->state = RUNNING;
-			// current->process->state = MESSAGE_UNBLOCK;
+void awakeProcess(struct process * sleeper) {
 
-			write("Awoke somebody.\n", 17);
-			return;
-		} else {
-			current = current->next;
-		}
-	}
+	sleeper->state = RUNNING;
 
-	if (i == pid) write("Couldn't awake anybody.\n", 25);
+	// struct process_node * current = scheduler->current;
+
+	// if (awake_pid == 0) write("Trying to awake 0.\n", 20);
+
+	// if (awake_pid == 1) write("Trying to awake 1.\n", 20);
+
+	// if (awake_pid == 2) write("Trying to awake 2.\n", 20);
+
+	// int i;
+	// for (i = 0; i < pid; i++) {
+	// 	if (current->process->pid == awake_pid) {
+	// 		current->process->state = RUNNING;
+	// 		// current->process->state = MESSAGE_UNBLOCK;
+
+	// 		write("Awoke somebody.\n", 17);
+	// 		return;
+	// 	} else {
+	// 		current = current->next;
+	// 	}
+	// }
+
+	// if (i == pid) write("Couldn't awake anybody.\n", 25);
 
 }
 

@@ -9,46 +9,60 @@ int main() {
 	// OS welcome
 	// initWelcome();
 
-	if (getPid() == 1) {
 
-		while (1) {
-			printf("I am process: %d, sending...\n", getPid());
+	int pid = getPid();
+	printf("I am process: %d\n", getPid());
 
-			char * msg = "DESDE 1 CON AMOR\0";
+	if (pid != 0) {
+		// for (int i = 0; i < 1000000000 * pid; i++);
 
-			send(msg, 0);
+		printf("I am process: %d, sending...\n", getPid());
 
-			printf("SENT!\n");
+		char * msg;
+		if (pid == 1) {
+			msg = "DESDE 1 CON AMOR\0";
+		}else if (pid == 2) {
+			msg = "DESDE 2 CON AMOR\0";
 		}
 
-	} else if (getPid() == 0) {
+		send(msg, pid - 1);
 
-		int k = 0;
-		while (1) {
-			if (k % 100000000 == 0) {
+		printf("Sali del send.\n");
 
-				printf("I am process: %d, receiving...\n", getPid());
-
-				printf("RECEIVED: %s \n", receive());
-
-			}
-			k++;
-		}
-
-	}
-	
-	char f[100];
-	if (getPid() != 0) {
-		int pid = getPid();
-		// for (int i = 0; i < pid + 1; i++) {
-			printf("Soy el proceso: %d, espero teclado...\n", getPid());
-			scanf("%s", &f);
-			printf("Soy: %d, volvi con: %s!!!\n", getPid(), f);
-		// }
-		iam();
 	} else {
-		iam();
+
+		// int k = 0;
+		// while (1) {
+		// if (k % 100000000 == 0) {
+
+		printf("I am process: %d, receiving...\n", getPid());
+
+		printf("RECEIVED MSG n1: %s \n", receive());
+
+		printf("RECEIVED MSG n2: %s \n", receive());
+
 	}
+
+	iam();
+	// 	// k++;
+	// 	// }
+
+	// } else {
+	// 	iam();
+	// }
+
+	// char f[100];
+	// if (getPid() != 0) {
+	// 	int pid = getPid();
+	// 	// for (int i = 0; i < pid + 1; i++) {
+	// 	printf("Soy el proceso: %d, espero teclado...\n", getPid());
+	// 	scanf("%s", &f);
+	// 	printf("Soy: %d, volvi con: %s!!!\n", getPid(), f);
+	// 	// }
+	// 	iam();
+	// } else {
+	// 	iam();
+	// }	
 
 	// else {
 	// 	printf("Soy el proceso: %d\n", getPid());
