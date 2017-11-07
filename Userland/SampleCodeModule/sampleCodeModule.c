@@ -19,11 +19,15 @@ int main() {
 
 		char msg[20];
 
-		scanf("%s", &msg);
-		printf("Im: %d, sending: %s.\n", getPid(), msg);
+		while (1) {
+
+			scanf("%s", &msg);
+			printf("Im: %d, sending: %s.\n", getPid(), msg);
 
 
-		send(msg, 1);
+			send(msg, 1);
+
+		}
 
 	} else if (pid == 1){
 

@@ -12,7 +12,6 @@
 
 
 static struct scheduler * scheduler;
-static Queue * blockedQueue;
 
 typedef int (*EntryPoint)();
 
@@ -20,8 +19,6 @@ static int pid = 0;
 
 void initScheduler() {
 	scheduler = (struct scheduler *)malloc(sizeof(struct scheduler));
-	blockedQueue = (Queue *)malloc(sizeof(Queue));
-	queueInit(blockedQueue, sizeof(struct process *));
 }
 
 int getCurrentPid() {
@@ -83,7 +80,7 @@ void schedule() {
 		struct process * process1 = pop();
 		addProcess(process1); //Lo pongo como next.
 		next(); //Paso al next, lo pongo como current.
-		enableTickInter();
+		// enableTickInter();
 		callProcess(process1);
 	}
 }
@@ -123,27 +120,39 @@ void addProcess(struct process * process) {
 		scheduler->current->next = newNode; //Lo pongo como el siguiente al current y cambio las referencias del siguiente previo.
 	}
 	pid++;
+
+	scheduler->last_serviced = newNode;
 }
 
 void unblock(int code) {
 
-	struct process * ready;
-	if (getQueueSize(blockedQueue) > 0) {
-		dequeue(blockedQueue, &(ready));
-		ready->state = RUNNING;
+	struct process_node * current = scheduler->last_serviced;
+	int startingPid = current->process->pid;
+	current = current->next;
+
+	while (current->process->state != code && current->process->pid != startingPid) {
+		current = current->next;
 	}
+	current->process->state = RUNNING;
+	scheduler->last_serviced = current;
+}
+
+void unblockProcess(struct process * sleeper) {
+
+	sleeper->state = RUNNING;
+
 }
 
 void blockCurrent(int code) {
 
 	scheduler->current->process->state = code;
 
-	enqueue(blockedQueue, &(scheduler->current->process));
-
-	enableTickInter();
+	// enableTickInter();
 
 	int20();
 }
+
+
 
 int getProcess(int get_pid, struct process ** ret) {
 	struct process_node * current = scheduler->current;
@@ -169,20 +178,9 @@ int isBlocked(struct process * process) {
 
 
 
-void deawakeCurrent(int code) {
 
-	scheduler->current->process->state = code;
 
-	enableTickInter();
 
-	int20();
-}
-
-void awakeProcess(struct process * sleeper) {
-
-	sleeper->state = RUNNING;
-
-}
 
 /* end IPC */
 

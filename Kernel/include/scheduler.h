@@ -20,6 +20,7 @@ void * switchKernelToUser(void * esp);
 struct scheduler {
 
 	struct process_node * current;
+	struct process_node * last_serviced;
 
 };
 

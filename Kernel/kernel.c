@@ -245,13 +245,13 @@ int main() {
 	void * flippedStack = toStackAddress(malloc(0x1000));
 
 
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 5; i++) {
 		struct process * processN;
 		processN = malloc(sizeof(struct process));
 		processN->entryPoint = sampleCodeModuleAddress;
 		processN->userStack = toStackAddress(malloc(0x1000));
 		processN->kernelStack = toStackAddress(malloc(0x1000));
-		processN->flippedStack = flippedStack;
+		processN->flippedStack = toStackAddress(malloc(0x1000));//flippedStack;
 		processN->flipped = 0;
 
 		/* IPC */
@@ -269,7 +269,7 @@ int main() {
 	process0->entryPoint = sampleCodeModuleAddress;
 	process0->userStack = toStackAddress(malloc(0x1000));
 	process0->kernelStack = toStackAddress(malloc(0x1000));
-	process0->flippedStack = flippedStack;
+	process0->flippedStack = toStackAddress(malloc(0x1000));//flippedStack;
 	process0->flipped = 0;
 
 	/* IPC */

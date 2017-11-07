@@ -53,7 +53,7 @@ void asyncSend(char * message, int destination_pid) {
 		// write("Encole mi mensaje.\n", 20);
 
 		if (isBlocked(destination)) {
-			awakeProcess(destination);
+			unblockProcess(destination);
 		}
 	}
 
@@ -87,7 +87,7 @@ char * asyncReceive() {
 
 		mutex_up();
 		flip();
-		deawakeCurrent(MESSAGE_BLOCK);
+		blockCurrent(MESSAGE_BLOCK);
 		unflip();
 	}
 

@@ -203,7 +203,7 @@ sysInByte:
 
 irq0Handler:
 
-	call disableTickInter
+	;call disableTickInter
 	
 	pushaq
 
@@ -220,7 +220,7 @@ irq0Handler:
 	call schedule
 
 
-	call enableTickInter
+	;call enableTickInter
 
 
 	mov rdi, rsp
