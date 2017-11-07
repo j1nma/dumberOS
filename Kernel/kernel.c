@@ -179,22 +179,22 @@ int sysCallDispatcher(int function, char* segundo, int tercero, int cuarto) {
 
 void miCallbackDeTeclado(uint8_t c, int function) {
 	switch (function) {
-	case RESPONSE_CHARACTER: {
-		write(&c, 1); //RESPONSE_CHARACTER es cuando el usuario presiona una tecla imprimible. Llamo a write del driver de video.
-		break;
-	}
-	case RESPONSE_BACKSPACE: {
-		backspace();
-		break;
-	}
-	case RESPONSE_ENTER: {
-		unblock(KEYBOARD_BLOCK);
-		newLine(); //RESPONSE_ENTER es cuando el usuario presiona "return". Llamo a "newLine" del driver de video.
-		break;
-	}
-	case RESPONSE_ARROWS: {
-		break;
-	}
+		case RESPONSE_CHARACTER: {
+			write(&c, 1); //RESPONSE_CHARACTER es cuando el usuario presiona una tecla imprimible. Llamo a write del driver de video.
+			break;
+		}
+		case RESPONSE_BACKSPACE: {
+			backspace();
+			break;
+		}
+		case RESPONSE_ENTER: {
+			unblock(KEYBOARD_BLOCK);
+			newLine(); //RESPONSE_ENTER es cuando el usuario presiona "return". Llamo a "newLine" del driver de video.
+			break;
+		}
+		case RESPONSE_ARROWS: {
+			break;
+		}
 	}
 }
 
@@ -221,7 +221,7 @@ int main() {
 	void * flippedStack = toStackAddress(malloc(0x1000));
 
 
-	for (int i = 0; i < 49; ++i) {
+	for (int i = 0; i < 10; ++i) {
 		struct process * processN;
 		processN = malloc(sizeof(struct process));
 		processN->entryPoint = sampleCodeModuleAddress;

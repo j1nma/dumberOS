@@ -14,11 +14,11 @@ int main() {
 	char f[100];
 	if (getPid() != 0) {
 		int pid = getPid();
-		// for (int i = 0; i < pid + 1; i++) {
+		for (int i = 0; i < pid + 1; i++) {
 			printf("Soy el proceso: %d, espero teclado...\n", getPid());
 			scanf("%s", &f);
 			printf("Soy: %d, volvi con: %s!!!\n", getPid(), f);
-		// }
+		}
 		iam();
 	} else {
 		iam();
