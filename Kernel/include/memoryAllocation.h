@@ -26,8 +26,10 @@ void setUpHeapOrganizer(void * memoryBaseFromKernel);
 // void fillInformation(struct node * nodeToFill, int level, int elementNumber, int elementsInLevel, int nodeNumber);
 int getLevel(int size);
 void * allocPage (int size);
+void * calculateOffsetFromIndex(int i);
+void updateState(int i);
 void * findSpaceDFS(int level, int i, int currentLevel);
-int findPageDFS(void * page, int i);
+State findPageDFS(void * page, int i);
 void freePage(void * page);
 
 #endif

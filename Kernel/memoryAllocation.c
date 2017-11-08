@@ -102,6 +102,27 @@ void * allocPage(int size) {
 	return ans;
 }
 
+void * calculateOffsetFromIndex(int i) {
+	// TODO
+	return 0;
+}
+
+/*
+** Updates the state of the memory manager at index i depending on the state of its children.
+** Prioratizes asking if a child is ALMOST_FULL because it's the most common state.
+*/
+void updateState(int i) {
+	if(memManager[2*i+1] == ALMOST_FULL || memManager[2*i+2] == ALMOST_FULL) {
+		memManager[i] = ALMOST_FULL;
+	} else if(memManager[2*i+1] == EMPTY && memManager[2*i+2] == EMPTY) {
+		memManager[i] = EMPTY;
+	} else if(memManager[2*i+1] == FULL && memManager[2*i+2] == FULL) {
+		memManager[i] = FULL;
+	} else {
+		memManager[i] = ALMOST_FULL;
+	}
+}
+
 /*
 ** Buddy Allocation is nothing more than a binary heap.
 **
@@ -124,16 +145,22 @@ void * findSpaceDFS(int level, int i, int currentLevel) {
 		if(memManager[i] == ALMOST_FULL) {
 			return NULL;
 		} else {
-			//
 			memManager[i] = FULL;
-			return memoryBase + (0);			// TODO: el calculo del salto falta aca
+			return memoryBase + (calculateOffsetFromIndex(i));			// TODO: el calculo del salto falta aca
 		}
+	}
+
+	if(2*i+1 >= TOTALELEMENTS) {
+		return NULL;
 	}
 
 	left = findSpaceDFS(level, ((2*i)+1), currentLevel + 1);
 
 	// If left gives back NULL I try through the right side.
 	if(left == NULL) {
+		if(2*i+2 >= TOTALELEMENTS) {
+			return NULL;
+		}
 		right = findSpaceDFS(level, (2*i)+2, currentLevel + 1);
 		if(right == NULL) {
 			return NULL;
@@ -144,11 +171,8 @@ void * findSpaceDFS(int level, int i, int currentLevel) {
 	}
 
 	// I update my state accordingly.
-	if(memManager[2*i+1] == FULL && memManager[2*i+2] == FULL) {
-		memManager[i] = FULL;
-	} else {
-		memManager[i] = ALMOST_FULL;
-	}
+	updateState(i);
+
 	return ans;
 
 	// if(memoryBase[i]->state == FULL) {
@@ -180,83 +204,106 @@ void * findSpaceDFS(int level, int i, int currentLevel) {
 	// return left;
 }
 
-int getNewState(int descendantState, int parentState, int child) {
-	switch(descendantState) {
-		case EMPTY:									// it has to be your left/right child or one of its descendants
-			if(parentState == FULL) {				// if it was then you must update your state
-				return ALMOST_FULL;
-			} else {								// might depend on your other child
-				if(child < totalElements) {
-					if(memoryBase[child]->state) {
-						return ALMOST_FULL;
-					} else {
-						return EMPTY;
-					}
-				}
-				//	page not valid
-			}
-			break;
-		case ALMOST_FULL:
-			return ALMOST_FULL;
-		default:
-			return INVALID;
-	}
-}
+// int getNewState(int descendantState, int parentState, int child) {
+// 	switch(descendantState) {
+// 		case EMPTY:									// it has to be your left/right child or one of its descendants
+// 			if(parentState == FULL) {				// if it was then you must update your state
+// 				return ALMOST_FULL;
+// 			} else {								// might depend on your other child
+// 				if(child < totalElements) {
+// 					if(memoryBase[child]->state) {
+// 						return ALMOST_FULL;
+// 					} else {
+// 						return EMPTY;
+// 					}
+// 				}
+// 				//	page not valid
+// 			}
+// 			break;
+// 		case ALMOST_FULL:
+// 			return ALMOST_FULL;
+// 		default:
+// 			return INVALID;
+// 	}
+// }
 
 /*
 ** 
 */
-int findPageDFS(void * page, int i) {
-	if(memoryBase[i]->base == page) {
-		if(memoryBase[i]->size) {			// If it gets here, it's either this one or a left child.
-			memoryBase[i]->size = 0;		// If it gets here, I've found it!
-			memoryBase[i]->state = EMPTY;
-			return memoryBase[i]->state;	// Return new state so "parents" can update themselves as needed.
+State findPageDFS(void * page, int i) {
+	void * aux = memoryBase + calculateOffsetFromIndex(i);
+	if(aux == page) {
+		if(memManager[i] == FULL) {
+			// Found it!
+			memManager[i] = EMPTY;
+			return memManager[i];
 		} else {
-			if(2*i+1 < totalElements) {
-				int state = findPageDFS(page, 2*i+1);	// Else look for the left child.
-				memoryBase[i]->state = getNewState(state, memoryBase[i]->state, 2*i+2);
-				return memoryBase[i]->state;
+			// It's a left child (they share the same *base)
+			if(2*i+1 < TOTALELEMENTS) {
+				int state = findPageDFS(page, 2*i+1);
+				if(state == INVALID) {
+					return INVALID;		// Page out of range.
+				}
+				updateState(i);
+				return memManager[i];
+			} else {
+				return INVALID;
 			}
-			return INVALID;					// Looking in the wrong branch (page out of range), nothing to do here.
 		}
 	} else {
-		if(2*i+2 < totalElements) {
-			int stateRight = findPageDFS(page, 2*i+2);
-			if(stateRight != INVALID) {
-				if(stateRight == EMPTY) {
-					if(memoryBase[2*i+1]->state) {
-						memoryBase[i]->state = ALMOST_FULL;
-					} else {
-						memoryBase[i]->state = EMPTY;
-					}
-				} else {
-					memoryBase[i]->state = ALMOST_FULL;
-				}
-			} else {
-				int stateLeft = findPageDFS(page, 2*i+1);
-				if(stateLeft == INVALID) {
-					return INVALID;
-				} else if(stateLeft == EMPTY) {
-					if(memoryBase[i]->state == FULL) {		// if it was then you must update your state
-						memoryBase[i]->state = ALMOST_FULL;
-					} else {								// might depend on your right child
-						if(2*i+2 < totalElements) {
-							if(memoryBase[2*i+2]->state) {
-								memoryBase[i]->state = ALMOST_FULL;
-							} else {
-								memoryBase[i]->state = EMPTY;
-							}
-						}
-					}
-				} else {
-					memoryBase[i]->state = ALMOST_FULL;
-				}
-			}
-			return memoryBase[i]->state;
-		}
-		return INVALID;
+		// TODO: keep searching for page
+		return 0;
 	}
+	// if(memoryBase[i]->base == page) {
+	// 	if(memoryBase[i]->size) {			// If it gets here, it's either this one or a left child.
+	// 		memoryBase[i]->size = 0;		// If it gets here, I've found it!
+	// 		memoryBase[i]->state = EMPTY;
+	// 		return memoryBase[i]->state;	// Return new state so "parents" can update themselves as needed.
+	// 	} else {
+	// 		if(2*i+1 < totalElements) {
+	// 			int state = findPageDFS(page, 2*i+1);	// Else look for the left child.
+	// 			memoryBase[i]->state = getNewState(state, memoryBase[i]->state, 2*i+2);
+	// 			return memoryBase[i]->state;
+	// 		}
+	// 		return INVALID;					// Looking in the wrong branch (page out of range), nothing to do here.
+	// 	}
+	// } else {
+	// 	if(2*i+2 < totalElements) {
+	// 		int stateRight = findPageDFS(page, 2*i+2);
+	// 		if(stateRight != INVALID) {
+	// 			if(stateRight == EMPTY) {
+	// 				if(memoryBase[2*i+1]->state) {
+	// 					memoryBase[i]->state = ALMOST_FULL;
+	// 				} else {
+	// 					memoryBase[i]->state = EMPTY;
+	// 				}
+	// 			} else {
+	// 				memoryBase[i]->state = ALMOST_FULL;
+	// 			}
+	// 		} else {
+	// 			int stateLeft = findPageDFS(page, 2*i+1);
+	// 			if(stateLeft == INVALID) {
+	// 				return INVALID;
+	// 			} else if(stateLeft == EMPTY) {
+	// 				if(memoryBase[i]->state == FULL) {		// if it was then you must update your state
+	// 					memoryBase[i]->state = ALMOST_FULL;
+	// 				} else {								// might depend on your right child
+	// 					if(2*i+2 < totalElements) {
+	// 						if(memoryBase[2*i+2]->state) {
+	// 							memoryBase[i]->state = ALMOST_FULL;
+	// 						} else {
+	// 							memoryBase[i]->state = EMPTY;
+	// 						}
+	// 					}
+	// 				}
+	// 			} else {
+	// 				memoryBase[i]->state = ALMOST_FULL;
+	// 			}
+	// 		}
+	// 		return memoryBase[i]->state;
+	// 	}
+	// 	return INVALID;
+	// }
 }
 
 void freePage(void * page) {
