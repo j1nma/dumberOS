@@ -86,9 +86,7 @@ char * asyncReceive() {
 		// write("Blocking...\n", 13);
 
 		mutex_up();
-		flip();
 		blockCurrent(MESSAGE_BLOCK);
-		unflip();
 	}
 
 	dequeue(rb, tmp);

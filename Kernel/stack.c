@@ -1,7 +1,9 @@
 #include "stack.h"
 
-int MAXSIZE = 50;
-void * stack[50];
+#define SIZE 200
+
+int MAXSIZE = SIZE;
+void * stack[SIZE];
 int top = -1;
 
 int isEmpty() {

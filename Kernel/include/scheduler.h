@@ -6,6 +6,7 @@
 
 #define KEYBOARD_BLOCK 4
 #define MESSAGE_BLOCK 5
+#define CREATE_PROCESS_BLOCK 10
 #define MESSAGE_UNBLOCK 6
 #define RUNNING 0
 
@@ -31,6 +32,8 @@ void flip();
 void unflip();
 
 void schedule();
+
+int createPid();
 
 void queueProcess(struct process * process);
 

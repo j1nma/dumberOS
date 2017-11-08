@@ -126,17 +126,9 @@ void * sysCallDispatcher(int function, char* segundo, int tercero, int cuarto) {
 		switch ( cuarto ) {
 		case DESCRIPTOR_CLI: {
 
-			// ncPrint("Entro: ");
-			// ncPrintDec(segundo);
-
-			// while(1);
-			flip();
 			blockCurrent(KEYBOARD_BLOCK);
-			unflip();
 
 			int test = read(segundo);
-			// ncPrint("Salio: ");
-			// ncPrintDec(segundo);
 
 			return test;
 			break;
@@ -189,7 +181,10 @@ void * sysCallDispatcher(int function, char* segundo, int tercero, int cuarto) {
 		break;
 	}
 	case SYSCALL_PROCESS: {
-		return createNewProcess((void *)segundo);
+		struct process * newProcess = createNewProcess((void *)segundo, getCurrentPid());
+		queueProcess(newProcess);
+		blockCurrent(CREATE_PROCESS_BLOCK);
+		return newProcess->pid;
 		break;
 	}
 	default: {
@@ -236,48 +231,14 @@ int main() {
 
 	// Net Init
 	dma_start();
-	net_start();
 
+	net_start();
 
 	initScheduler();
 
 	initMutex();
 
-
-	for (int i = 0; i < 0; i++) {
-		struct process * processN;
-		processN = malloc(sizeof(struct process));
-		processN->entryPoint = sampleCodeModuleAddress;
-		processN->userStack = toStackAddress(malloc(0x1000));
-		processN->kernelStack = toStackAddress(malloc(0x1000));
-		processN->flippedStack = toStackAddress(malloc(0x1000));
-		processN->flipped = 0;
-		processN->pid = -1;
-
-		/* IPC */
-		processN->receiver_buffer = (Queue *)malloc(sizeof(Queue));
-		queueInit(processN->receiver_buffer, (MESSAGE_SIZE + 1) * sizeof(char));
-		/* IPC */
-
-		queueProcess(processN);
-	}
-
-	
-
-	struct process * process0;
-	process0 = malloc(sizeof(struct process));
-	process0->entryPoint = sampleCodeModuleAddress;
-	process0->userStack = toStackAddress(malloc(0x1000));
-	process0->kernelStack = toStackAddress(malloc(0x1000));
-	process0->flippedStack = toStackAddress(malloc(0x1000));
-	process0->flipped = 0;
-	process0->pid = -1;
-
-	/* IPC */
-	process0->receiver_buffer = (Queue *)malloc(sizeof(Queue));
-	queueInit(process0->receiver_buffer, (MESSAGE_SIZE + 1) * sizeof(char));
-	/* IPC */
-
+	struct process * process0 = createNewProcess(sampleCodeModuleAddress, 0);
 
 	init_interruptions();
 

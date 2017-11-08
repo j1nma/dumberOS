@@ -80,8 +80,18 @@ void schedule() {
 		struct process * process1 = pop();
 		addProcess(process1); //Lo pongo como next.
 		next(); //Paso al next, lo pongo como current.
-		// enableTickInter();
+		unblockParent(process1->parent);
 		callProcess(process1);
+	}
+}
+
+void unblockParent(int pid) {
+	struct process * parent;
+	if (getProcess(pid, &parent) != 0) {
+		if (parent->state == CREATE_PROCESS_BLOCK){
+			unblockProcess(parent);
+			
+		}
 	}
 }
 
@@ -98,6 +108,10 @@ void startProcess(struct process * process) {
 	callProcess(process);
 }
 
+int createPid() {
+	return pid++;
+}
+
 void queueProcess(struct process * process) {
 
 	push(process);
@@ -108,18 +122,15 @@ void addProcess(struct process * process) {
 	struct process_node * newNode;
 	newNode = (struct process_node *)malloc(sizeof(struct process_node));
 
-
 	newNode->process = process; //Le asigno el proceso
-	newNode->process->pid = pid; //Le asigno el pid
 
-	if (pid == 0) { //Es el primero?
+	if (process->pid == 0) { //Es el primero?
 		scheduler->current = newNode;
 		scheduler->current->next = newNode; //Lo pongo como current y el que le sigue a current
 	} else {
 		newNode->next = scheduler->current->next;
 		scheduler->current->next = newNode; //Lo pongo como el siguiente al current y cambio las referencias del siguiente previo.
 	}
-	pid++;
 
 	scheduler->last_serviced = newNode;
 }
@@ -138,18 +149,18 @@ void unblock(int code) {
 }
 
 void unblockProcess(struct process * sleeper) {
-
 	sleeper->state = RUNNING;
-
 }
 
 void blockCurrent(int code) {
 
+	flip();
+
 	scheduler->current->process->state = code;
 
-	// enableTickInter();
-
 	int20();
+
+	unflip();
 }
 
 
@@ -175,12 +186,6 @@ int getProcess(int get_pid, struct process ** ret) {
 int isBlocked(struct process * process) {
 	return process->state != RUNNING;
 }
-
-
-
-
-
-
 
 /* end IPC */
 

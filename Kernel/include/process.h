@@ -25,6 +25,8 @@ struct process {
 
 	int flipped;
 
+	int parent;
+
 	Queue * receiver_buffer;
 };
 
@@ -32,7 +34,7 @@ void callProcess(struct process * process);
 
 int isBlocked(struct process * process);
 
-int createNewProcess(void * statringPoint);
+struct process * createNewProcess(void * statringPoint, int parent);
 
 void * toStackAddress(void * page);
 

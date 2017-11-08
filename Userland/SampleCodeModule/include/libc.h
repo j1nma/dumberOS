@@ -23,6 +23,7 @@ void getTime(char *ptr);
 void haltAsm();
 void halt();
 int getPid();
+void LoopNop();
 
 void send(char *, int pid);
 char * receive();
