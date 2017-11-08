@@ -32,4 +32,8 @@ void callProcess(struct process * process);
 
 int isBlocked(struct process * process);
 
+int createNewProcess(void * statringPoint);
+
+void * toStackAddress(void * page);
+
 #endif

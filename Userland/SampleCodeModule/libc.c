@@ -1,6 +1,11 @@
 #include <libc.h>
 #include <../../../Kernel/include/syscalls.h>
 
+
+int createProcess(EntryPoint entryPoint) {
+	return syscall(SYSCALL_PROCESS, entryPoint, 0, 0);
+}
+
 uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base){
 	char *p = buffer;
 	char *p1, *p2;

@@ -188,6 +188,10 @@ void * sysCallDispatcher(int function, char* segundo, int tercero, int cuarto) {
 		return asyncReceive();
 		break;
 	}
+	case SYSCALL_PROCESS: {
+		return createNewProcess((void *)segundo);
+		break;
+	}
 	default: {
 		ncPrint("SysCall not found.");
 		break;
@@ -220,9 +224,7 @@ void miCallbackDeTeclado(uint8_t c, int function) {
 	}
 }
 
-void * toStackAddress(void * page) {
-	return page + 0x1000 - 0x10;
-}
+
 
 int main() {
 
@@ -242,17 +244,15 @@ int main() {
 	initMutex();
 
 
-	void * flippedStack = toStackAddress(malloc(0x1000));
-
-
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < 0; i++) {
 		struct process * processN;
 		processN = malloc(sizeof(struct process));
 		processN->entryPoint = sampleCodeModuleAddress;
 		processN->userStack = toStackAddress(malloc(0x1000));
 		processN->kernelStack = toStackAddress(malloc(0x1000));
-		processN->flippedStack = toStackAddress(malloc(0x1000));//flippedStack;
+		processN->flippedStack = toStackAddress(malloc(0x1000));
 		processN->flipped = 0;
+		processN->pid = -1;
 
 		/* IPC */
 		processN->receiver_buffer = (Queue *)malloc(sizeof(Queue));
@@ -269,8 +269,9 @@ int main() {
 	process0->entryPoint = sampleCodeModuleAddress;
 	process0->userStack = toStackAddress(malloc(0x1000));
 	process0->kernelStack = toStackAddress(malloc(0x1000));
-	process0->flippedStack = toStackAddress(malloc(0x1000));//flippedStack;
+	process0->flippedStack = toStackAddress(malloc(0x1000));
 	process0->flipped = 0;
+	process0->pid = -1;
 
 	/* IPC */
 	process0->receiver_buffer = (Queue *)malloc(sizeof(Queue));

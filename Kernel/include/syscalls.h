@@ -9,6 +9,7 @@
 #define SYSCALL_DOWN 8
 #define SYSCALL_SEND 9
 #define SYSCALL_RECEIVE 10
+#define SYSCALL_PROCESS 11
 
 
 #define DESCRIPTOR_CLI 0

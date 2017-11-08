@@ -1,48 +1,62 @@
 #include <libc.h>
 #include <commands.h>
 
+
+
 void initWelcome ();
 static int exit = FALSE;
 
+
+void process2 (){
+	int pid = getPid();
+	printf("I am process: %d\n", getPid());
+	iam();
+}
+
 int main() {
+
+
+	int i = createProcess(&process2);
+	printf("Created process: %d\n", i);
+	iam();
 
 	// OS welcome
 	// initWelcome();
 
 
-	int pid = getPid();
+	// int pid = getPid();
 
-	if (pid > 1) {
-		// for (int i = 0; i < 1000000000 * pid; i++);
+	// if (pid > 1) {
+	// 	// for (int i = 0; i < 1000000000 * pid; i++);
 
-		printf("I am process: %d, sending...\n", getPid());
+	// 	printf("I am process: %d, sending...\n", getPid());
 
-		char msg[20];
+	// 	char msg[20];
 
-		while (1) {
+	// 	while (1) {
 
-			scanf("%s", &msg);
-			printf("Im: %d, sending: %s.\n", getPid(), msg);
+	// 		scanf("%s", &msg);
+	// 		printf("Im: %d, sending: %s.\n", getPid(), msg);
 
 
-			send(msg, 1);
+	// 		send(msg, 1);
 
-		}
+	// 	}
 
-	} else if (pid == 1){
+	// } else if (pid == 1){
 
-		// int k = 0;
-		// while (1) {
-		// if (k % 100000000 == 0) {
+	// 	// int k = 0;
+	// 	// while (1) {
+	// 	// if (k % 100000000 == 0) {
 
-		printf("I am process: %d, receiving...\n", getPid());
+	// 	printf("I am process: %d, receiving...\n", getPid());
 
-		while (1) 
-			printf("I am process 1, recieved message: %s\n", receive());
+	// 	while (1) 
+	// 		printf("I am process 1, recieved message: %s\n", receive());
 
-	}
+	// }
 
-	iam();
+	// iam();
 	// 	// k++;
 	// 	// }
 

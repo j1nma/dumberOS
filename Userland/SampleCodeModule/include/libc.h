@@ -1,6 +1,8 @@
 #include <stdint.h>
 #include <stdarg.h>
 
+typedef int (*EntryPoint)();
+
 #define TRUE 1
 #define FALSE 0
 #define MAX_PARAMS_SHELL 5
@@ -24,3 +26,5 @@ int getPid();
 
 void send(char *, int pid);
 char * receive();
+
+int createProcess(EntryPoint entryPoint);
