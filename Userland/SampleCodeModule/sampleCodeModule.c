@@ -27,17 +27,32 @@ void processShell (){
 		scanf("%s", &msg);
 		lastPID = pid;
 	}
-	// for (int i = 0; i < lastPID + 1; ++i)
-	// {
-	// 	char * msg = "msg";
-	// 	send(msg, i);
-	// }
+
 	LoopNop();
 }
+void processKilled() {
+	printf("Hello!, I am process: %d\n", getPid());
+	iam();
+}
+
+
+void processKiller() {
+	printf("Hello!, I am process: %d\n", getPid());
+	int pid = createProcess(&processKilled);
+	printf("Created process: %d\n", pid);
+	for (int i = 0; i < 1000000000; ++i);
+
+	killProcess(pid);
+	printf("Killed process: %d\n", pid);
+
+	iam();
+}
+
+
 
 int main() {
 
-	int i = createProcess(&processShell);
+	int i = createProcess(&processKiller);
 	
 	LoopNop();
 

@@ -24,6 +24,7 @@ void haltAsm();
 void halt();
 int getPid();
 void LoopNop();
+int killProcess(int pid);
 
 void send(char *, int pid);
 char * receive();

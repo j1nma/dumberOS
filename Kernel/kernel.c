@@ -187,6 +187,10 @@ void * sysCallDispatcher(int function, char* segundo, int tercero, int cuarto) {
 		return newProcess->pid;
 		break;
 	}
+	case SYSCALL_PROCESS_KILL: {
+		return killProcess(tercero);
+		break;
+	}
 	default: {
 		ncPrint("SysCall not found.");
 		break;

@@ -35,6 +35,8 @@ void schedule();
 
 int createPid();
 
+int killProcess(int pid);
+
 void queueProcess(struct process * process);
 
 void startProcess(struct process * process);

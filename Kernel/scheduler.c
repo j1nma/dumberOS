@@ -95,6 +95,28 @@ void unblockParent(int pid) {
 	}
 }
 
+int killProcess(int pid) {
+
+	struct process_node * prev = scheduler->current;
+	struct process_node * current = scheduler->current->next;
+
+	for (int i = 0; i < pid; i++) {
+		if (current->process->pid == pid) {
+			
+			prev->next = current->next;
+			//TODO: free la memoria.
+
+			return current->process->pid;
+		} else {
+			prev = prev->next;
+			current = current->next;
+		}
+	}
+
+	return 0;
+
+}
+
 void startProcess(struct process * process) {
 
 	process->state = RUNNING;
