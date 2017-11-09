@@ -86,14 +86,14 @@ int getLevel(int size){
 /*
 ** Minimum allocation block size is 1024
 */
-void * allocPage(int size) {
+void * allocSpace(int size) {
 	int level;
 	void * ans;
 	if(size == 0) {
 		return NULL;
 	}
 	level = getLevel(size);		// indice < level es que es mas grande 
-									// level ahora tiene el 2^level que necesita
+								// level ahora tiene el 2^level que necesita
 	if(level > TOTALLEVELS) {
 		return NULL;
 	}
@@ -102,7 +102,11 @@ void * allocPage(int size) {
 	return ans;
 }
 
-void * calculateOffsetFromIndex(int i) {
+void * allocNPages(int n) {
+	return allocSpace(n * PAGE_SIZE);
+}
+
+int calculateOffsetFromIndex(int i) {
 	// TODO
 	return 0;
 }
@@ -150,7 +154,7 @@ void * findSpaceDFS(int level, int i, int currentLevel) {
 		}
 	}
 
-	if(2*i+1 >= TOTALELEMENTS) {
+	if(!leftChildValid(i)) {
 		return NULL;
 	}
 
@@ -158,7 +162,7 @@ void * findSpaceDFS(int level, int i, int currentLevel) {
 
 	// If left gives back NULL I try through the right side.
 	if(left == NULL) {
-		if(2*i+2 >= TOTALELEMENTS) {
+		if(!rightChildValid(i)) {
 			return NULL;
 		}
 		right = findSpaceDFS(level, (2*i)+2, currentLevel + 1);
@@ -227,83 +231,58 @@ void * findSpaceDFS(int level, int i, int currentLevel) {
 // 	}
 // }
 
+int leftChildValid(int i) {
+	return ((2*i) + 1) < TOTALELEMENTS;
+}
+
+int rightChildValid(int i) {
+	return ((2*i) + 2) < TOTALELEMENTS;
+}
+
 /*
 ** 
 */
 State findPageDFS(void * page, int i) {
-	void * aux = memoryBase + calculateOffsetFromIndex(i);
-	if(aux == page) {
+	// void * aux = memoryBase + calculateOffsetFromIndex(i);
+	// if(aux == page) {
+	if(memoryBase + calculateOffsetFromIndex(i) == page) {
 		if(memManager[i] == FULL) {
-			// Found it!
-			memManager[i] = EMPTY;
+			memManager[i] = EMPTY;								// Found the page I was looking for!
 			return memManager[i];
 		} else {
-			// It's a left child (they share the same *base)
-			if(2*i+1 < TOTALELEMENTS) {
+			if(leftChildValid(i)) {							// It's a left child (they share the same *base).
 				int state = findPageDFS(page, 2*i+1);
 				if(state == INVALID) {
-					return INVALID;		// Page out of range.
+					return INVALID;								// Freeing a page that's not reserved!
 				}
 				updateState(i);
 				return memManager[i];
 			} else {
-				return INVALID;
+				return INVALID;									// Freeing a page that's not reserved! (Page out of range)
 			}
 		}
 	} else {
-		// TODO: keep searching for page
-		return 0;
+		// Keep searching for page.
+		// It can be a descendant of the left child or a descendant of the right child.
+		// Starting with left child.
+		if(leftChildValid(i)) {
+			int stateLeft = findPageDFS(page, 2*i+1);
+			if(stateLeft != INVALID) {
+				updateState(i);
+				return memManager[i];
+			} else if(rightChildValid(i)) {
+				int stateRight = findPageDFS(page, 2*i+2);
+				if(stateRight != INVALID) {
+					updateState(i);
+					return memManager[i];
+				} else {
+					return INVALID;								// Not found on this branch.
+				}
+			}
+			return INVALID;
+		}
+		return INVALID;
 	}
-	// if(memoryBase[i]->base == page) {
-	// 	if(memoryBase[i]->size) {			// If it gets here, it's either this one or a left child.
-	// 		memoryBase[i]->size = 0;		// If it gets here, I've found it!
-	// 		memoryBase[i]->state = EMPTY;
-	// 		return memoryBase[i]->state;	// Return new state so "parents" can update themselves as needed.
-	// 	} else {
-	// 		if(2*i+1 < totalElements) {
-	// 			int state = findPageDFS(page, 2*i+1);	// Else look for the left child.
-	// 			memoryBase[i]->state = getNewState(state, memoryBase[i]->state, 2*i+2);
-	// 			return memoryBase[i]->state;
-	// 		}
-	// 		return INVALID;					// Looking in the wrong branch (page out of range), nothing to do here.
-	// 	}
-	// } else {
-	// 	if(2*i+2 < totalElements) {
-	// 		int stateRight = findPageDFS(page, 2*i+2);
-	// 		if(stateRight != INVALID) {
-	// 			if(stateRight == EMPTY) {
-	// 				if(memoryBase[2*i+1]->state) {
-	// 					memoryBase[i]->state = ALMOST_FULL;
-	// 				} else {
-	// 					memoryBase[i]->state = EMPTY;
-	// 				}
-	// 			} else {
-	// 				memoryBase[i]->state = ALMOST_FULL;
-	// 			}
-	// 		} else {
-	// 			int stateLeft = findPageDFS(page, 2*i+1);
-	// 			if(stateLeft == INVALID) {
-	// 				return INVALID;
-	// 			} else if(stateLeft == EMPTY) {
-	// 				if(memoryBase[i]->state == FULL) {		// if it was then you must update your state
-	// 					memoryBase[i]->state = ALMOST_FULL;
-	// 				} else {								// might depend on your right child
-	// 					if(2*i+2 < totalElements) {
-	// 						if(memoryBase[2*i+2]->state) {
-	// 							memoryBase[i]->state = ALMOST_FULL;
-	// 						} else {
-	// 							memoryBase[i]->state = EMPTY;
-	// 						}
-	// 					}
-	// 				}
-	// 			} else {
-	// 				memoryBase[i]->state = ALMOST_FULL;
-	// 			}
-	// 		}
-	// 		return memoryBase[i]->state;
-	// 	}
-	// 	return INVALID;
-	// }
 }
 
 void freePage(void * page) {
@@ -317,10 +296,15 @@ void freePage(void * page) {
 // 	//printf("getLevel(75) %d \n", getLevel(75));
 // 	return 0;
 // }
-// int main(int argc, char const *argv[])			// TODO: should move call to setUpHeapOrganizer to Kernel.c when implemented in OS
-// {
-// 	setUpHeapOrganizer(); 
-// 	//printf("totalLevels %d\n", totalLevels);
-// 	//printf("getLevel(75) %d \n", getLevel(75));
-// 	return 0;
-// }
+int main(int argc, char const *argv[])			// TODO: should move call to setUpHeapOrganizer to Kernel.c when implemented in OS
+{
+	setUpHeapOrganizer(malloc(sizeof(1024*1024))); 
+	printf("totalLevels %d\n", TOTALLEVELS);
+	printf("getLevel(1500) %d \n", getLevel(1500));
+	void * test = allocSpace(1500);
+	printf("%p\n", test);
+	printf("%d\n", findPageDFS(test+2, 0));
+	printf("%d\n", findPageDFS(test, 0));
+	printf("%s\n", "Todo bien.");
+	return 0;
+}
