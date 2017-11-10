@@ -1,5 +1,3 @@
-#include "libc.h"
-#include "commands.h"
 #include "tests.h"
 
 int lastPID;

@@ -172,11 +172,11 @@ void * sysCallDispatcher(int function, char* segundo, int tercero, int cuarto) {
 		break;
 	}
 	case SYSCALL_UP: {
-		return acquireBolt(&tercero);
+		return releaseBolt(getBolt());
 		break;
 	}
 	case SYSCALL_DOWN: {
-		return releaseBolt(&tercero);
+		return acquireBolt(getBolt());
 		break;
 	}
 	case SYSCALL_PROCESS: {
@@ -247,7 +247,7 @@ int main() {
 
 	startProcess(process0);
 
-
+	deleteMutex();
 
 	return 0;
 

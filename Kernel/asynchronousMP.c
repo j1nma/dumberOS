@@ -14,6 +14,14 @@ void initMutex() {
 	bolt = newBolt();
 }
 
+void deleteMutex() {
+	deleteBolt(bolt);
+}
+
+int * getBolt() {
+	return bolt;
+}
+
 /*
 If destination process does not exist, the operation will terminate. If it does, the message is added to the receiver's
 queue of messages. If it's blocked by message passing, it is awaken. Mutex implemented over the bolt.

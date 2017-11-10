@@ -31,5 +31,5 @@ char * receive();
 int createProcess(EntryPoint entryPoint);
 
 /* Mutual exclusion */
-int up(int * bolt);
-int down(int * bolt);
+int down();
+int up();

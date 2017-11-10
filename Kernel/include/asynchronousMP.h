@@ -6,9 +6,9 @@
 
 void initMutex();
 
-void mutex_down();
+void deleteMutex();
 
-void mutex_up();
+int * getBolt();
 
 void asyncSend(char * message, int destination_pid);
 

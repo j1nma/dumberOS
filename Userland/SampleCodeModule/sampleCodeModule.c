@@ -1,12 +1,10 @@
-#include "libc.h"
-#include "commands.h"
 #include "tests.h"
 
-void initWelcome ();
+void initWelcome();
 static int exit = FALSE;
 
 
-void process2 () {
+void process2() {
 	printf("I am process: %d waiting for message.\n", getPid());
 	char * re = receive();
 	printf("I am: %d, ", getPid());
@@ -15,10 +13,9 @@ void process2 () {
 	LoopNop();
 }
 
-void processShell () {
+void processShell() {
 	int lastPID = 0;
-	for (int i = 0; i < 10; ++i)
-	{
+	for (int i = 0; i < 10; ++i) {
 		printf("I am process: %d\n", getPid());
 		int pid = createProcess(&process2);
 		printf("Created process: %d\n", pid);
@@ -29,63 +26,6 @@ void processShell () {
 
 	LoopNop();
 }
-
-void processKilled() {
-	printf("Hello!, I am process: %d\n", getPid());
-	iam();
-}
-
-void processKiller() {
-	printf("Hello!, I am process: %d\n", getPid());
-	int pid = createProcess(&processKilled);
-	printf("Created process: %d\n", pid);
-	for (int i = 0; i < 1000000000; ++i);
-
-	killProcess(pid);
-	printf("Killed process: %d\n", pid);
-
-	iam();
-}
-
-/* START MUTUAL EXCLUSION */
-
-//shared variable
-int x;
-int * bolt;
-
-void processMutualExclusion() {
-
-	up(bolt);
-
-	printf("I am process: %d. And now bolt is: %d.\n", getPid(), *bolt);
-
-	if (getPid() == 1 ) {
-		char * re = receive();
-	}
-
-	x++;
-
-	printf("x = %d.\n", x);
-
-	down(bolt);
-
-}
-
-void processMutualExclusionSetup() {
-	// x = 0;
-
-	// bolt = newBolt();
-
-	for (int i = 0; i < 2; i++) {
-		printf("I am process: %d\n", getPid());
-		int pid = createProcess(&processMutualExclusion);
-		printf("Process %d was created.\n", pid);
-	}
-
-	// deleteBolt(bolt);
-}
-/* END MUTUAL EXCLUSION */
-
 
 int main() {
 

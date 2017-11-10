@@ -424,12 +424,12 @@ char * receive() {
 }
 
 /* Mutex */
-int up(int * bolt) {
-	return syscall(SYSCALL_UP, 0, *bolt, 0);
+int down() {
+	return syscall(SYSCALL_DOWN, 0, 0, 0);
 }
 
-int down(int * bolt) {
-	return syscall(SYSCALL_DOWN, 0, *bolt, 0);
+int up() {
+	return syscall(SYSCALL_UP, 0, 0, 0);
 }
 
 

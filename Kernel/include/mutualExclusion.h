@@ -7,6 +7,6 @@ int acquireBolt(int * bolt);
 
 int releaseBolt(int * bolt);
 
-int deleteBolt(int * ptr);
+int deleteBolt(int * bolt);
 
 #endif

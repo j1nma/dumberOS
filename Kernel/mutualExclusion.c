@@ -28,7 +28,7 @@ int releaseBolt(int * bolt) {
 	return 0;
 }
 
-int deleteBolt(int * ptr) {
-	free(ptr);
+int deleteBolt(int * bolt) {
+	free(bolt);
 	return 0;
 }
