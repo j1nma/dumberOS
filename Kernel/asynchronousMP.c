@@ -8,17 +8,6 @@
 #include "lib.h"
 #include "interruptions.h"
 
-// void disableTaskSwitch();
-
-// void disableTaskSwitch() {
-// 	setPicMaster(0x01);
-// 	setPicSlave(0x00);
-// }
-
-// void enableTaskSwitch() {
-// 	enableTickInter();
-// }
-
 
 void mutex_down() {
 	down();
@@ -36,7 +25,6 @@ and we'll continue only after there's space for our message.
 */
 void asyncSend(char * message, int destination_pid) {
 
-	// disableTaskSwitch();
 	mutex_down();
 
 	struct process * destination;
@@ -59,9 +47,6 @@ void asyncSend(char * message, int destination_pid) {
 
 	mutex_up();
 
-	// blockCurrent(MESSAGE_BLOCK);
-
-	// enableTaskSwitch();
 }
 
 /*
@@ -70,10 +55,6 @@ is empty and there's nothing to process.
 */
 char * asyncReceive() {
 
-	// write("HI RECEIVE\n", 12);
-
-
-	// disableTaskSwitch();
 	mutex_down();
 
 	struct process * current_process = getCurrentProcess();
@@ -94,7 +75,6 @@ char * asyncReceive() {
 	free(tmp);
 
 	mutex_up();
-	// enableTaskSwitch();
 
 	return tmp;
 }

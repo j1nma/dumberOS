@@ -8,6 +8,7 @@
 #define MESSAGE_BLOCK 5
 #define CREATE_PROCESS_BLOCK 10
 #define MESSAGE_UNBLOCK 6
+#define BOLT_BLOCK 7
 #define RUNNING 0
 
 /* Context switching */

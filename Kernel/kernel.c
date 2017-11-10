@@ -12,6 +12,7 @@
 #include "mutex.h"
 #include "asynchronousMP.h"
 #include "MP_queue.h"
+#include "mutualExclusion.h"
 
 
 
@@ -178,6 +179,14 @@ void * sysCallDispatcher(int function, char* segundo, int tercero, int cuarto) {
 	}
 	case SYSCALL_RECEIVE: {
 		return asyncReceive();
+		break;
+	}
+	case SYSCALL_ACQUIRE: {
+		return acquireBolt(&tercero);
+		break;
+	}
+	case SYSCALL_RELEASE: {
+		return releaseBolt(&tercero);
 		break;
 	}
 	case SYSCALL_PROCESS: {

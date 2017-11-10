@@ -296,15 +296,15 @@ void freePage(void * page) {
 // 	//printf("getLevel(75) %d \n", getLevel(75));
 // 	return 0;
 // }
-int main(int argc, char const *argv[])			// TODO: should move call to setUpHeapOrganizer to Kernel.c when implemented in OS
-{
-	setUpHeapOrganizer(malloc(sizeof(1024*1024))); 
-	printf("totalLevels %d\n", TOTALLEVELS);
-	printf("getLevel(1500) %d \n", getLevel(1500));
-	void * test = allocSpace(1500);
-	printf("%p\n", test);
-	printf("%d\n", findPageDFS(test+2, 0));
-	printf("%d\n", findPageDFS(test, 0));
-	printf("%s\n", "Todo bien.");
-	return 0;
-}
+// int main(int argc, char const *argv[])			// TODO: should move call to setUpHeapOrganizer to Kernel.c when implemented in OS
+// {
+// 	setUpHeapOrganizer(malloc(sizeof(1024*1024))); 
+// 	printf("totalLevels %d\n", TOTALLEVELS);
+// 	printf("getLevel(1500) %d \n", getLevel(1500));
+// 	void * test = allocSpace(1500);
+// 	printf("%p\n", test);
+// 	printf("%d\n", findPageDFS(test+2, 0));
+// 	printf("%d\n", findPageDFS(test, 0));
+// 	printf("%s\n", "Todo bien.");
+// 	return 0;
+// }
