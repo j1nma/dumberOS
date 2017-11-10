@@ -31,8 +31,5 @@ char * receive();
 int createProcess(EntryPoint entryPoint);
 
 /* Mutual exclusion */
-int * newBolt();
-int acquireBolt(int * bolt);
-int releaseBolt(int * bolt);
-int deleteBolt(int * ptr);
-void * thread_do(void * arg);
+int up(int * bolt);
+int down(int * bolt);
