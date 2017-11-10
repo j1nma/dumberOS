@@ -1,6 +1,13 @@
 #include "mutualExclusion.h"
 #include "drivers.h"
 #include "scheduler.h"
+#include "memory.h"
+
+int * newBolt() {
+	int * ptr = (int*)(malloc(sizeof(int)));
+	*ptr = 0;
+	return ptr;
+}
 
 int acquireBolt(int * bolt) {
 
@@ -18,5 +25,10 @@ int acquireBolt(int * bolt) {
 
 int releaseBolt(int * bolt) {
 	*bolt = 0;
+	return 0;
+}
+
+int deleteBolt(int * ptr) {
+	free(ptr);
 	return 0;
 }

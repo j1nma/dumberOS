@@ -55,7 +55,7 @@ int * bolt;
 
 void processMutualExclusion() {
 
-	acquireBolt(bolt);
+	up(bolt);
 
 	printf("I am process: %d. And now bolt is: %d.\n", getPid(), *bolt);
 
@@ -67,7 +67,7 @@ void processMutualExclusion() {
 
 	printf("x = %d.\n", x);
 
-	releaseBolt(bolt);
+	down(bolt);
 
 }
 

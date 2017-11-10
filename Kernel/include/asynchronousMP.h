@@ -4,6 +4,8 @@
 #include "MP_queue.h"
 #include "process.h"
 
+void initMutex();
+
 void mutex_down();
 
 void mutex_up();

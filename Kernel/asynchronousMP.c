@@ -1,5 +1,4 @@
 #include "asynchronousMP.h"
-#include "mutex.h"
 #include "process.h"
 #include "MP_queue.h"
 #include "scheduler.h"
@@ -7,30 +6,26 @@
 #include "drivers.h"
 #include "lib.h"
 #include "interruptions.h"
+#include "mutualExclusion.h"
 
+int * bolt;
 
-void mutex_down() {
-	down();
-}
-
-void mutex_up() {
-	up();
+void initMutex() {
+	bolt = newBolt();
 }
 
 /*
-Now let's start with sending a message, and not care about. This could lead to losing a message,
-which we can't afford, so we'll do a trick here.
-Despite of being asynchronous, we will block if receiver buffer is full,
-and we'll continue only after there's space for our message.
+If destination process does not exist, the operation will terminate. If it does, the message is added to the receiver's
+queue of messages. If it's blocked by message passing, it is awaken. Mutex implemented over the bolt.
 */
 void asyncSend(char * message, int destination_pid) {
 
-	mutex_down();
+	acquireBolt(bolt);
 
 	struct process * destination;
 
 	if (getProcess(destination_pid, &destination) == 0) {
-		mutex_up();
+		releaseBolt(bolt);
 		return;
 	}
 
@@ -45,17 +40,16 @@ void asyncSend(char * message, int destination_pid) {
 		}
 	}
 
-	mutex_up();
-
+	releaseBolt(bolt);
 }
 
 /*
-Doesn't matter whether it's synchronized or not, receiver must block if it's message queue
-is empty and there's nothing to process.
+Receiver process blocks if it's message queue is empty and there's nothing to process.
+Mutex implemented over the bolt.
 */
 char * asyncReceive() {
 
-	mutex_down();
+	acquireBolt(bolt);
 
 	struct process * current_process = getCurrentProcess();
 
@@ -65,7 +59,7 @@ char * asyncReceive() {
 
 	if (rb->sizeOfQueue == 0) {
 		// write("Blocking...\n", 13);
-		mutex_up();
+		releaseBolt(bolt);
 		blockCurrent(MESSAGE_BLOCK);
 	}
 
@@ -73,7 +67,7 @@ char * asyncReceive() {
 
 	free(tmp);
 
-	mutex_up();
+	releaseBolt(bolt);
 
 	return tmp;
 }

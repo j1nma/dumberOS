@@ -1,8 +1,6 @@
 #include <libc.h>
 #include <../../../Kernel/include/syscalls.h>
 
-#include <pthread.h>
-
 
 int createProcess(EntryPoint entryPoint) {
 	return syscall(SYSCALL_PROCESS, entryPoint, 0, 0);
@@ -415,6 +413,8 @@ char * strconcat(char * a, char * b) {
 	return str;
 }
 
+
+/* Message passing */
 void send(char * message, int pid) {
 	syscall(SYSCALL_SEND, message, pid, 0);
 }
@@ -423,26 +423,13 @@ char * receive() {
 	return (char *) syscall(SYSCALL_RECEIVE, 0, 0, 0);
 }
 
-//new bolt instance that's consistent over function calls
-int * newBolt() {
-	int * ptr = (int*)(malloc(sizeof(int)));
-	*ptr = 0;
-	return ptr;
+/* Mutex */
+int up(int * bolt) {
+	return syscall(SYSCALL_UP, 0, *bolt, 0);
 }
 
-//set content of bolt atomically to 1
-int acquireBolt(int * bolt) {
-	return syscall(SYSCALL_ACQUIRE, 0, *bolt, 0);
+int down(int * bolt) {
+	return syscall(SYSCALL_DOWN, 0, *bolt, 0);
 }
 
-//release the bolt
-int releaseBolt(int * bolt) {
-	return syscall(SYSCALL_RELEASE, 0, *bolt, 0);
-}
-
-//free bolt
-int deleteBolt(int * ptr) {
-	free(ptr);
-	return 0;
-}
 

@@ -12,11 +12,6 @@ void queueInit(Queue * q, size_t memSize) {
 }
 
 int enqueue(Queue * q, const void * data) {
-  // if(!q->sizeOfQueue) write("No habia nada.\n", 16);
-
-  // if(q->sizeOfQueue == 1) write("Hay solo uno.\n", 15);
-
-  // if(q->sizeOfQueue >= 1) write("Hay mas uno.\n", 14);
 
   node * newNode = (node *)malloc(sizeof(node));
 
@@ -45,13 +40,6 @@ int enqueue(Queue * q, const void * data) {
 
   q->sizeOfQueue++;
 
-  // if(!(q->sizeOfQueue)) write("Ahora no hay nada.\n", 20);
-
-  // if(q->sizeOfQueue == 1) write("Ahora hay solo uno.\n", 21);
-
-  // if(q->sizeOfQueue == 2) write("Ahora hay dos.\n", 16);
-
-  // if(q->sizeOfQueue == 3) write("Ahora hay tres.\n", 17);
   return 0;
 }
 

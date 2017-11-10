@@ -1,4 +1,4 @@
-#include "include/memoryAllocation.h"
+#include "memoryAllocation.h"
 #include <stdlib.h>
 #include <stdio.h>
 // #include <math.h>

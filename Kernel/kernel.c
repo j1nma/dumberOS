@@ -9,11 +9,9 @@
 #include <process.h>
 #include <scheduler.h>
 
-#include "mutex.h"
 #include "asynchronousMP.h"
 #include "MP_queue.h"
 #include "mutualExclusion.h"
-
 
 
 extern uint8_t text;
@@ -165,14 +163,6 @@ void * sysCallDispatcher(int function, char* segundo, int tercero, int cuarto) {
 		return getCurrentPid();
 		break;
 	}
-	case SYSCALL_UP: {
-		up();
-		break;
-	}
-	case SYSCALL_DOWN: {
-		down();
-		break;
-	}
 	case SYSCALL_SEND: {
 		asyncSend(segundo, tercero);
 		break;
@@ -181,11 +171,11 @@ void * sysCallDispatcher(int function, char* segundo, int tercero, int cuarto) {
 		return asyncReceive();
 		break;
 	}
-	case SYSCALL_ACQUIRE: {
+	case SYSCALL_UP: {
 		return acquireBolt(&tercero);
 		break;
 	}
-	case SYSCALL_RELEASE: {
+	case SYSCALL_DOWN: {
 		return releaseBolt(&tercero);
 		break;
 	}
