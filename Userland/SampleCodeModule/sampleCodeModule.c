@@ -1,5 +1,6 @@
 #include "libc.h"
 #include "commands.h"
+#include "tests.h"
 
 void initWelcome ();
 static int exit = FALSE;
@@ -28,6 +29,7 @@ void processShell () {
 
 	LoopNop();
 }
+
 void processKilled() {
 	printf("Hello!, I am process: %d\n", getPid());
 	iam();
@@ -44,6 +46,8 @@ void processKiller() {
 
 	iam();
 }
+
+/* START MUTUAL EXCLUSION */
 
 //shared variable
 int x;
@@ -68,23 +72,24 @@ void processMutualExclusion() {
 }
 
 void processMutualExclusionSetup() {
-	x = 0;
+	// x = 0;
 
-	bolt = newBolt();
+	// bolt = newBolt();
 
 	for (int i = 0; i < 2; i++) {
-		printf("Hello! This is process %d.\n", getPid());
+		printf("I am process: %d\n", getPid());
 		int pid = createProcess(&processMutualExclusion);
-		printf("Created process: %d\n", pid);
+		printf("Process %d was created.\n", pid);
 	}
 
-	deleteBolt(bolt);
+	// deleteBolt(bolt);
 }
+/* END MUTUAL EXCLUSION */
 
 
 int main() {
 
-	int i = createProcess(&processKiller);
+	int i = createProcess(&processMessagePassing);
 
 	LoopNop();
 

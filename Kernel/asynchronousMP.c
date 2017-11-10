@@ -65,7 +65,6 @@ char * asyncReceive() {
 
 	if (rb->sizeOfQueue == 0) {
 		// write("Blocking...\n", 13);
-
 		mutex_up();
 		blockCurrent(MESSAGE_BLOCK);
 	}
