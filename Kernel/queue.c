@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <lib.h>
-#include "MP_queue.h"
+#include "queue.h"
 #include "drivers.h"
 
 // Copyright https://codereview.stackexchange.com/questions/141238/implementing-a-generic-queue-in-c

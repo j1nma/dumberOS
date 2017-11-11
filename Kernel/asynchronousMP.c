@@ -1,6 +1,6 @@
 #include "asynchronousMP.h"
 #include "process.h"
-#include "MP_queue.h"
+#include "queue.h"
 #include "scheduler.h"
 
 #include "drivers.h"

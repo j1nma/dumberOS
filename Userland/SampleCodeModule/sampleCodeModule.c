@@ -52,6 +52,7 @@ int main() {
 
 	processPrompt();
 
+	killProcess(pid);
 	printf("See ya! :D");
 	halt();
 

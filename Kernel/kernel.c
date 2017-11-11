@@ -10,7 +10,7 @@
 #include <scheduler.h>
 
 #include "asynchronousMP.h"
-#include "MP_queue.h"
+#include "queue.h"
 #include "mutualExclusion.h"
 
 

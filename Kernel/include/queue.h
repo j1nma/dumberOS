@@ -1,5 +1,5 @@
-#ifndef _MP_QUEUE_H_INCLUDED
-#define _MP_QUEUE_H_INCLUDED
+#ifndef _QUEUE_H_INCLUDED
+#define _QUEUE_H_INCLUDED
 
 #include <stddef.h>
 

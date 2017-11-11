@@ -4,7 +4,7 @@
 #include "stack.h"
 #include "interruptions.h"
 #include <naiveConsole.h>
-#include "MP_queue.h"
+#include "queue.h"
 #include "asynchronousMP.h"
 
 #define FLIPPED 5
@@ -118,7 +118,7 @@ void listProcesses() {
 
 	struct process_node * current = scheduler->current;
 
-	int prev;
+	int prev = 0;
 
 	for (int i = 0; i < pid; i++) {
 		struct process * p = current->process;

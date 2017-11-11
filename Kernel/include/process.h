@@ -1,7 +1,8 @@
 #ifndef _PROCESS_H
 #define _PROCESS_H
 
-#include "MP_queue.h"
+#include "queue.h"
+#include "scheduler.h"
 
 #define MESSAGE_SIZE 20
 
@@ -28,6 +29,8 @@ struct process {
 	int parent;
 
 	Queue * receiver_buffer;
+
+	struct scheduler * threadScheduler;
 };
 
 void callProcess(struct process * process);
