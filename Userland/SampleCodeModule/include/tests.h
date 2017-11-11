@@ -15,3 +15,6 @@ void processMutualExclusionSetup();
 void processKilled();
 
 void processKiller();
+
+/* Process listing */
+void processListing();

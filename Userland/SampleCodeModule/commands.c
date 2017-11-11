@@ -123,7 +123,8 @@ int runCommand(int command, char **params) {
 		break;
 	}
 	case COMMAND_PS: {
-		//TO-DO
+		if (strcmp(params[1], "test") == 0) processListing();
+		listProcesses();
 		break;
 	}
 	case COMMAND_PHILOSOPHERS: {

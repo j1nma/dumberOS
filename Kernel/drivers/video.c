@@ -61,7 +61,7 @@ int read(char *str){
 /**
  *Esta funcion escribe en pantalla el string recibido a la longitud pedida.
  */
-void write(char *str, int length){
+void write(char * str, int length){
 	
 	if (startBuffering == FALSE){
 		lcPrint(str);

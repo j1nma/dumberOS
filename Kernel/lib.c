@@ -58,7 +58,7 @@ void getTime(char *ptr) {
 }
 
 
-int mystrlen(char *s) {
+int mystrlen(char * s) {
 	int c = 0;
 	while (*(s++) != 0) {
 		c++;
@@ -113,4 +113,48 @@ void * memcpy(void * destination, const void * source, uint64_t length) {
 	}
 
 	return destination;
+}
+
+char * stateToString(int state) {
+	switch (state) {
+	case RUNNING:
+		return "RUNNING";
+
+	case KEYBOARD_BLOCK:
+		return "KEYBOARD_BLOCK";
+
+	case MESSAGE_BLOCK:
+		return "MESSAGE_BLOCK";
+
+	case CREATE_PROCESS_BLOCK:
+		return "CREATE_PROCESS_BLOCK";
+
+	case MESSAGE_UNBLOCK:
+		return "MESSAGE_UNBLOCK";
+
+	case BOLT_BLOCK:
+		return "BOLT_BLOCK";
+
+	default:
+		return "UNKNOWN";
+	}
+}
+
+char * itoaHelper(char * dest, int i) {
+	if (i <= -10) {
+		dest = itoaHelper(dest, i / 10);
+	}
+	*dest++ = '0' - i % 10;
+	return dest;
+}
+
+char * itoa(char * dest, int i) {
+	char * s = dest;
+	if (i < 0) {
+		*s++ = '-';
+	} else {
+		i = -i;
+	}
+	*itoaHelper(s, i) = '\0';
+	return dest;
 }

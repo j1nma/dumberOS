@@ -38,6 +38,8 @@ int createPid();
 
 int killProcess(int pid);
 
+void listProcesses();
+
 void queueProcess(struct process * process);
 
 void startProcess(struct process * process);
@@ -61,12 +63,5 @@ void initScheduler();
 int getProcess(int get_pid, struct process ** ret);
 
 struct process * getCurrentProcess();
-
-/* IPC */
-
-void blockProcess(struct process * process);
-
-void awakeProcess(struct process * sleeper);
-void deawakeCurrent(int code);
 
 #endif

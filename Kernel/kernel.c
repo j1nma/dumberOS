@@ -101,7 +101,7 @@ Dispatch syscalls to the corresponding functions
 @param	tercero	Length
 @param	cuarto Decryptor to use
 */
-void * sysCallDispatcher(int function, char* segundo, int tercero, int cuarto) {
+void * sysCallDispatcher(int function, char * segundo, int tercero, int cuarto) {
 
 	switch (function) {
 	case SYSCALL_WRITE: {
@@ -188,6 +188,10 @@ void * sysCallDispatcher(int function, char* segundo, int tercero, int cuarto) {
 	}
 	case SYSCALL_PROCESS_KILL: {
 		return killProcess(tercero);
+		break;
+	}
+	case SYSCALL_PROCESS_LIST: {
+		listProcesses();
 		break;
 	}
 	default: {

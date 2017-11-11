@@ -41,6 +41,8 @@ void LoopNop();
 
 int killProcess(int pid);
 
+void listProcesses();
+
 int createProcess(EntryPoint entryPoint);
 
 /* Message passing*/

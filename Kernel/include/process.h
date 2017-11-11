@@ -13,7 +13,7 @@ struct process {
 
 	int state;
 
-	int priority;
+	// int priority;
 
 	void * userStack;
 

@@ -5,11 +5,9 @@
 #include "interruptions.h"
 #include <naiveConsole.h>
 #include "MP_queue.h"
-
-#define FLIPPED 5
-
 #include "asynchronousMP.h"
 
+#define FLIPPED 5
 
 static struct scheduler * scheduler;
 
@@ -76,7 +74,6 @@ void schedule() {
 	if (isEmpty()) {
 		next();
 	} else {
-		// write("SCHEDULEANDO---\n", 17);
 		struct process * process1 = pop();
 		addProcess(process1); //Lo pongo como next.
 		next(); //Paso al next, lo pongo como current.
@@ -88,9 +85,9 @@ void schedule() {
 void unblockParent(int pid) {
 	struct process * parent;
 	if (getProcess(pid, &parent) != 0) {
-		if (parent->state == CREATE_PROCESS_BLOCK){
+		if (parent->state == CREATE_PROCESS_BLOCK) {
 			unblockProcess(parent);
-			
+
 		}
 	}
 }
@@ -102,7 +99,7 @@ int killProcess(int pid) {
 
 	for (int i = 0; i < pid; i++) {
 		if (current->process->pid == pid) {
-			
+
 			prev->next = current->next;
 			//TODO: free la memoria.
 
@@ -114,6 +111,32 @@ int killProcess(int pid) {
 	}
 
 	return 0;
+
+}
+
+void listProcesses() {
+
+	struct process_node * current = scheduler->current;
+
+	for (int i = 0; i < pid; i++) {
+		struct process * p = current->process;
+
+		write("[PID: ", 6);
+		char pd[2];
+		write(itoa(pd, p->pid), 2);
+
+		write(", state: ", 9);
+		char * state = stateToString(p->state);
+		write(state, mystrlen(state));
+
+		write(", parent: ", 10);
+		char prnt[2];
+		write(itoa(prnt, p->parent), 2);
+
+		write("]\n", 3);
+
+		current = current->next;
+	}
 
 }
 

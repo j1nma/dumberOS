@@ -1,11 +1,12 @@
 #ifndef LIB_H
 #define LIB_H
 
+#include <stdint.h>
+#include "scheduler.h"
+
 #define PCI_CONFIG_ADDRESS  0x0CF8
 #define PCI_CONFIG_DATA     0x0CFC
 
-
-#include <stdint.h>
 
 void * memset(void * destination, int32_t character, uint64_t length);
 void * memcpy(void * destination, const void * source, uint64_t length);
@@ -36,5 +37,9 @@ void popAQ();
 
 void sti();
 void cli();
+
+char * stateToString(int state);
+char * itoaHelper(char * dest, int i);
+char * itoa(char * dest, int i);
 
 #endif

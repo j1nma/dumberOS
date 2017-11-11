@@ -413,6 +413,10 @@ char * strconcat(char * a, char * b) {
 	return str;
 }
 
+void listProcesses() {
+	syscall(SYSCALL_PROCESS_LIST, 0, 0, 0);
+}
+
 
 /* Message passing */
 void send(char * message, int pid) {
