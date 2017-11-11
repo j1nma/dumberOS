@@ -37,19 +37,23 @@ void processPrompt() {
 		exit = runCommand(parseCommand(params[0]), params);
 	}
 
+	// LoopNop();
+}
+
+void processIdle() {
+
 	LoopNop();
 }
 
 int main() {
 
-	// OS welcome
-	// initWelcome();
+	initWelcome();
 
-	int i = createProcess(&processPrompt);
+	int pid = createProcess(&processIdle);
 
-	LoopNop();
+	processPrompt();
 
-	printf("Bye! :D\n");
+	printf("See ya! :D");
 	halt();
 
 	return 0;

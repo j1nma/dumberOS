@@ -11,29 +11,29 @@ Convert string to command int value.
 */
 int parseCommand(char * commandName) {
 
-	if ( strcmp((char *)commandName, "echo") == 0 )
+	if ( strcmp(commandName, "echo") == 0 )
 		return COMMAND_ECHO;
-	else if ( strcmp((char *)commandName, "time") == 0 )
+	else if ( strcmp(commandName, "time") == 0 )
 		return COMMAND_TIME;
-	else if ( strcmp((char *)commandName, "net") == 0 )
+	else if ( strcmp(commandName, "net") == 0 )
 		return COMMAND_NET;
-	else if ( strcmp((char *)commandName, "help") == 0 )
+	else if ( strcmp(commandName, "help") == 0 )
 		return COMMAND_HELP;
-	else if ( strcmp((char *)commandName, "man") == 0 )
+	else if ( strcmp(commandName, "man") == 0 )
 		return COMMAND_MAN;
-	else if ( strcmp((char *)commandName, "exit") == 0 )
+	else if ( strcmp(commandName, "exit") == 0 )
 		return COMMAND_POWEROFF;
-	else if ( strcmp((char *)commandName, "clear") == 0 )
+	else if ( strcmp(commandName, "clear") == 0 )
 		return COMMAND_CLEAR;
-	else if ( strcmp((char *)commandName, "ipc") == 0 )
+	else if ( strcmp(commandName, "ipc") == 0 )
 		return COMMAND_IPC;
-	else if ( strcmp((char *)commandName, "ps") == 0 )
+	else if ( strcmp(commandName, "ps") == 0 )
 		return COMMAND_PS;
-	else if ( strcmp((char *)commandName, "philosophers") == 0 )
+	else if ( strcmp(commandName, "philosophers") == 0 )
 		return COMMAND_PHILOSOPHERS;
-	else if ( strcmp((char *)commandName, "prodcons") == 0 )
+	else if ( strcmp(commandName, "prodcons") == 0 )
 		return COMMAND_PRODCONS;
-	else if ( strcmp((char *)commandName, "memprotection") == 0 )
+	else if ( strcmp(commandName, "memprotection") == 0 )
 		return COMMAND_MEMPROTECTION;
 	else
 		return COMMAND_NULL;

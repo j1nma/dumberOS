@@ -78,8 +78,7 @@ void * memset(void * destination, int32_t c, uint64_t length)
 	return destination;
 }
 
-void * memcpy(void * destination, const void * source, uint64_t length)
-{
+void * memcpy(void * destination, const void * source, uint64_t length) {
 	/*
 	* memcpy does not support overlapping buffers, so always do it
 	* forwards. (Don't change this without adjusting memmove.)
@@ -114,26 +113,4 @@ void * memcpy(void * destination, const void * source, uint64_t length)
 	}
 
 	return destination;
-}
- 
-void myMemCpy(void *dest, void *src, size_t n)
-{
-   // Typecast src and dest addresses to (char *)
-   char *csrc = (char *)src;
-   char *cdest = (char *)dest;
- 
-   // Copy contents of src[] to dest[]
-   for (int i=0; i<n; i++)
-       cdest[i] = csrc[i];
-}
-
-char * strcpy(char * dest_ptr, const char * src_ptr) {
-	char * strresult = dest_ptr;
-	if ((NULL != dest_ptr) && (NULL != src_ptr)) {
-		while (NULL != *src_ptr) {
-			*dest_ptr++ = *src_ptr++;
-		}
-		*dest_ptr = NULL;
-	}
-	return strresult;
 }
