@@ -27,11 +27,30 @@ void processShell() {
 	LoopNop();
 }
 
-int main() {
-
-	int i = createProcess(&processMessagePassing);
+void processPrompt() {
+	// Loop shell until user exits OS
+	while (!exit) {
+		char f[100];
+		printf("dummyOS $ ");
+		scanf("%s", &f);
+		char** params = str_split(f);
+		exit = runCommand(parseCommand(params[0]), params);
+	}
 
 	LoopNop();
+}
+
+int main() {
+
+	// OS welcome
+	// initWelcome();
+
+	int i = createProcess(&processPrompt);
+
+	LoopNop();
+
+	printf("Bye! :D\n");
+	halt();
 
 	return 0;
 }

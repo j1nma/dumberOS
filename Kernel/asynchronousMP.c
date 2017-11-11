@@ -33,6 +33,7 @@ void asyncSend(char * message, int destination_pid) {
 	struct process * destination;
 
 	if (getProcess(destination_pid, &destination) == 0) {
+		write("Receiver process does not exist.\n", 34);
 		releaseBolt(bolt);
 		return;
 	}

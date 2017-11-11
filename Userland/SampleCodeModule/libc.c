@@ -188,7 +188,7 @@ Read formated string from the cli descriptor
 @param *format Pointer to the format string to scan
 @param ... Pointers for all scanned parameters in format
 */
-void scanf(char *format, ...) {
+void scanf(char * format, ...) {
 
 	va_list ap;
 	va_start(ap, 1);
