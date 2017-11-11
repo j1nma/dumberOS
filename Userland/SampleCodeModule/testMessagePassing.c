@@ -1,22 +1,25 @@
 #include "tests.h"
 
-int lastPID;
+void processSender() {
 
-void processSenderReceiver() {
+	int pid = getPid();
 
-	if (getPid() % 2 == 0) {
-		// Receiver
-		printf("Hi! I am process %d waiting for message.\n", getPid());
-		char * msg = receive();
-		printf("I am process %d, ", getPid());
-		printf("recieved message: %s\n", msg);
+	printf("Hi! I am process %d sending message to %d, \n", pid, pid-1);
+	char * msg = "Hi Dave. I'm HAL.\n";
+	send(msg, pid-1);
 
-	} else {
-		// Sender
-		printf("Hi! I am process %d sending message.\n", getPid());
-		char * msg = "Hi Dave. I'm HAL.\n";
-		send(msg, lastPID);
-	}
+	LoopNop();
+
+}
+
+void processReceiver() {
+
+	int pid = getPid();
+
+	printf("Hi! I am process %d waiting for message.\n", pid);
+	char * msg = receive();
+	printf("I am process %d, ", pid);
+	printf("recieved message: %s\n", msg);
 
 	LoopNop();
 
@@ -24,17 +27,15 @@ void processSenderReceiver() {
 
 void processMessagePassing() {
 
-	lastPID = getPid();
+	int receiver;
+	int sender;
 
-	int pid;
+	printf("I am process %d\n", getPid());
 
-	for (int i = 0; i < 2; i++) {
-		printf("I am process %d\n", getPid());
-		lastPID = pid = createProcess(&processSenderReceiver);
-	}
+	receiver = createProcess(&processReceiver);
+	sender = createProcess(&processSender);
 
-	for (int i = 0; i < 2; i++) {
-		killProcess(pid--);
-	}
+	killProcess(sender);
+	killProcess(receiver);
 
 }

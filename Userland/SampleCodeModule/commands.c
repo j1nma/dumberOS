@@ -49,7 +49,7 @@ Run command with the submited params
 @param params Array of string params for command
 @return int 0 or 1 if shell should exit
 */
-int runCommand(int command, char **params) {
+int runCommand(int command, char ** params) {
 
 	switch (command) {
 	case COMMAND_ECHO: {

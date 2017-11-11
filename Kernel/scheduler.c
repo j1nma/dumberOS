@@ -118,8 +118,13 @@ void listProcesses() {
 
 	struct process_node * current = scheduler->current;
 
+	int prev;
+
 	for (int i = 0; i < pid; i++) {
 		struct process * p = current->process;
+
+		if (prev > p->pid) break; // This is required due to the scheduler's circular list of processes.
+		prev = i;
 
 		write("[PID: ", 6);
 		char pd[2];
@@ -207,8 +212,6 @@ void blockCurrent(int code) {
 
 	unflip();
 }
-
-
 
 int getProcess(int get_pid, struct process ** ret) {
 	struct process_node * current = scheduler->current;

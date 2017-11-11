@@ -2,9 +2,13 @@
 #include "commands.h"
 
 /* Message Passing */
-void processSenderReceiver();
+// void processSenderReceiver();
 
 void processMessagePassing();
+
+void processSender(); 
+
+void processReceiver(); 
 
 /* Mutex exclusion */
 void processMutualExclusion();
@@ -17,4 +21,7 @@ void processKilled();
 void processKiller();
 
 /* Process listing */
+void processListing();
+
+/* Producer consumer */
 void processListing();

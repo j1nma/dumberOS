@@ -41,7 +41,6 @@ void processPrompt() {
 }
 
 void processIdle() {
-
 	LoopNop();
 }
 
