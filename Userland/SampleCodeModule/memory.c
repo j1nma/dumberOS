@@ -2,7 +2,8 @@
 #include "memory.h"
 #include <../../../Kernel/include/syscalls.h>
 
-#define SMALLESTBLOCKSIZE 1024
+#define SMALLESTBLOCKSIZE (1024)
+#define PAGE_SIZE (4*1024)
 
 Header * first = NULL;
 Header base;	// me sirve para asignar un espacio de memoria a mi lista
@@ -16,7 +17,8 @@ void * malloc(unsigned nBytes){
 
 	/*si malloc no fue llamada nunca => first = NULL, tengo que inicializarlo, como no puedo usar malloc, le asigno una posicion cualquiera = base */
 	if((prev = first) == NULL){
-		base.availableSize = 0; 
+		base.availableSize = 0;
+		base.unmutableSize = 0;
 		base.next = first = prev = &base; /* first = prev son iguales al inicio porque la lista es una lista circular, facilita la funcion*/
 	}
 
@@ -59,6 +61,9 @@ void free(void *toFree) {
 			bp -> next = aux-> next;
 		if(aux+(aux->availableSize) == bp) {
 			aux->availableSize += bp->availableSize;
+			if(aux->availableSize == aux->unmutableSize) {
+				syscall(SYSCALL_FREE, bp, 0, 0);
+			}
 			aux->next = bp->next;
 		} else
 			aux->next = bp;
@@ -72,17 +77,18 @@ void free(void *toFree) {
 Header * morecore(unsigned nBytes){
 	Header * newBlock; 
 
-	if(nBytes < SMALLESTBLOCKSIZE) {
-		nBytes = SMALLESTBLOCKSIZE;
-	}
+	// if(nBytes < SMALLESTBLOCKSIZE) {
+	// 	nBytes = SMALLESTBLOCKSIZE;
+	// }
 
-	newBlock = (Header *) syscall(SYSCALL_MALLOC, 0, SMALLESTBLOCKSIZE, 0); /*allocPage(nBytes)*/ // TODO: change this to syscall_malloc for userland
+	newBlock = (Header *) syscall(SYSCALL_MALLOC, 0, PAGE_SIZE, 0); /*allocPage(nBytes)*/
 
 	if(newBlock == NULL){
 		return NULL; 
 	}
 
-	newBlock->availableSize = SMALLESTBLOCKSIZE; // TODO: sizeof(newBlock);/*getSize(newBlock->startingPointOfBlock)*/
+	newBlock->availableSize = PAGE_SIZE;
+	newBlock->unmutableSize = newBlock->availableSize;
 	
 	Header *aux; 
 	aux = first; 

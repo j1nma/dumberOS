@@ -19,8 +19,9 @@
 typedef enum state {INVALID=-1, EMPTY, ALMOST_FULL, FULL, FULLANDOCCUPIED} State;
 
 typedef struct header {
-	unsigned availableSize; 
-	struct header * next; 
+	unsigned availableSize;
+	unsigned unmutableSize;
+	struct header * next;
 } Header;
 
 void * memAlloc(unsigned nBytes); 

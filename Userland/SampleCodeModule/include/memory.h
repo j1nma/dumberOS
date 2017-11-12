@@ -1,8 +1,9 @@
 #include <stdio.h>
 
 typedef struct header {
-	unsigned availableSize; 
-	struct header * next; 
+	unsigned availableSize;
+	unsigned unmutableSize;
+	struct header * next;
 } Header;
 
 void * memAlloc(unsigned nBytes); 

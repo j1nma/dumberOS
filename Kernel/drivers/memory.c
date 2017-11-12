@@ -37,8 +37,9 @@ void * memAlloc(unsigned nBytes){
 	unsigned nUnits = (nBytes + sizeof(Header)-1)/sizeof(Header)+1; /*TODO: VOLVER A CAMBIAR ESTO - cuentita;*/
 
 	/*si malloc no fue llamada nunca => first = NULL, tengo que inicializarlo, como no puedo usar malloc, le asigno una posicion cualquiera = base */
-	if((prev = first) == NULL){
-		base.availableSize = 0; 
+	if((prev = first) == NULL) {
+		base.availableSize = 0;
+		base.unmutableSize = 0;
 		base.next = first = prev = &base; /* first = prev son iguales al inicio porque la lista es una lista circular, facilita la funcion*/
 	}
 
@@ -67,7 +68,6 @@ void * memAlloc(unsigned nBytes){
 
 
 void memFree(void *toFree){
-
 	Header *bp, *aux; 
 	bp = (Header *)toFree - 1; /*apunta al encabezador de un bloque*/
 	aux = first; 
@@ -82,6 +82,9 @@ void memFree(void *toFree){
 			bp -> next = aux-> next;
 		if(aux+(aux->availableSize) == bp) {
 			aux->availableSize += bp->availableSize;
+			if(aux->availableSize == aux->unmutableSize) {
+				freePage(bp);
+			}
 			aux->next = bp->next;
 		} else
 			aux->next = bp;
@@ -99,13 +102,14 @@ Header * morecore(unsigned nBytes){
 		nBytes = SMALLESTBLOCKSIZE;
 	}
 
-	newBlock = (Header *) allocSpace(SMALLESTBLOCKSIZE); /*allocPage(nBytes)*/ // TODO: change this to syscall_malloc for userland
+	newBlock = (Header *) allocSpace(SMALLESTBLOCKSIZE); /*allocPage(nBytes)*/
 
 	if(newBlock == NULL){
 		return NULL; 
 	}
 
-	newBlock->availableSize = SMALLESTBLOCKSIZE; // TODO: sizeof(newBlock);/*getSize(newBlock->startingPointOfBlock)*/
+	newBlock->availableSize = SMALLESTBLOCKSIZE;
+	newBlock->unmutableSize = newBlock->availableSize;
 	
 	Header *aux; 
 	aux = first; 
