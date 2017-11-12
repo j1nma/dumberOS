@@ -9,6 +9,7 @@
 #include <process.h>
 #include <scheduler.h>
 
+#include "memoryAllocation.h"
 #include "asynchronousMP.h"
 #include "queue.h"
 #include "mutualExclusion.h"
@@ -144,15 +145,15 @@ void * sysCallDispatcher(int function, char * segundo, int tercero, int cuarto) 
 		break;
 	}
 	case SYSCALL_MALLOC: {
-		return malloc(tercero);
+		return memAlloc(tercero);
 		break;
 	}
 	case SYSCALL_CALLOC: {
-		return calloc(tercero);
+		return memAlloc(tercero);
 		break;
 	}
 	case SYSCALL_FREE: {
-		free(segundo);
+		memFree(segundo);
 		break;
 	}
 	case SYSCALL_TIME: {
@@ -240,6 +241,9 @@ int main() {
 	dma_start();
 
 	net_start();
+
+	// Memory Start-up
+	setUpHeapOrganizer(buddyAllocationMemory);
 
 	initScheduler();
 

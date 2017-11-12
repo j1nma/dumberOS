@@ -13,16 +13,16 @@ void queueInit(Queue * q, size_t memSize) {
 
 int enqueue(Queue * q, const void * data) {
 
-  node * newNode = (node *)malloc(sizeof(node));
+  node * newNode = (node *)memAlloc(sizeof(node));
 
   if (newNode == NULL) {
     return -1;
   }
 
-  newNode->data = malloc(q->memSize);
+  newNode->data = memAlloc(q->memSize);
 
   if (newNode->data == NULL) {
-    free(newNode);
+    memFree(newNode);
     return -1;
   }
 
@@ -58,8 +58,8 @@ void dequeue(Queue * q, void * data) {
     }
 
     q->sizeOfQueue--;
-    free(temp->data);
-    free(temp);
+    memFree(temp->data);
+    memFree(temp);
   }
 }
 
@@ -79,14 +79,14 @@ void clearQueue(Queue * q) {
   while (q->sizeOfQueue > 0) {
     temp = q->head;
     q->head = temp->next;
-    free(temp->data);
-    free(temp);
+    memFree(temp->data);
+    memFree(temp);
     q->sizeOfQueue--;
   }
 
   q->head = q->tail = NULL;
 
-  free(q);
+  memFree(q);
 }
 
 int getQueueSize(Queue * q) {

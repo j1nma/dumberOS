@@ -297,17 +297,17 @@ void net_send(char * s) {
 	syscall(SYSCALL_WRITE, s, 0, DESCRIPTOR_NET);
 }
 
-void * malloc(int size) {
-	return (void *)syscall(SYSCALL_MALLOC, 0, size, 0);
-}
+// void * malloc(int size) {
+// 	return (void *)syscall(SYSCALL_MALLOC, 0, size, 0);
+// }
 
-void * calloc(int size) {
-	return (void *)syscall(SYSCALL_CALLOC, 0, size, 0);
-}
+// void * calloc(int size) {
+// 	return (void *)syscall(SYSCALL_CALLOC, 0, size, 0);
+// }
 
-void free(void * ptr) {
-	syscall(SYSCALL_FREE, ptr, 0, 0);
-}
+// void free(void * ptr) {
+// 	syscall(SYSCALL_FREE, ptr, 0, 0);
+// }
 
 /**
 Calculate string length

@@ -16,7 +16,7 @@ typedef int (*EntryPoint)();
 static int pid = 0;
 
 void initScheduler() {
-	scheduler = (struct scheduler *)malloc(sizeof(struct scheduler));
+	scheduler = (struct scheduler *)memAlloc(sizeof(struct scheduler));
 }
 
 int getCurrentPid() {
@@ -170,7 +170,7 @@ void queueProcess(struct process * process) {
 void addProcess(struct process * process) {
 
 	struct process_node * newNode;
-	newNode = (struct process_node *)malloc(sizeof(struct process_node));
+	newNode = (struct process_node *)memAlloc(sizeof(struct process_node));
 
 	newNode->process = process; //Le asigno el proceso
 

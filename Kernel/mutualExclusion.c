@@ -4,7 +4,7 @@
 #include "memory.h"
 
 int * newBolt() {
-	int * ptr = (int*)(malloc(sizeof(int)));
+	int * ptr = (int*)(memAlloc(sizeof(int)));
 	*ptr = 0;
 	return ptr;
 }
@@ -29,6 +29,6 @@ int releaseBolt(int * bolt) {
 }
 
 int deleteBolt(int * bolt) {
-	free(bolt);
+	memFree(bolt);
 	return 0;
 }

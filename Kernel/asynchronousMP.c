@@ -62,7 +62,7 @@ char * asyncReceive() {
 
 	struct process * current_process = getCurrentProcess();
 
-	char * tmp = malloc((MESSAGE_SIZE + 1) * sizeof(char));
+	char * tmp = memAlloc((MESSAGE_SIZE + 1) * sizeof(char));
 
 	Queue * rb = current_process->receiver_buffer;
 
@@ -74,7 +74,7 @@ char * asyncReceive() {
 
 	dequeue(rb, tmp);
 
-	free(tmp);
+	memFree(tmp);
 
 	releaseBolt(bolt);
 
