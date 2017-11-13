@@ -1,6 +1,6 @@
 #include "include/memoryAllocation.h"
-#include <stdlib.h>
-#include <stdio.h>
+// #include <stdlib.h>
+// #include <stdio.h>
 // #include <stddef.h>	// Might be required in Linux for NULL to be valid.
 
 void * memoryBase;// = buddyAllocationMemory;	// in Kernel.c
@@ -13,7 +13,6 @@ void setUpHeapOrganizer(void * memoryBaseFromKernel) {
 	}
 	memoryBase = memoryBaseFromKernel;
 }
-// 	nodeToFill->base = memoryBase + (nodeNumber*(MEMORYSIZE/elementsInLevel));
 
 /*
 ** Max level is 10 (2^10 equals 1024 and it's the small assignable block size).
@@ -40,6 +39,9 @@ void * allocSpace(int size) {
 	level = getLevel(size);		// indice < level es que es mas grande 
 								// level ahora tiene el 2^level que necesita
 	if(level > TOTALLEVELS) {
+		return NULL;
+	}
+	if(level < 0) {
 		return NULL;
 	}
 	ans = findSpaceDFS(level, 0, 0);
@@ -145,6 +147,7 @@ void * findSpaceDFS(int level, int i, int currentLevel) {
 			return NULL;
 		} else {
 			memManager[i] = FULLANDOCCUPIED;
+			// nodeToFill->base = memoryBase + (nodeNumber*(MEMORYSIZE/elementsInLevel));
 			return memoryBase + (calculateOffsetFromIndex(i));
 		}
 	}
@@ -228,7 +231,7 @@ State findPageDFS(void * page, int i) {
 	}
 }
 
-void freePage(void * page) {
+void freeSpace(void * page) {
 	findPageDFS(page, 0);
 }
 
@@ -250,25 +253,86 @@ void freePage(void * page) {
 
 // int main(int argc, char const *argv[])
 // {
+// 
+// Para testear hay que descomentar las libraries (arriba de todo)
+// 
 // 	void * mymemory = malloc(sizeof(1024*1024));
 // 	setUpHeapOrganizer(mymemory);
-// 	printf("totalLevels %d\n", (int) TOTALLEVELS);
+// 	printf("totalLevels %d\n", (int) TOTALLEVELS + 1);
 // 	printf("getLevel(1500) %d \n", getLevel(1500));
 // 	void * test1 = allocSpace(1500);
-// 	// void * test2 = allocSpace(800);
 // 	void * test3 = allocSpace(1500);
+// 	void * test2 = allocSpace(800);
+// 	void * test4 = allocSpace(1024*1024);
+// 	void * test5 = allocSpace(1500);
 // 	printf("Test1 base: %p\n", test1);
-// 	// printf("Test2 base: %p\n", test2);
+// 	printf("Test2 base: %p\n", test2);
 // 	printf("Test3 base: %p\n", test3);
+// 	printf("Test4 base: %p\n", test4);
+// 	printf("Test5 base: %p\n", test5);
+// 	void * test6 = allocSpace(1500);
+// 	void * test7 = allocSpace(1500);
+// 	void * test8 = allocSpace(1500);
+// 	void * test9 = allocSpace(1500);
+// 	void * test10 = allocSpace(131071);
+// 	void * test11 = allocSpace(131072);
+// 	void * test12 = allocSpace(131073);
+// 	void * test13 = allocSpace(131071);
+// 	void * test14 = allocSpace(131071);
+// 	void * test15 = allocSpace(131071);
+// 	void * test16 = allocSpace(1500);
+// 	void * test17 = allocSpace(1500);
+// 	void * test18 = allocSpace(1500);
+// 	void * test19 = allocSpace(1500);
+// 	void * test20 = allocSpace(1500);
+// 	void * test21 = allocSpace(1500);
+// 	void * test22 = allocSpace(1500);
+// 	void * test23 = allocSpace(1500);
+// 	void * test24 = allocSpace(1500);
+// 	void * test25 = allocSpace(131071);
+// 	printf("Test10 base: %p\n", test10);
+// 	printf("Test11 base: %p\n", test11);
+// 	printf("Test12 base: %p\n", test12);
+// 	printf("Test13 base: %p\n", test13);
+// 	printf("Test14 base: %p\n", test14);
+// 	printf("Test15 base: %p\n", test15);
+// 	printf("Test16 base: %p\n", test16);
+// 	printf("Test25 base: %p\n", test25);
 // 	printBuddy();
 // 	printf("Freeing fake page: %d\n", findPageDFS(test1+2, 0));
 // 	printBuddy();
 // 	printf("Freeing test1: %d\n", findPageDFS(test1, 0));
 // 	printBuddy();
-// 	// printf("Freeing test2: %d\n", findPageDFS(test2, 0));
+// 	printf("Freeing test2: %d\n", findPageDFS(test2, 0));
 // 	printf("Freeing test3: %d\n", findPageDFS(test3, 0));
 // 	printBuddy();
+// 	printf("Freeing test4 (should not work): %d\n", findPageDFS(test4, 0));
+// 	printf("Freeing test5: %d\n", findPageDFS(test5, 0));
+// 	printf("Freeing test6: %d\n", findPageDFS(test6, 0));
+// 	printf("Freeing test7: %d\n", findPageDFS(test7, 0));
+// 	printf("Freeing test8: %d\n", findPageDFS(test8, 0));
+// 	printf("Freeing test9: %d\n", findPageDFS(test9, 0));
+// 	printBuddy();
+// 	printf("Freeing test10: %d\n", findPageDFS(test10, 0));
+// 	printf("Freeing test11: %d\n", findPageDFS(test11, 0));
+// 	printf("Freeing test12: %d\n", findPageDFS(test12, 0));
+// 	printf("Freeing test13: %d\n", findPageDFS(test13, 0));
+// 	printf("Freeing test14: %d\n", findPageDFS(test14, 0));
+// 	printf("Freeing test15: %d\n", findPageDFS(test15, 0));
+// 	printf("Freeing test16: %d\n", findPageDFS(test16, 0));
+// 	printf("Freeing test17: %d\n", findPageDFS(test17, 0));
+// 	printf("Freeing test18: %d\n", findPageDFS(test18, 0));
+// 	printf("Freeing test19: %d\n", findPageDFS(test19, 0));
+// 	printf("Freeing test20: %d\n", findPageDFS(test20, 0));
+// 	printf("Freeing test21: %d\n", findPageDFS(test21, 0));
+// 	printf("Freeing test22: %d\n", findPageDFS(test22, 0));
+// 	printf("Freeing test23: %d\n", findPageDFS(test23, 0));
+// 	printf("Freeing test24: %d\n", findPageDFS(test24, 0));
+// 	printf("Freeing test25: %d\n", findPageDFS(test25, 0));
+// 	printBuddy();
+
 // 	free(mymemory);
+
 // 	// printf("%d\n", sizeof(char));
 // 	return 0;
 // }

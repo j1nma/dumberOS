@@ -145,11 +145,11 @@ void * sysCallDispatcher(int function, char * segundo, int tercero, int cuarto) 
 		break;
 	}
 	case SYSCALL_MALLOC: {
-		return allocNPages(1);
+		return allocNPages(tercero);
 		break;
 	}
 	case SYSCALL_CALLOC: {
-		return allocNPages(1);
+		return allocNPages(tercero);
 		break;
 	}
 	case SYSCALL_FREE: {

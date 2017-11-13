@@ -42,7 +42,7 @@ int calculateOffsetFromIndex(int index);
 void updateState(int i);
 void * findSpaceDFS(int level, int i, int currentLevel);
 State findPageDFS(void * page, int i);
-void freePage(void * page);
+void freeSpace(void * page);
 void printBuddy();
 
 #endif

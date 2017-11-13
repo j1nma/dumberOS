@@ -1,49 +1,29 @@
-// #include <drivers.h>
-// /**
-//  * Esta driver es el que se ocupa de manejo de memoria.
-//  */
-
-// static void* ptr = 0x600000;
-
-// void *malloc(int size){
-// 	void *ret = ptr;
-// 	ptr += size;
-// 	return ret;
-// }
-
-// void *calloc(int size){
-// 	char* ret = malloc(size);
-// 	for (int i = 0; i < size; i++)
-// 		ret[i] = 0;
-// 	return (void *)ret;
-// }
-
-// void free(void *ptr){
-// 	return;
-// }
-
-/* El Lenguaje de Programacion C - Brian W. Kernighan & Denis M. Ritchie - Paginas 205 a la 208 */ 
 #include <stdio.h>
 #include "../include/memoryAllocation.h"
+// El Lenguaje de Programacion C - Brian W. Kernighan & Denis M. Ritchie - Paginas 205 a la 208
+
+/**
+ * Esta driver es el que se ocupa de manejo de memoria en Kernel.
+ */
 
 Header * first = NULL;
 Header base;	// me sirve para asignar un espacio de memoria a mi lista
 
-void * memAlloc(unsigned nBytes){
-	
-	Header * aux, *prev; 
-	Header * morecore(unsigned); 
+void * memAlloc(unsigned nBytes) {
+	Header * aux, *prev;
+	Header * morecore(unsigned);
 
-	unsigned nUnits = (nBytes + sizeof(Header)-1)/sizeof(Header)+1; /*TODO: VOLVER A CAMBIAR ESTO - cuentita;*/
+	// unsigned nUnits = (nBytes + sizeof(Header)-1)/sizeof(Header)+1; /*TODO: VOLVER A CAMBIAR ESTO - cuentita;*/
+	unsigned nUnits = nBytes;
 
-	/*si malloc no fue llamada nunca => first = NULL, tengo que inicializarlo, como no puedo usar malloc, le asigno una posicion cualquiera = base */
+	// si malloc no fue llamada nunca => first = NULL, tengo que inicializarlo, como no puedo usar malloc, le asigno una posicion cualquiera = base
 	if((prev = first) == NULL) {
 		base.availableSize = 0;
 		base.unmutableSize = 0;
-		base.next = first = prev = &base; /* first = prev son iguales al inicio porque la lista es una lista circular, facilita la funcion*/
+		base.next = first = prev = &base; // first = prev son iguales al inicio porque la lista es una lista circular, facilita la funcion
 	}
 
-	/*el for me soluciona el tema de que si llegue al final y reserve espacio de mas, puedo volver a "solucionarlo"*/
+	// el for me soluciona el tema de que si llegue al final y reserve espacio de mas, puedo volver a "solucionarlo"
 
 	for(aux = prev->next; ;prev = aux, aux = aux->next) {
 		if(aux->availableSize >= nUnits) {
@@ -58,11 +38,11 @@ void * memAlloc(unsigned nBytes){
 			first = prev; /*para mantener la circularidad*/
 			return (void*)(aux + 1);
 		}
-		 if(aux == first) { /*di la vuelta completa a la lista circular*/
-		 	if((aux = morecore(nBytes)) == NULL) {
-		 		return NULL;  /*nada libre*/
-		 	}
-		 }
+		if(aux == first) {		// moved through the whole list and nothing was big enough to fit nBytes
+			if((aux = morecore(nBytes)) == NULL) {
+				return NULL;	// nothing free, come back later
+			}
+		}
 	}
 }
 
@@ -83,7 +63,7 @@ void memFree(void *toFree){
 		if(aux+(aux->availableSize) == bp) {
 			aux->availableSize += bp->availableSize;
 			if(aux->availableSize == aux->unmutableSize) {
-				freePage(bp);
+				freeSpace(bp);
 			}
 			aux->next = bp->next;
 		} else
@@ -102,13 +82,13 @@ Header * morecore(unsigned nBytes){
 		nBytes = SMALLESTBLOCKSIZE;
 	}
 
-	newBlock = (Header *) allocSpace(SMALLESTBLOCKSIZE); /*allocPage(nBytes)*/
+	newBlock = (Header *) allocSpace(nBytes); /*allocPage(nBytes)*/
 
 	if(newBlock == NULL){
 		return NULL; 
 	}
 
-	newBlock->availableSize = SMALLESTBLOCKSIZE;
+	newBlock->availableSize = nBytes;
 	newBlock->unmutableSize = newBlock->availableSize;
 	
 	Header *aux; 
