@@ -9,6 +9,10 @@ int * newBolt() {
 	return ptr;
 }
 
+
+/*
+* __sync_val_compare_and_swap() is a gcc builtin that implements hardware-specific atomic compare and swap.
+*/
 int acquireBolt(int * bolt) {
 
 	if (__sync_val_compare_and_swap (bolt, 0, 1) == 1) {
