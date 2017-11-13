@@ -20,6 +20,6 @@ void net_send(char *msg);
 int net_read(char *b);
 
 //Drivers memoria
-void * malloc(int size);
-void * calloc(int size);
-void free(void *ptr);
+void * mymalloc(int size);
+void * mycalloc(int size);
+void myfree(void *ptr);

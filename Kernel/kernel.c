@@ -229,29 +229,41 @@ void miCallbackDeTeclado(uint8_t c, int function) {
 
 
 int main() {
+	ncPrint("Arrancamos");
+	ncPrint("0");
 
 	// Kernel INIT
 	dma_start();
+	ncPrint("1");
 
 	// Kernel Operations
 	setKeyboardCallback(miCallbackDeTeclado);
+	ncPrint("2");
 
 	// Net Init
 	dma_start();
+	ncPrint("3");
 
 	net_start();
+	ncPrint("4");
 
 	initScheduler();
+	ncPrint("5");
 
 	initMutex();
+	ncPrint("6");
 
 	struct process * process0 = createNewProcess(sampleCodeModuleAddress, 0);
+	ncPrint("7");
 
 	init_interruptions();
+	ncPrint("8");
 
 	startProcess(process0);
+	ncPrint("9");
 
 	deleteMutex();
+	ncPrint("10");
 
 	return 0;
 
