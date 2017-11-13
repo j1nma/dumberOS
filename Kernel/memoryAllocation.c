@@ -1,7 +1,6 @@
 #include "include/memoryAllocation.h"
 // #include <stdlib.h>
 // #include <stdio.h>
-// #include <stddef.h>	// Might be required in Linux for NULL to be valid.
 
 void * memoryBase;// = buddyAllocationMemory;	// in Kernel.c
 char memManager[TOTALELEMENTS] = {EMPTY};
@@ -57,6 +56,14 @@ int getParent(int index) {
 	return (index-1)/2;
 }
 
+int getLeftChild(int index) {
+	return 2 * index + 1;
+}
+
+int getRightChild(int index) {
+	return 2 * index + 2;
+}
+
 int getLevelFromIndex(int index) {
 	int level = 0;
 	while(index != 0) {
@@ -73,15 +80,8 @@ int getLevelFromIndex(int index) {
 ** represents the whole memory that the Buddy Allocator has).
 */
 int getNumberOfElementsInLevel(int level) {
-	// Instead of using pow we do it with a for cycle so as to not include math.h or other libraries.
-	int base = 2;
-	int i;
-	int numberOfElementsInLevel = 1;
-
-	for (i = 0 ; i<level; i++) {
-		numberOfElementsInLevel *= base;
-	}
-	return numberOfElementsInLevel;
+	// Instead of using pow we do it with a shift so as to not include math.h or other libraries.
+	return 1 << level;
 }
 
 int getNodeNumber(int index) {
@@ -109,15 +109,15 @@ int calculateOffsetFromIndex(int index) {
 ** Updates the state of the memory manager at index i depending on the state of its children.
 ** Prioratizes asking if a child is ALMOST_FULL because it's the most common state.
 */
-void updateState(int i) {
-	if(memManager[2*i+1] == ALMOST_FULL || memManager[2*i+2] == ALMOST_FULL) {
-		memManager[i] = ALMOST_FULL;
-	} else if(memManager[2*i+1] == EMPTY && memManager[2*i+2] == EMPTY) {
-		memManager[i] = EMPTY;
-	} else if((memManager[2*i+1] == FULL || memManager[2*i+1] == FULLANDOCCUPIED) && (memManager[2*i+2] == FULL || memManager[2*i+2] == FULLANDOCCUPIED)) {
-		memManager[i] = FULL;
+void updateState(int index) {
+	if(memManager[getLeftChild(index)] == ALMOST_FULL || memManager[getRightChild(index)] == ALMOST_FULL) {
+		memManager[index] = ALMOST_FULL;
+	} else if(memManager[getLeftChild(index)] == EMPTY && memManager[getRightChild(index)] == EMPTY) {
+		memManager[index] = EMPTY;
+	} else if((memManager[getLeftChild(index)] == FULL || memManager[getLeftChild(index)] == FULLANDOCCUPIED) && (memManager[getRightChild(index)] == FULL || memManager[getRightChild(index)] == FULLANDOCCUPIED)) {
+		memManager[index] = FULL;
 	} else {
-		memManager[i] = ALMOST_FULL;
+		memManager[index] = ALMOST_FULL;
 	}
 }
 
@@ -130,102 +130,82 @@ void updateState(int i) {
 ** https://www.youtube.com/watch?v=WCm3TqScBM8
 ** izquierdo - dato - derecho x heap
 */
-void * findSpaceDFS(int level, int i, int currentLevel) {
+void * findSpaceDFS(int level, int index, int currentLevel) {
 	void * ans;
-	void * left;
-	void * right;
-
+	// Fail-safe checks
 	// if(memManager[i] == FULL) {
-	if(memManager[i] == FULLANDOCCUPIED) {
+	if(!isIndexValid(index) || memManager[index] == FULLANDOCCUPIED) {
 		return NULL;
 	}
 
+	// Base case
 	if(currentLevel == level) {
-		if(memManager[i] == ALMOST_FULL) {
+		if(memManager[index] == ALMOST_FULL) {
 			return NULL;
-		} else if(memManager[i] == FULL) {
+		} else if(memManager[index] == FULL) {
 			return NULL;
 		} else {
-			memManager[i] = FULLANDOCCUPIED;
-			// nodeToFill->base = memoryBase + (nodeNumber*(MEMORYSIZE/elementsInLevel));
-			return memoryBase + (calculateOffsetFromIndex(i));
+			memManager[index] = FULLANDOCCUPIED;
+			return memoryBase + (calculateOffsetFromIndex(index));
 		}
 	}
 
-	if(!leftChildValid(i)) {
-		return NULL;
-	}
-
-	left = findSpaceDFS(level, ((2*i)+1), currentLevel + 1);
-
-	// If left gives back NULL I try through the right side.
-	if(left == NULL) {
-		if(!rightChildValid(i)) {
+	// Recursive case
+	ans = findSpaceDFS(level, getLeftChild(index), currentLevel + 1);
+	if(ans == NULL) {	// If left gives back NULL I try through the right side.
+		ans = findSpaceDFS(level, getRightChild(index), currentLevel + 1);
+		if(ans == NULL) {
 			return NULL;
 		}
-		right = findSpaceDFS(level, (2*i)+2, currentLevel + 1);
-		if(right == NULL) {
-			return NULL;
-		}
-		ans = right;
-	} else {
-		ans = left;
 	}
-	// I update my state accordingly.
-	updateState(i);
-
+	updateState(index);	// I update my state accordingly.
 	return ans;
 }
 
-int leftChildValid(int i) {
-	return ((2*i) + 1) < TOTALELEMENTS;
-}
-
-int rightChildValid(int i) {
-	return ((2*i) + 2) < TOTALELEMENTS;
+int isIndexValid(int index) {
+	return index < TOTALELEMENTS;
 }
 
 /*
 ** Finds the page and marks it as free in the heap.
 */
-State findPageDFS(void * page, int i) {
-	// void * aux = memoryBase + calculateOffsetFromIndex(i);
-	// if(aux == page) {
-	if(memoryBase + calculateOffsetFromIndex(i) == page) {
-		if(memManager[i] == FULLANDOCCUPIED) {
-			memManager[i] = EMPTY;								// Found the page I was looking for!
-			return memManager[i];
+State findPageDFS(void * page, int index) {
+	// Fail-safe checks.
+	if(!isIndexValid(index)) {
+		return INVALID;
+	}
+
+	// Base case.
+	if(memoryBase + calculateOffsetFromIndex(index) == page) {
+		if(memManager[index] == FULLANDOCCUPIED) {					// Found the base pointer I was looking for!
+			memManager[index] = EMPTY;								// Found the actual page I was looking for!
+			return memManager[index];
 		} else {
-			if(leftChildValid(i)) {							// It's a left child (they share the same *base).
-				int state = findPageDFS(page, 2*i+1);
-				if(state == INVALID) {
-					return INVALID;								// Freeing a page that's not reserved!
-				}
-				updateState(i);
-				return memManager[i];
-			} else {
-				return INVALID;									// Freeing a page that's not reserved! (Page out of range)
+			int state = findPageDFS(page, getLeftChild(index));
+			if(state == INVALID) {
+				return INVALID;										// Freeing a page that's not reserved!
 			}
+			updateState(index);
+			return memManager[index];
 		}
 	} else {
+		// Recursive case.
+
 		// Keep searching for page.
 		// It can be a descendant of the left child or a descendant of the right child.
 		// Starting with left child.
-		if(leftChildValid(i)) {
-			int stateLeft = findPageDFS(page, 2*i+1);
-			if(stateLeft != INVALID) {
-				updateState(i);
-				return memManager[i];
-			} else if(rightChildValid(i)) {
-				int stateRight = findPageDFS(page, 2*i+2);
-				if(stateRight != INVALID) {
-					updateState(i);
-					return memManager[i];
-				} else {
-					return INVALID;								// Not found on this branch.
-				}
+		int stateLeft = findPageDFS(page, getLeftChild(index));
+		if(stateLeft != INVALID) {
+			updateState(index);
+			return memManager[index];
+		} else {
+			int stateRight = findPageDFS(page, getRightChild(index));
+			if(stateRight != INVALID) {
+				updateState(index);
+				return memManager[index];
+			} else {
+				return INVALID;								// Not found on this branch.
 			}
-			return INVALID;
 		}
 		return INVALID;
 	}
@@ -253,9 +233,9 @@ void freeSpace(void * page) {
 
 // int main(int argc, char const *argv[])
 // {
-// 
-// Para testear hay que descomentar las libraries (arriba de todo)
-// 
+
+// Para testear hay que descomentar las libraries (arriba de todo) e incluir la math library con -lm
+
 // 	void * mymemory = malloc(sizeof(1024*1024));
 // 	setUpHeapOrganizer(mymemory);
 // 	printf("totalLevels %d\n", (int) TOTALLEVELS + 1);
