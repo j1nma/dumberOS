@@ -1,6 +1,6 @@
 #include "stack.h"
 
-#define SIZE 200
+#define SIZE 100
 
 int MAXSIZE = SIZE;
 void * stack[SIZE];

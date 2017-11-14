@@ -128,16 +128,12 @@ void testMemory() {
 }
 
 int main() {
-	
 
 	initWelcome();
 
-	int pid = createProcess(&processIdle);
-
 	processPrompt();
 
-	killProcess(pid);
-	printf("See ya! :D");
+	printf("See ya! :D %d", getPid());
 	halt();
 
 	return 0;

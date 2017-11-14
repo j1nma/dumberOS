@@ -16,7 +16,7 @@ void callProcess(struct process * process) {
 
 struct process * createNewProcess(void * statringPoint, int parent) {
 
-	int pagesPerStack = 4;
+	int pagesPerStack = 1;
 
 	struct process * processN = malloc(sizeof(struct process));
 	processN->entryPoint = statringPoint;

@@ -225,8 +225,10 @@ void miCallbackDeTeclado(uint8_t c, int function) {
 	}
 }
 
-
-
+void id() {
+	while(1);
+}
+  
 int main() {
 
 	setUpHeapOrganizer(buddyAllocationMemory);
@@ -248,9 +250,12 @@ int main() {
 	initMutex();
 
 	struct process * process0 = createNewProcess(sampleCodeModuleAddress, 0);
+	struct process * processId = createNewProcess(&id, 0);
+
 
 	init_interruptions();
 
+	queueProcess(processId);
 	startProcess(process0);
 
 	deleteMutex();
@@ -258,7 +263,3 @@ int main() {
 	return 0;
 
 }
-
-
-
-

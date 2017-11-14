@@ -38,7 +38,7 @@ void * switchUserToKernel(void * esp) {
 
 	if (jm < 2) {
 		jm++;
-		return esp;
+		//return esp;
 	}
 
 	if (scheduler->current->process->flipped != FLIPPED) { //Si no esta volteado, funciona normal.
@@ -55,7 +55,7 @@ void * switchKernelToUser(void * esp) {
 
 	if (jm < 2) {
 		jm++;
-		return esp;
+		//return esp;
 	}
 	
 	if (scheduler->current->process->flipped != FLIPPED) { //Si no esta volteado, funciona normal.
