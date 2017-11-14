@@ -31,8 +31,6 @@ int parseCommand(char * commandName) {
 		return COMMAND_MUTEX;
 	else if ( strcmp(commandName, "ps") == 0 )
 		return COMMAND_PS;
-	else if ( strcmp(commandName, "philosophers") == 0 )
-		return COMMAND_PHILOSOPHERS;
 	else if ( strcmp(commandName, "prodcons") == 0 )
 		return COMMAND_PRODCONS;
 	else if ( strcmp(commandName, "memorytest") == 0  || strcmp(commandName, "mt") == 0 )
@@ -98,7 +96,6 @@ int runCommand(int command, char **params, char *postcommand) {
 		printf("%s\n", man_ipc);
 		printf("%s\n", man_mutex);
 		printf("%s\n", man_ps);
-		printf("%s\n", man_philosophers);
 		printf("%s\n", man_prodcons);
 		printf("%s\n", man_memorytest);
 		printf("\n");
@@ -211,10 +208,6 @@ void printManPage (char * commandString) {
 	}
 	case COMMAND_PS: {
 		printf("%s\n", man_ps);
-		break;
-	}
-	case COMMAND_PHILOSOPHERS: {
-		printf("%s\n", man_philosophers);
 		break;
 	}
 	case COMMAND_PRODCONS: {
