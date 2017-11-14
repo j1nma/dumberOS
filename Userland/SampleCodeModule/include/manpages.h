@@ -14,3 +14,4 @@ char * man_ps = "ps - shows list of processes with their properties. Usage: ps [
 char * man_philosophers = "philosophers - philosophers problem solution. Usage: philosophers {quantity}";
 char * man_prodcons = "prodcons - producer-consumer solution. Usage: prodcons {producers} {consumers}";
 char * man_memprotection = "memprotection - shows application where a process blocks due to invalid access.";
+char * man_memorytest = "memorytest - runs memory test code.";

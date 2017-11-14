@@ -2,6 +2,30 @@
 #include <../../../Kernel/include/syscalls.h>
 
 
+/** Dummy malloc */
+static void* memoryStart;
+
+void initMemory() {
+	memoryStart = alloc(10);
+}
+
+void *malloc(int size){
+	void *ret = memoryStart;
+	memoryStart += size;
+	return ret;
+}
+
+void *calloc(int size){
+	char* ret = malloc(size);
+	for (int i = 0; i < size; i++)
+		ret[i] = 0;
+	return (void *)ret;
+}
+
+void free(void *memoryStart){
+	return;
+}
+
 int createProcess(EntryPoint entryPoint) {
 	return syscall(SYSCALL_PROCESS, entryPoint, 0, 0);
 }
@@ -106,6 +130,15 @@ void printf(char *format, ...) {
 				//TODO
 				char number[20];
 				int characters = uintToBase(va_arg(ap, int), number, 10);
+				for (int j = 0; j < characters; j++) {
+					output[indexOutput++] = number[j];
+				}
+				break;
+			}
+			case 'h': {
+				//TODO
+				char number[20];
+				int characters = uintToBase(va_arg(ap, int), number, 16);
 				for (int j = 0; j < characters; j++) {
 					output[indexOutput++] = number[j];
 				}
@@ -297,15 +330,11 @@ void net_send(char * s) {
 	syscall(SYSCALL_WRITE, s, 0, DESCRIPTOR_NET);
 }
 
-void * malloc(int size) {
-	return (void *)syscall(SYSCALL_MALLOC, 0, size, 0);
+void * alloc(int size) {
+	return (void *)syscall(SYSCALL_ALLOC, 0, size, 0);
 }
 
-void * calloc(int size) {
-	return (void *)syscall(SYSCALL_CALLOC, 0, size, 0);
-}
-
-void free(void * ptr) {
+void freeP(void * ptr) {
 	syscall(SYSCALL_FREE, ptr, 0, 0);
 }
 

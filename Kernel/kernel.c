@@ -143,16 +143,12 @@ void * sysCallDispatcher(int function, char * segundo, int tercero, int cuarto) 
 		}
 		break;
 	}
-	case SYSCALL_MALLOC: {
-		return malloc(tercero);
-		break;
-	}
-	case SYSCALL_CALLOC: {
-		return calloc(tercero);
+	case SYSCALL_ALLOC: {
+		return allocNPages(tercero);
 		break;
 	}
 	case SYSCALL_FREE: {
-		free(segundo);
+		freeSpace(segundo);
 		break;
 	}
 	case SYSCALL_TIME: {
@@ -229,6 +225,9 @@ void miCallbackDeTeclado(uint8_t c, int function) {
 
 
 int main() {
+
+	setUpHeapOrganizer(buddyAllocationMemory);
+	initMemory();
 
 	// Kernel INIT
 	dma_start();

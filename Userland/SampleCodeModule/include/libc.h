@@ -7,6 +7,14 @@ typedef int (*EntryPoint)();
 #define FALSE 0
 #define MAX_PARAMS_SHELL 5
 
+void initMemory();
+
+void *malloc(int size);
+
+void *calloc(int size);
+
+void free(void *ptr);
+
 void printf(char * format, ...);
 
 void scanf(char * format, ...);
@@ -23,11 +31,9 @@ void net_send(char * s);
 
 int net_receive(char * s);
 
-void * malloc(int size);
+void * alloc(int size);
 
-void * calloc(int size);
-
-void free(void *ptr);
+void freeP(void *ptr);
 
 void getTime(char *ptr);
 

@@ -3,11 +3,16 @@
  * Esta driver es el que se ocupa de manejo de memoria
  */
 
-static void* ptr = 0x600000;
+/** Dummy malloc */
+static void* memoryStart;
+
+void initMemory() {
+	memoryStart = allocNPages(100);
+}
 
 void *malloc(int size){
-	void *ret = ptr;
-	ptr += size;
+	void *ret = memoryStart;
+	memoryStart += size;
 	return ret;
 }
 
@@ -18,6 +23,6 @@ void *calloc(int size){
 	return (void *)ret;
 }
 
-void free(void *ptr){
+void free(void *memoryStart){
 	return;
 }

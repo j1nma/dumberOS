@@ -35,6 +35,8 @@ int parseCommand(char * commandName) {
 		return COMMAND_PRODCONS;
 	else if ( strcmp(commandName, "memprotection") == 0 )
 		return COMMAND_MEMPROTECTION;
+	else if ( strcmp(commandName, "memorytest") == 0  || strcmp(commandName, "mt") == 0 )
+		return COMMAND_MEMORYTEST;
 	else
 		return COMMAND_NULL;
 
@@ -139,6 +141,10 @@ int runCommand(int command, char ** params) {
 		//TO-DO
 		break;
 	}
+	case COMMAND_MEMORYTEST: {
+		testMemory();
+		break;
+	}
 	case COMMAND_NULL: {
 		// If invalid command, do nothing
 		printf("Invalid command.\n");
@@ -204,6 +210,10 @@ void printManPage (char * commandString) {
 	}
 	case COMMAND_MEMPROTECTION: {
 		printf("%s\n", man_memprotection);
+		break;
+	}
+	case COMMAND_MEMORYTEST: {
+		printf("%s\n", man_memorytest);
 		break;
 	}
 	case COMMAND_NULL: {
