@@ -247,8 +247,6 @@ int main() {
 
 	initMutex();
 
-	ncPrintHex(getRSP());
-
 	struct process * process0 = createNewProcess(sampleCodeModuleAddress, 0);
 
 	init_interruptions();
