@@ -30,14 +30,12 @@ void processShell() {
 void processPrompt() {
 	// Loop shell until user exits OS
 	while (!exit) {
-		char f[100];
+		char f[250];
 		printf("dummyOS $ ");
 		scanf("%s", &f);
 		char** params = str_split(f);
-		exit = runCommand(parseCommand(params[0]), params);
+		exit = runCommand(parseCommand(params[0]), params, f + strlength(params[0]) + 1);
 	}
-
-	// LoopNop();
 }
 
 void processIdle() {
@@ -145,7 +143,7 @@ void iam() {
 Welcoming sign of the OS
 */
 void initWelcome () {
-	runCommand(COMMAND_CLEAR, "null");
+	runCommand(COMMAND_CLEAR, "null", "null");
 	printf(" _____                                   ____   _____ \n");
 	printf("|  __ \\                                 / __ \\ / ____|\n");
 	printf("| |  | |_   _ _ __ ___  _ __ ___  _   _| |  | | (___  \n");

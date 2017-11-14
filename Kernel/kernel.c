@@ -107,7 +107,10 @@ void * sysCallDispatcher(int function, char * segundo, int tercero, int cuarto) 
 	case SYSCALL_WRITE: {
 		switch ( cuarto ) {
 		case DESCRIPTOR_CLI: {
-			write(segundo, tercero);
+			// write(segundo, tercero);
+			for (int i = 0; i < tercero; i++){
+				lcPrintChar(segundo[i]);
+			}
 			break;
 		}
 		case DESCRIPTOR_NET: {

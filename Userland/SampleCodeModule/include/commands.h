@@ -19,5 +19,5 @@
 #define SCREEN_SIZE 78
 
 void printManPage (char *command);
-int runCommand(int command, char **params);
+int runCommand(int command, char **params, char *postcommand);
 int parseCommand(char *params);

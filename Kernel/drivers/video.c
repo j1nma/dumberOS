@@ -8,7 +8,8 @@
  * Tecnico: Este driver te da la linea de edicion (ultima) y si hay un scanf (por ejempo) devuelver el valor, etc, etc.
  */
 
-char buffer[500];
+char buffer[200];
+int max = 200;
 int startBuffering = TRUE;
 int bufferIndex = 0;
 
@@ -38,18 +39,9 @@ void newLine(){
  */
 int read(char *str){
 
-	// if (bufferIndex == 0)
-	// 	return 0;
-
-	startBuffering = TRUE; //Cuando se llama a read, startBuffering se pone en true, lo que hacer que la funcion "write" guarde todo en el buffer.
-
 	int i = 0;
 	for (i = 0; i < bufferIndex; i++){ //Este for copia el buffer al vector de parametro.
 		str[i] = buffer[i];
-		if (buffer[i] == '\n'){ //Si encuentro un '\n' significa que el usuario presiono "return" entonces pongo el flag de buffer en false.
-			//startBuffering = FALSE;
-			// break;
-		}
 	}
 	str[i] = 0; //Pongo un 0 al final del vector del usuario para que sea leible en C.
 
@@ -62,29 +54,27 @@ int read(char *str){
  *Esta funcion escribe en pantalla el string recibido a la longitud pedida.
  */
 void write(char * str, int length){
+
+	if (bufferIndex >= max)
+		return;
 	
-	if (startBuffering == FALSE){
-		lcPrint(str);
+	if (length == 1){
+		lcPrintChar(str[0]); //Si start buffering esta en TRUE entonces los characteres entran por teclado, o sea de a uno.
+		for (int i = 0; i < length; i++){
+			buffer[bufferIndex++] = str[i];
+		}	
 	}else{
-		if (length == 1){
-			lcPrintChar(str[0]); //Si start buffering esta en TRUE entonces los characteres entran por teclado, o sea de a uno.
-			for (int i = 0; i < length; i++){
-				if (startBuffering){ //Si startBuffering esta en true entonces guardo todo lo impreso.
-					buffer[bufferIndex++] = str[i];
-				}
-			}	
-		}else{
-			lcPrint(str);
-		}
-
-		
-
+		lcPrint(str);
 	}
+	
 }
 
 void backspace(){
-	char nl = '\b'; //Backspace aca lo que hace es meter el character '\b' en el buffer de "read", cuando el user le llega, tiene que hacer el backspace
-					//en su buffer propio.
-	write(&nl, 1);
+	char nl = '\b';
+	if (bufferIndex > 0){
+		buffer[bufferIndex - 1] = 0;
+		bufferIndex--;
+		lcPrintChar(nl);
+	}
 }
 

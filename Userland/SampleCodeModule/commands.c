@@ -42,7 +42,7 @@ int parseCommand(char * commandName) {
 
 }
 
-char buf[1000];
+char buf[250];
 
 /**
 Run command with the submited params
@@ -51,15 +51,11 @@ Run command with the submited params
 @param params Array of string params for command
 @return int 0 or 1 if shell should exit
 */
-int runCommand(int command, char ** params) {
+int runCommand(int command, char **params, char *postcommand) {
 
 	switch (command) {
 	case COMMAND_ECHO: {
-		printf("%s ", (char *)params[1]);
-		printf("%s ", (char *)params[2]);
-		printf("%s ", (char *)params[3]);
-		printf("%s\n", (char *)params[4]);
-
+		printf("%s\n", postcommand);
 		break;
 	}
 	case COMMAND_TIME: {
@@ -104,6 +100,7 @@ int runCommand(int command, char ** params) {
 		printf("%s\n", man_philosophers);
 		printf("%s\n", man_prodcons);
 		printf("%s\n", man_memprotection);
+		printf("%s\n", man_memorytest);
 		printf("\n");
 		break;
 	}

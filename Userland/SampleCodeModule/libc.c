@@ -239,7 +239,7 @@ void scanf(char * format, ...) {
 	// printf("Segunda letra: %c\n", d[1]);
 
 	// for (int i = 0; i < indexStr + 1; i++) //El +1 es para que meta el 0 al final.
-	// d[i] = buffer[i];
+	// 	printf("%c\n", );
 
 
 	return;
