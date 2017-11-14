@@ -65,13 +65,19 @@ void irqDispatcher(int irq) {
 	handlers[irq]();
 }
 
-
 char *video = (char *) 0xB8000;
+int anim = 0;
+void videoAnimation() {
+	char *an = "\\|/-";
+	video[158] = an[anim++ % 4];
+}
+
 static int videoIndex = 0;
 void tickHandler() {
+	videoAnimation();
 	video[videoIndex] = '0' + getCurrentPid();
 	videoIndex += 2;
-	if (videoIndex > 80)
+	if (videoIndex > 156)
 		videoIndex = 0;
 
 }
