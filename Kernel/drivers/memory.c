@@ -7,7 +7,7 @@
 static void* memoryStart;
 
 void initMemory() {
-	memoryStart = allocNPages(100);
+	memoryStart = allocNPages(10);
 }
 
 void *malloc(int size){

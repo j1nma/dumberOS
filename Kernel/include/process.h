@@ -14,7 +14,11 @@ struct process {
 
 	int state;
 
-	// int priority;
+	void * userStackStart;
+
+	void * kernelStackStart;
+
+	void * flippedStackStart;
 
 	void * userStack;
 
@@ -29,8 +33,6 @@ struct process {
 	int parent;
 
 	Queue * receiver_buffer;
-
-	struct scheduler * threadScheduler;
 };
 
 void callProcess(struct process * process);
@@ -39,6 +41,8 @@ int isBlocked(struct process * process);
 
 struct process * createNewProcess(void * statringPoint, int parent);
 
-void * toStackAddress(void * page);
+void freeProcess(struct process * process);
+
+void * toStackAddress(void * page, int pagesPerStack);
 
 #endif

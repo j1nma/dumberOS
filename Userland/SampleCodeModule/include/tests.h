@@ -23,5 +23,4 @@ void processKiller();
 /* Process listing */
 void processListing();
 
-/* Producer consumer */
-void processListing();
+void killListing();

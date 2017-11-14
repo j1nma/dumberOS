@@ -16,11 +16,20 @@ void callProcess(struct process * process) {
 
 struct process * createNewProcess(void * statringPoint, int parent) {
 
+	int pagesPerStack = 4;
+
 	struct process * processN = malloc(sizeof(struct process));
 	processN->entryPoint = statringPoint;
-	processN->userStack = toStackAddress(malloc(0x1000));
-	processN->kernelStack = toStackAddress(malloc(0x1000));
-	processN->flippedStack = toStackAddress(malloc(0x1000));
+
+
+	processN->userStackStart = allocNPages(pagesPerStack);
+	processN->kernelStackStart = allocNPages(pagesPerStack);
+	processN->flippedStackStart = allocNPages(pagesPerStack);
+
+
+	processN->userStack = toStackAddress(processN->userStackStart, pagesPerStack);
+	processN->kernelStack = toStackAddress(processN->kernelStackStart, pagesPerStack);
+	processN->flippedStack = toStackAddress(processN->flippedStackStart, pagesPerStack);
 	processN->flipped = 0;
 	processN->pid = createPid();
 	processN->parent = parent;
@@ -33,6 +42,17 @@ struct process * createNewProcess(void * statringPoint, int parent) {
 	return processN;
 }
 
-void * toStackAddress(void * page) {
-	return page + 0x1000 - 0x10;
+void freeProcess(struct process * process) {
+
+	freeSpace(process->userStackStart);
+	freeSpace(process->kernelStackStart);
+	freeSpace(process->flippedStackStart);
+
+	free(process->receiver_buffer);
+	free(process);
+
+}
+
+void * toStackAddress(void * page, int pagesPerStack) {
+	return page + pagesPerStack * 0x1000 - 0x10;
 }

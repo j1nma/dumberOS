@@ -122,8 +122,11 @@ int runCommand(int command, char **params, char *postcommand) {
 		break;
 	}
 	case COMMAND_PS: {
-		if (strcmp(params[1], "test") == 0) processListing();
+		if (strcmp(params[1], "test") == 0) 
+			processListing();
 		listProcesses();
+		if (strcmp(params[1], "test") == 0) 
+			killListing();
 		break;
 	}
 	case COMMAND_PHILOSOPHERS: {

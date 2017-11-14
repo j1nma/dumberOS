@@ -17,7 +17,7 @@ void free(void *ptr);
 
 void printf(char * format, ...);
 
-void scanf(char * format, ...);
+int scanf(char * format, ...);
 
 char ** str_split(char * str);
 

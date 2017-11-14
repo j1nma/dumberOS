@@ -221,7 +221,7 @@ Read formated string from the cli descriptor
 @param *format Pointer to the format string to scan
 @param ... Pointers for all scanned parameters in format
 */
-void scanf(char * format, ...) {
+int scanf(char * format, ...) {
 
 	va_list ap;
 	va_start(ap, 1);
@@ -242,7 +242,7 @@ void scanf(char * format, ...) {
 	// 	printf("%c\n", );
 
 
-	return;
+	return indexStr;
 
 	// //TODO: Revisar que el string sea valido y implementar que scan devuelva los valores en los punteros ingresados.
 

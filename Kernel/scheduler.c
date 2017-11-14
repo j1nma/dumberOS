@@ -114,7 +114,8 @@ int killProcess(int pid) {
 		if (current->process->pid == pid) {
 
 			prev->next = current->next;
-			//TODO: free la memoria.
+
+			freeProcess(current->process);
 
 			return current->process->pid;
 		} else {

@@ -29,12 +29,26 @@ void processShell() {
 
 void processPrompt() {
 	// Loop shell until user exits OS
+	char dup[250];
 	while (!exit) {
 		char f[250];
+		for (int i = 0; i < 250; ++i)
+			dup[i] = f[i];
+
 		printf("dummyOS $ ");
-		scanf("%s", &f);
-		char** params = str_split(f);
-		exit = runCommand(parseCommand(params[0]), params, f + strlength(params[0]) + 1);
+		int t = scanf("%s", &f);
+
+		if (t == 1) {
+			for (int i = 0; i < 250; ++i)
+				f[i] = dup[i];
+			char** params = str_split(dup);
+			exit = runCommand(parseCommand(params[0]), params, dup + strlength(params[0]) + 1);
+		} else {
+			char** params = str_split(f);
+			exit = runCommand(parseCommand(params[0]), params, f + strlength(params[0]) + 1);
+		}
+
+		
 	}
 }
 
