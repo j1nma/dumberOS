@@ -1,14 +1,12 @@
 #include "libc.h"
 #include "commands.h"
 
-/* Message Passing */
-// void processSenderReceiver();
-
+/* Message passing */
 void processMessagePassing();
 
-void processSender(); 
+void processSender();
 
-void processReceiver(); 
+void processReceiver();
 
 /* Mutex exclusion */
 void processMutualExclusion();
@@ -24,3 +22,8 @@ void processKiller();
 void processListing();
 
 void killListing();
+
+/* Memory testing */
+void memoryError(int error);
+
+void testMemory();

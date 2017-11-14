@@ -9,20 +9,20 @@ void initMemory() {
 	memoryStart = alloc(10);
 }
 
-void *malloc(int size){
+void * malloc(int size) {
 	void *ret = memoryStart;
 	memoryStart += size;
 	return ret;
 }
 
-void *calloc(int size){
+void * calloc(int size) {
 	char* ret = malloc(size);
 	for (int i = 0; i < size; i++)
 		ret[i] = 0;
 	return (void *)ret;
 }
 
-void free(void *memoryStart){
+void free(void *memoryStart) {
 	return;
 }
 
@@ -448,8 +448,8 @@ void listProcesses() {
 
 
 /* Message passing */
-void send(char * message, int pid) {
-	syscall(SYSCALL_SEND, message, pid, 0);
+int send(char * message, int pid) {
+	return syscall(SYSCALL_SEND, message, pid, 0);
 }
 
 char * receive() {

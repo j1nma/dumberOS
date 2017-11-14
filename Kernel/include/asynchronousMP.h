@@ -10,7 +10,7 @@ void deleteMutex();
 
 int * getBolt();
 
-void asyncSend(char * message, int destination_pid);
+int asyncSend(char * message, int destination_pid);
 
 char * asyncReceive();
 

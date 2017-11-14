@@ -54,7 +54,7 @@ void listProcesses();
 int createProcess(EntryPoint entryPoint);
 
 /* Message passing*/
-void send(char *, int pid);
+int send(char *, int pid);
 
 char * receive();
 

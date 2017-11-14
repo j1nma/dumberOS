@@ -4,9 +4,14 @@ void processSender() {
 
 	int pid = getPid();
 
-	printf("Hi! I am process %d sending message to %d, \n", pid, pid-1);
+	printf("Hi! I am process %d sending message to %d, \n", pid, pid - 1);
 	char * msg = "Hi Dave. I'm HAL.\n";
-	send(msg, pid-1);
+	send(msg, pid - 1);
+
+	printf("Hi! I am process %d sending message to unexistant %d, \n", pid, -2);
+
+	if (send(msg, -2))
+		printf("%d sending was unsuccesful, process %d does not exist.\n", pid, -2);
 
 	LoopNop();
 
@@ -29,8 +34,6 @@ void processMessagePassing() {
 
 	int receiver;
 	int sender;
-
-	printf("I am process %d\n", getPid());
 
 	receiver = createProcess(&processReceiver);
 	sender = createProcess(&processSender);

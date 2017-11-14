@@ -108,7 +108,7 @@ void * sysCallDispatcher(int function, char * segundo, int tercero, int cuarto) 
 		switch ( cuarto ) {
 		case DESCRIPTOR_CLI: {
 			// write(segundo, tercero);
-			for (int i = 0; i < tercero; i++){
+			for (int i = 0; i < tercero; i++) {
 				lcPrintChar(segundo[i]);
 			}
 			break;
@@ -163,7 +163,7 @@ void * sysCallDispatcher(int function, char * segundo, int tercero, int cuarto) 
 		break;
 	}
 	case SYSCALL_SEND: {
-		asyncSend(segundo, tercero);
+		return asyncSend(segundo, tercero);
 		break;
 	}
 	case SYSCALL_RECEIVE: {
@@ -171,6 +171,7 @@ void * sysCallDispatcher(int function, char * segundo, int tercero, int cuarto) 
 		break;
 	}
 	case SYSCALL_UP: {
+		unblock(BOLT_BLOCK);
 		return releaseBolt(getBolt());
 		break;
 	}
@@ -226,7 +227,6 @@ void miCallbackDeTeclado(uint8_t c, int function) {
 }
 
 
-  
 int main() {
 
 	setUpHeapOrganizer(buddyAllocationMemory);

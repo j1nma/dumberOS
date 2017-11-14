@@ -22,7 +22,7 @@ Syscalls involved
 - Reserve memory for the calling process
 - Free memory of the calling process
 
-### Proccesses, Threads, Context Switching y Scheduling
+### Proccesses, Context Switching y Scheduling
 
 The system must have pre-emptive multitasking in a variable amount of processes. To do this, the system must implement some mechanism that allows to suspend the execution of a process and continue the execution of another one (context switching), without requiring that they release the control of the CPU, and with some structure / algorithm that allows to select the next process (scheduler).
 
@@ -30,16 +30,11 @@ It must also have threads implementation, with its own scheduler within each pro
 
 Syscalls involved
 - Create, Finish, and List Processes
-- Create, Finish, and List threads
 
 Optional (can be used to implement IPCs later)
 - Sleep the current process until an x event occurs.
 - Send a signal to a process x (awakens it if it is asleep)
 - Give the processor the following process (yield)
-
-### Memory Protection
-
-Using the developed page allocator and Intel's 64-bit paging system, interprocess memory protection is implemented, i.e. one process should not be able to access memory zones of another. Which memory zone occupies each process, and if those zones are dynamic or static, is an arbitrary decision.
 
 ### IPCs
 
@@ -48,7 +43,7 @@ Sending and receiving blocking messages must be implemented, of a fixed number o
 Mutexes are also implemented: they can execute their up and down operations on an agreed identifier.
 
 Syscalls involved
-Send and Receive for messages, being the latter blocking. Up and Down for mutexes. The scheduler design should contemplate these syscalls. A thread waiting for a message or mutex should not block the other threads.
+Send and Receive for messages, being the latter blocking. Up and Down for mutexes. The scheduler design should contemplate these syscalls.
 
 ### Drivers
 
@@ -69,7 +64,7 @@ Mandatory applications
 - **philosophers**: shows a resolution of the problem of philosophers. You can increase / decrease in runtime the number of philosophers.
 - **prodcons**: shows a resolution for the consumer problem of bound buffer. You can increase / decrease in runtime the number of consumers and producers.
 - **help**: displays a list of all available commands.
-- Some extra practical applications are added to demonstrate the functioning of each of the capabilities of the system (e.g., to display memory protection, an application attempts to access an invalid zone, and is blocked by the kernel).
+- Some extra practical applications are added to demonstrate the functioning of each of the capabilities of the system (e.g., an application attempts to access an invalid zone, and is blocked by the kernel).
 
 ## Getting Started
 
@@ -95,7 +90,7 @@ Add the folder of files you wish to hash into IPC/bin.
 
 If you wish to run on macOS:
 
-1) Open makefile located at IPC and erase the last two libraries (lrt lpthread) from LFLAGS line. Result:
+1) Open makefile located at IPC and erase the last two libraries (lrt) from LFLAGS line. Result:
 ```
 LFLAGS = -L /usr/local/opt/openssl/lib -lcrypto -lssl
 ```
