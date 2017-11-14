@@ -7,8 +7,9 @@
 #define MEMORYSIZE (1024*1024)
 #define SMALLESTBLOCKSIZE (1024)
 // #define TOTALLEVELS (log2(SMALLESTBLOCKSIZE))
-#define TOTALLEVELS (10)
+#define MAXLEVELS (10)
 #define TOTALELEMENTS ((SMALLESTBLOCKSIZE*2)-1)
+#define MYNULL (void*)0
 
 /*
 **	The state is:

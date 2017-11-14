@@ -23,7 +23,7 @@ int getLevel(int size){
 		size /= 2;
 		level++;
 	}
-	return TOTALLEVELS - level;
+	return MAXLEVELS - level;
 }
 
 /*
@@ -33,15 +33,15 @@ void * allocSpace(int size) {
 	int level;
 	void * ans;
 	if(size == 0) {
-		return NULL;
+		return MYNULL;
 	}
 	level = getLevel(size);		// indice < level es que es mas grande 
 								// level ahora tiene el 2^level que necesita
-	if(level > TOTALLEVELS) {
-		return NULL;
+	if(level > MAXLEVELS) {
+		return MYNULL;
 	}
 	if(level < 0) {
-		return NULL;
+		return MYNULL;
 	}
 	ans = findSpaceDFS(level, 0, 0);
 
@@ -135,15 +135,15 @@ void * findSpaceDFS(int level, int index, int currentLevel) {
 	// Fail-safe checks
 	// if(memManager[i] == FULL) {
 	if(!isIndexValid(index) || memManager[index] == FULLANDOCCUPIED) {
-		return NULL;
+		return MYNULL;
 	}
 
 	// Base case
 	if(currentLevel == level) {
 		if(memManager[index] == ALMOST_FULL) {
-			return NULL;
+			return MYNULL;
 		} else if(memManager[index] == FULL) {
-			return NULL;
+			return MYNULL;
 		} else {
 			memManager[index] = FULLANDOCCUPIED;
 			return memoryBase + (calculateOffsetFromIndex(index));
@@ -152,10 +152,10 @@ void * findSpaceDFS(int level, int index, int currentLevel) {
 
 	// Recursive case
 	ans = findSpaceDFS(level, getLeftChild(index), currentLevel + 1);
-	if(ans == NULL) {	// If left gives back NULL I try through the right side.
+	if(ans == MYNULL) {	// If left gives back NULL I try through the right side.
 		ans = findSpaceDFS(level, getRightChild(index), currentLevel + 1);
-		if(ans == NULL) {
-			return NULL;
+		if(ans == MYNULL) {
+			return MYNULL;
 		}
 	}
 	updateState(index);	// I update my state accordingly.
@@ -238,7 +238,7 @@ void freeSpace(void * page) {
 
 // 	void * mymemory = malloc(sizeof(1024*1024));
 // 	setUpHeapOrganizer(mymemory);
-// 	printf("totalLevels %d\n", (int) TOTALLEVELS + 1);
+// 	printf("maxLevels %d\n", (int) MAXLEVELS + 1);
 // 	printf("getLevel(1500) %d \n", getLevel(1500));
 // 	void * test1 = allocSpace(1500);
 // 	void * test3 = allocSpace(1500);
