@@ -47,11 +47,15 @@ void processIdle() {
 void memoryError(int error) {
 	switch (error) {
 		case 1: {
-			printf("Error: %d\n", error);
+			printf("Error: Value not stored correctlly on page.\n");
 			break;
 		}
 		case 2: {
-			printf("Error: %d\n", error);
+			printf("Error: Value not retained on page after free. Not critical.\n");
+			break;
+		}
+		case 3: {
+			printf("Error: Alloc didn't return the same page. Shame.\n");
 			break;
 		}
 		default: {
@@ -76,6 +80,7 @@ void testMemory() {
 		printf("On the last byte of the page, value: %c.\n", page[1024*4*sizeof(char) -1]);
 	else{
 		memoryError(1);
+		freeP(page);
 		return;
 	}
 
@@ -87,7 +92,6 @@ void testMemory() {
 		printf("The value is the same: %c. Not overwriten.\n", page[1024*4*sizeof(char) -1]);
 	else {
 		memoryError(2);
-		return;
 	}
 
 
@@ -104,7 +108,6 @@ void testMemory() {
 		printf("The value in the first pointer should be: %c because they are in the same space.\n", page[1024*4*sizeof(char) -1]);
 	else {
 		memoryError(3);
-		return;
 	}
 
 	printf("Freeing second page.\n");
