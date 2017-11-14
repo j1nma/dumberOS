@@ -4,24 +4,17 @@
 
 int x;
 
-void processMutualExclusion() {
+void processThatAcquires() {
 
-	if (!(getPid() % 2)) {
-		printf("Hi! I am process %d acquiring bolt.\n", getPid());
+	int pid = getPid();
 
-		down();
+	printf("Hi! I am process %d acquiring bolt...\n", pid);
 
-		x++;
-		printf("x = %d.\n", x);
+	down();
+	printf("Process %d acquired bolt\n", pid);
 
-	} else {
-		printf("Hi! I am process %d acquiring bolt.\n", getPid());
-
-		down();
-
-		x++;
-		printf("x = %d.\n", x);
-	}
+	x++;
+	printf("Process %d does: x = %d.\n", pid, x);
 
 	LoopNop();
 
@@ -29,12 +22,22 @@ void processMutualExclusion() {
 
 void processMutualExclusionSetup() {
 
-	for (int i = 0; i < 2; i++) {
-		printf("I am process %d\n", getPid());
-		int pid = createProcess(&processMutualExclusion);
-		printf("Process %d was created.\n", pid);
-	}
+	int pid2 = createProcess(&processThatAcquires);
 
-	LoopNop();
+	int pid3 = createProcess(&processThatAcquires);
+
+	int pid4 = createProcess(&processThatAcquires);
+
+	for (int i = 0; i < 400000000; i++);
+
+	up();
+
+	for (int i = 0; i < 400000000; i++);
+
+	up();
+
+	killProcess(pid2);
+	killProcess(pid3);
+	killProcess(pid4);
 
 }

@@ -27,14 +27,14 @@ int parseCommand(char * commandName) {
 		return COMMAND_CLEAR;
 	else if ( strcmp(commandName, "ipc") == 0 )
 		return COMMAND_IPC;
+	else if ( strcmp(commandName, "mutex") == 0 )
+		return COMMAND_MUTEX;
 	else if ( strcmp(commandName, "ps") == 0 )
 		return COMMAND_PS;
 	else if ( strcmp(commandName, "philosophers") == 0 )
 		return COMMAND_PHILOSOPHERS;
 	else if ( strcmp(commandName, "prodcons") == 0 )
 		return COMMAND_PRODCONS;
-	else if ( strcmp(commandName, "memprotection") == 0 )
-		return COMMAND_MEMPROTECTION;
 	else if ( strcmp(commandName, "memorytest") == 0  || strcmp(commandName, "mt") == 0 )
 		return COMMAND_MEMORYTEST;
 	else
@@ -96,10 +96,10 @@ int runCommand(int command, char **params, char *postcommand) {
 		printf("%s\n", man_echo);
 		printf("%s\n", man_poweroff);
 		printf("%s\n", man_ipc);
+		printf("%s\n", man_mutex);
 		printf("%s\n", man_ps);
 		printf("%s\n", man_philosophers);
 		printf("%s\n", man_prodcons);
-		printf("%s\n", man_memprotection);
 		printf("%s\n", man_memorytest);
 		printf("\n");
 		break;
@@ -121,12 +121,21 @@ int runCommand(int command, char **params, char *postcommand) {
 		processMessagePassing();
 		break;
 	}
+	case COMMAND_MUTEX: {
+		processMutualExclusionSetup();
+		break;
+	}
 	case COMMAND_PS: {
-		if (strcmp(params[1], "test") == 0) 
+		if (strcmp(params[1], "test") == 0) {
 			processListing();
+		}
+
 		listProcesses();
-		if (strcmp(params[1], "test") == 0) 
+
+		if (strcmp(params[1], "test") == 0) {
 			killListing();
+		}
+
 		break;
 	}
 	case COMMAND_PHILOSOPHERS: {
@@ -196,6 +205,10 @@ void printManPage (char * commandString) {
 		printf("%s\n", man_ipc);
 		break;
 	}
+	case COMMAND_MUTEX: {
+		printf("%s\n", man_mutex);
+		break;
+	}
 	case COMMAND_PS: {
 		printf("%s\n", man_ps);
 		break;
@@ -206,10 +219,6 @@ void printManPage (char * commandString) {
 	}
 	case COMMAND_PRODCONS: {
 		printf("%s\n", man_prodcons);
-		break;
-	}
-	case COMMAND_MEMPROTECTION: {
-		printf("%s\n", man_memprotection);
 		break;
 	}
 	case COMMAND_MEMORYTEST: {

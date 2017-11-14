@@ -26,30 +26,28 @@ int * getBolt() {
 If destination process does not exist, the operation will terminate. If it does, the message is added to the receiver's
 queue of messages. If it's blocked by message passing, it is awaken. Mutex implemented over the bolt.
 */
-void asyncSend(char * message, int destination_pid) {
+int asyncSend(char * message, int destination_pid) {
 
 	acquireBolt(bolt);
 
 	struct process * destination;
 
 	if (getProcess(destination_pid, &destination) == 0) {
-		write("Receiver process does not exist.\n", 34);
 		releaseBolt(bolt);
-		return;
+		return 1;
 	}
 
 	Queue * tmpbuff = destination->receiver_buffer;
 
 	if (!enqueue(tmpbuff, message)) {
-
-		// write("Encole mi mensaje.\n", 20);
-
 		if (isBlocked(destination)) {
 			unblockProcess(destination);
 		}
 	}
 
 	releaseBolt(bolt);
+
+	return 0;
 }
 
 /*
@@ -67,7 +65,6 @@ char * asyncReceive() {
 	Queue * rb = current_process->receiver_buffer;
 
 	if (rb->sizeOfQueue == 0) {
-		// write("Blocking...\n", 13);
 		releaseBolt(bolt);
 		blockCurrent(MESSAGE_BLOCK);
 	}
