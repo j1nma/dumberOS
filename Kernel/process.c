@@ -1,5 +1,6 @@
 #include "process.h"
 #include "scheduler.h"
+#include "interruptions.h"
 #include <drivers.h>
 
 typedef int (*EntryPoint)();
@@ -7,6 +8,9 @@ typedef int (*EntryPoint)();
 
 void callProcess(struct process * process) {
 	endInter();
+
+	enableTickInter();
+
 	switchStackAndJump((process->userStack), (process->entryPoint));
 }
 

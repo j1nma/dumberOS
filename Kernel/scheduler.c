@@ -15,6 +15,8 @@ typedef int (*EntryPoint)();
 
 static int pid = 0;
 
+static int jm = 0;
+
 void initScheduler() {
 	scheduler = (struct scheduler *)malloc(sizeof(struct scheduler));
 }
@@ -34,6 +36,11 @@ void * getCurrentSP() {
 
 void * switchUserToKernel(void * esp) {
 
+	if (jm < 2) {
+		jm++;
+		return esp;
+	}
+
 	if (scheduler->current->process->flipped != FLIPPED) { //Si no esta volteado, funciona normal.
 		scheduler->current->process->userStack = esp;
 		return scheduler->current->process->kernelStack;
@@ -45,6 +52,12 @@ void * switchUserToKernel(void * esp) {
 
 
 void * switchKernelToUser(void * esp) {
+
+	if (jm < 2) {
+		jm++;
+		return esp;
+	}
+	
 	if (scheduler->current->process->flipped != FLIPPED) { //Si no esta volteado, funciona normal.
 		scheduler->current->process->kernelStack = esp;
 		return scheduler->current->process->userStack;
@@ -153,7 +166,7 @@ void startProcess(struct process * process) {
 
 	next(); //Paso al next, lo pongo como current.
 
-	enableTickInter(); // Lo hago aca, porque es posible que el primer tick, entre antes que hayan procesos en el scheduler.
+	// enableTickInter(); // Lo hago aca, porque es posible que el primer tick, entre antes que hayan procesos en el scheduler.
 
 	callProcess(process);
 }
