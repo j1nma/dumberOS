@@ -225,9 +225,7 @@ void miCallbackDeTeclado(uint8_t c, int function) {
 	}
 }
 
-void id() {
-	while(1);
-}
+
   
 int main() {
 
@@ -245,17 +243,16 @@ int main() {
 
 	net_start();
 
-	initScheduler();
+	initScheduler(getRSP());
 
 	initMutex();
 
-	struct process * process0 = createNewProcess(sampleCodeModuleAddress, 0);
-	struct process * processId = createNewProcess(&id, 0);
+	ncPrintHex(getRSP());
 
+	struct process * process0 = createNewProcess(sampleCodeModuleAddress, 0);
 
 	init_interruptions();
 
-	queueProcess(processId);
 	startProcess(process0);
 
 	deleteMutex();

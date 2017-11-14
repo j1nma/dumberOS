@@ -59,7 +59,7 @@ struct process * getCurrentProcess();
 
 void * getCurrentSP();
 
-void initScheduler();
+void initScheduler(void *sp);
 
 int getProcess(int get_pid, struct process ** ret);
 

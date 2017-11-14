@@ -17,8 +17,18 @@ static int pid = 0;
 
 static int jm = 0;
 
-void initScheduler() {
+static void *startingSP;
+
+int idle = 0;
+
+
+void id() {
+	while(1);
+}
+
+void initScheduler(void *sp) {
 	scheduler = (struct scheduler *)malloc(sizeof(struct scheduler));
+	startingSP = sp;
 }
 
 int getCurrentPid() {
@@ -36,9 +46,8 @@ void * getCurrentSP() {
 
 void * switchUserToKernel(void * esp) {
 
-	if (jm < 2) {
-		jm++;
-		//return esp;
+	if (startingSP + 0x1000 > esp && startingSP - 0x1000 < esp) {
+		return esp;
 	}
 
 	if (scheduler->current->process->flipped != FLIPPED) { //Si no esta volteado, funciona normal.
@@ -53,9 +62,8 @@ void * switchUserToKernel(void * esp) {
 
 void * switchKernelToUser(void * esp) {
 
-	if (jm < 2) {
-		jm++;
-		//return esp;
+	if (startingSP + 0x1000 > esp && startingSP - 0x1000 < esp) {
+		return esp;
 	}
 	
 	if (scheduler->current->process->flipped != FLIPPED) { //Si no esta volteado, funciona normal.
@@ -217,6 +225,12 @@ void unblockProcess(struct process * sleeper) {
 }
 
 void blockCurrent(int code) {
+
+	if (idle == 0) {
+		struct process * processId = createNewProcess(&id, 0);
+		queueProcess(processId);
+		idle = 1;
+	}
 
 	flip();
 

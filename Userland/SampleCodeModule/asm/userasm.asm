@@ -1,12 +1,16 @@
 GLOBAL syscall
 GLOBAL haltAsm
 GLOBAL LoopNop
-
+GLOBAL getRSP
 
  ; syscall: Esta funcion en asembler se utiliza para, desde C, llamar a las syscalls con ints. 
  ; parametros: rdi, rsi, rdx y rcx.
  ; retorna nada.
 
+
+getRSP:
+	mov rax, rsp
+	ret
 
 LoopNop:
 	nop

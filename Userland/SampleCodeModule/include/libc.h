@@ -43,6 +43,8 @@ void halt();
 
 int getPid();
 
+int getRSP();
+
 void LoopNop();
 
 int killProcess(int pid);

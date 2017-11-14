@@ -28,6 +28,10 @@ void processShell() {
 }
 
 void processPrompt() {
+
+	printf("Soy: %d", getPid());
+	printf("Mi SP: %h\n", getRSP());
+	
 	// Loop shell until user exits OS
 	char dup[250];
 	while (!exit) {
@@ -129,7 +133,7 @@ void testMemory() {
 
 int main() {
 
-	initWelcome();
+	// initWelcome();
 
 	processPrompt();
 
