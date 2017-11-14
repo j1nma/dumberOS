@@ -26,6 +26,19 @@ void free(void *memoryStart) {
 	return;
 }
 
+int createSharedMemory(int shared_memory_id, int pages) {
+	return syscall(SYSCALL_SHARED_MEM_NEW, 0, shared_memory_id, pages);
+}
+
+int getSharedMemory(int shared_memory_id, void **ptr) {
+	return syscall(SYSCALL_SHARED_MEM_GET, ptr, shared_memory_id, 0);
+}
+
+void freeSharedMemory(int shared_memory_id) {
+	return syscall(SYSCALL_SHARED_MEM_FREE, 0, shared_memory_id, 0);
+}
+
+
 int createProcess(EntryPoint entryPoint) {
 	return syscall(SYSCALL_PROCESS, entryPoint, 0, 0);
 }

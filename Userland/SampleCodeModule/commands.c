@@ -35,6 +35,8 @@ int parseCommand(char * commandName) {
 		return COMMAND_PRODCONS;
 	else if ( strcmp(commandName, "memorytest") == 0  || strcmp(commandName, "mt") == 0 )
 		return COMMAND_MEMORYTEST;
+	else if ( strcmp(commandName, "shared_mem") == 0  || strcmp(commandName, "sm") == 0 )
+		return COMMAND_SHARED_MEM;
 	else
 		return COMMAND_NULL;
 
@@ -98,6 +100,7 @@ int runCommand(int command, char **params, char *postcommand) {
 		printf("%s\n", man_ps);
 		printf("%s\n", man_prodcons);
 		printf("%s\n", man_memorytest);
+		printf("%s\n", man_shared_mem);
 		printf("\n");
 		break;
 	}
@@ -135,10 +138,6 @@ int runCommand(int command, char **params, char *postcommand) {
 
 		break;
 	}
-	case COMMAND_PHILOSOPHERS: {
-		//TO-DO
-		break;
-	}
 	case COMMAND_PRODCONS: {
 		//TO-DO
 		break;
@@ -149,6 +148,10 @@ int runCommand(int command, char **params, char *postcommand) {
 	}
 	case COMMAND_MEMORYTEST: {
 		testMemory();
+		break;
+	}
+	case COMMAND_SHARED_MEM: {
+		testSharedMemory();
 		break;
 	}
 	case COMMAND_NULL: {
@@ -216,6 +219,10 @@ void printManPage (char * commandString) {
 	}
 	case COMMAND_MEMORYTEST: {
 		printf("%s\n", man_memorytest);
+		break;
+	}
+	case COMMAND_SHARED_MEM: {
+		printf("%s\n", man_shared_mem);
 		break;
 	}
 	case COMMAND_NULL: {

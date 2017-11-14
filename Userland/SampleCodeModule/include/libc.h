@@ -45,6 +45,12 @@ int getPid();
 
 int getRSP();
 
+int createSharedMemory(int shared_memory_id, int pages);
+
+int getSharedMemory(int shared_memory_id, void **ptr);
+
+void freeSharedMemory(int shared_memory_id);
+
 void LoopNop();
 
 int killProcess(int pid);

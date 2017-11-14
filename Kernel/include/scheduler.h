@@ -57,6 +57,8 @@ int getCurrentPid();
 
 struct process * getCurrentProcess();
 
+struct process_node * getCurrentNode();
+
 void * getCurrentSP();
 
 void initScheduler(void *sp);

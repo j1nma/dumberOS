@@ -39,6 +39,9 @@ struct process * createNewProcess(void * statringPoint, int parent) {
 	queueInit(processN->receiver_buffer, (MESSAGE_SIZE + 1) * sizeof(char));
 	/* IPC */
 
+	processN->sm = malloc(sizeof(struct shared_mem));
+	processN->sm->id = 0;
+
 	return processN;
 }
 
@@ -49,6 +52,7 @@ void freeProcess(struct process * process) {
 	freeSpace(process->flippedStackStart);
 
 	free(process->receiver_buffer);
+	free(process->sm);
 	free(process);
 
 }

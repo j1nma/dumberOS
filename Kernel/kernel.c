@@ -12,6 +12,7 @@
 #include "asynchronousMP.h"
 #include "queue.h"
 #include "mutualExclusion.h"
+#include "shared_memory.h"
 
 
 extern uint8_t text;
@@ -192,6 +193,18 @@ void * sysCallDispatcher(int function, char * segundo, int tercero, int cuarto) 
 	}
 	case SYSCALL_PROCESS_LIST: {
 		listProcesses();
+		break;
+	}
+	case SYSCALL_SHARED_MEM_NEW: {
+		return createSharedMemory(tercero, cuarto);
+		break;
+	}
+	case SYSCALL_SHARED_MEM_GET: {
+		return getSharedMemory(tercero, (void **)segundo);
+		break;
+	}
+	case SYSCALL_SHARED_MEM_FREE: {
+		freeSharedMemory(tercero);
 		break;
 	}
 	default: {

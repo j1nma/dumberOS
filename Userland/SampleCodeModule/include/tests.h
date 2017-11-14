@@ -27,3 +27,5 @@ void killListing();
 void memoryError(int error);
 
 void testMemory();
+
+void testSharedMemory();

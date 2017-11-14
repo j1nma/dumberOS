@@ -3,7 +3,7 @@
 
 #include "queue.h"
 #include "scheduler.h"
-
+#include "shared_memory.h"
 #define MESSAGE_SIZE 20
 
 // https://unix.stackexchange.com/questions/80038/what-is-the-structure-of-a-linux-process
@@ -33,6 +33,8 @@ struct process {
 	int parent;
 
 	Queue * receiver_buffer;
+
+	struct shared_mem * sm;
 };
 
 void callProcess(struct process * process);

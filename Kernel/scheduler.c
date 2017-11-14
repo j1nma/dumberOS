@@ -39,6 +39,10 @@ struct process * getCurrentProcess() {
 	return scheduler->current->process;
 }
 
+struct process_node * getCurrentNode() {
+	return scheduler->current;
+}
+
 void * getCurrentSP() {
 	return scheduler->current->process->userStack;
 }

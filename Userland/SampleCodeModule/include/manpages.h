@@ -14,3 +14,4 @@ char * man_mutex = "mutex - mutual exclusion application";
 char * man_ps = "ps - shows list of processes with their properties. Usage: ps ['test']";
 char * man_prodcons = "prodcons - producer-consumer solution. Usage: prodcons {producers} {consumers}";
 char * man_memorytest = "memorytest - runs memory test code.";
+char * man_shared_mem = "shared_mem - tests shared memory between processes.";

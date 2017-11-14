@@ -41,4 +41,6 @@ void processMessagePassing() {
 	killProcess(sender);
 	killProcess(receiver);
 
+	printf("Done!\n");
+
 }
