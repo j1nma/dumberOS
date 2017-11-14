@@ -1,6 +1,6 @@
 #include <drivers.h>
 /**
- * Esta driver es el que se ocupa de manejo de memoria.
+ * Esta driver es el que se ocupa de manejo de memoria
  */
 
 static void* ptr = 0x600000;
