@@ -1,6 +1,6 @@
 # OS Kernel Construction
 
-This project consists of building a simple kernel based on a separate project about computer architecture. IPC,   Memory Management, Scheduling and Memory Protection will be implemented.
+This project consists of building a simple kernel based on a separate project about computer architecture. IPC, Memory Management, Scheduling and Memory Protection will be implemented.
 
 ## Previous requirements
 
@@ -22,7 +22,7 @@ Syscalls involved
 - Reserve memory for the calling process
 - Free memory of the calling process
 
-### Proccesses, Threads, Context Switching y Scheduling
+### Processes, Threads, Context Switching y Scheduling
 
 The system must have pre-emptive multitasking in a variable amount of processes. To do this, the system must implement some mechanism that allows to suspend the execution of a process and continue the execution of another one (context switching), without requiring that they release the control of the CPU, and with some structure / algorithm that allows to select the next process (scheduler).
 
@@ -36,10 +36,6 @@ Optional (can be used to implement IPCs later)
 - Sleep the current process until an x event occurs.
 - Send a signal to a process x (awakens it if it is asleep)
 - Give the processor the following process (yield)
-
-### Memory Protection
-
-Using the developed page allocator and Intel's 64-bit paging system, interprocess memory protection is implemented, i.e. one process should not be able to access memory zones of another. Which memory zone occupies each process, and if those zones are dynamic or static, is an arbitrary decision.
 
 ### IPCs
 
@@ -60,58 +56,6 @@ Use the keyboard driver implemented in the previous PW. Add the necessary syscal
 Video in text mode
 Use the video driver implemented in the previous PW.
 
-### Userspace applications
-
-In order to show compliance with all the previous requirements, several applications are developed, which *show the functionality of the system* by calling the different system calls.
-Mandatory applications
-- **sh**: user shell to run applications. A simple mechanism determines whether or not to forego the foreground to the process that is executed, for example, bash yields the foreground when an & is added at the end of a command.
-- **ps**: shows the list of processes with their properties, PID, name, state, foreground, reserved memory, etc.
-- **philosophers**: shows a resolution of the problem of philosophers. You can increase / decrease in runtime the number of philosophers.
-- **prodcons**: shows a resolution for the consumer problem of bound buffer. You can increase / decrease in runtime the number of consumers and producers.
-- **help**: displays a list of all available commands.
-- Some extra practical applications are added to demonstrate the functioning of each of the capabilities of the system (e.g., to display memory protection, an application attempts to access an invalid zone, and is blocked by the kernel).
-
-## Getting Started
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
-
-### Installation prerequisites
-
-What things you need to install the software and how to install them:
-
-* md5sum
-* openssl
-
-
-### Installing
-
-Inside IPC folder:
-
-```
-cd view && make && cd .. && make
-```
-
-Add the folder of files you wish to hash into IPC/bin.
-
-If you wish to run on macOS:
-
-1) Open makefile located at IPC and erase the last two libraries (lrt lpthread) from LFLAGS line. Result:
-```
-LFLAGS = -L /usr/local/opt/openssl/lib -lcrypto -lssl
-```
-2) Do the same for the makefile located at IPC/view
-
-## Running inside IPC:
-
-To hash files from the 'testFolder' folder:
-```
-cd bin && ./hash testFolder
-```
-
-To view files hashed at the moment:
-```
-cd bin && ./hash testFolder | ./view
-```
 
 ## Authors
 
