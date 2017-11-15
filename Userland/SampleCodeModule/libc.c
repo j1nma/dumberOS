@@ -470,12 +470,20 @@ char * receive() {
 }
 
 /* Mutex */
-int down() {
-	return syscall(SYSCALL_DOWN, 0, 0, 0);
+int down(void * bolt) {
+	return syscall(SYSCALL_DOWN, bolt, 0, 0);
 }
 
-int up() {
-	return syscall(SYSCALL_UP, 0, 0, 0);
+int up(void * bolt) {
+	return syscall(SYSCALL_UP, bolt, 0, 0);
+}
+
+void * createBolt() {
+	return syscall(SYSCALL_NEW_BOLT, 0, 0, 0);
+}
+
+void freeBolt(void * bolt) {
+	syscall(SYSCALL_FREE_BOLT, bolt, 0, 0);
 }
 
 

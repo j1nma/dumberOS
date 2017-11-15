@@ -121,22 +121,23 @@ int killProcess(int pid) {
 
 	struct process_node * prev = scheduler->current;
 	struct process_node * current = scheduler->current->next;
+	int startingPID = prev->process->pid;
 
-	for (int i = 0; i < pid; i++) {
-		if (current->process->pid == pid) {
 
-			prev->next = current->next;
-
-			freeProcess(current->process);
-
-			return current->process->pid;
-		} else {
-			prev = prev->next;
-			current = current->next;
-		}
+	while (current->process->pid != pid && current->process->pid != startingPID) {
+		prev = current;
+		current = current->next;
 	}
 
-	return 0;
+	if (current->process->pid == startingPID && current->process->pid != pid) {
+		return 0;
+	}
+
+	prev->next = current->next;
+	int aux = current->process->pid;
+	freeProcess(current->process);
+	return aux;
+
 
 }
 

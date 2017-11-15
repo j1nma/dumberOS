@@ -171,13 +171,21 @@ void * sysCallDispatcher(int function, char * segundo, int tercero, int cuarto) 
 		return asyncReceive();
 		break;
 	}
+	case SYSCALL_NEW_BOLT: {
+		return newBolt();
+		break;
+	}
+	case SYSCALL_FREE_BOLT: {
+		deleteBolt(segundo);
+		break;
+	}
 	case SYSCALL_UP: {
 		unblock(BOLT_BLOCK);
-		return releaseBolt(getBolt());
+		return releaseBolt(segundo);
 		break;
 	}
 	case SYSCALL_DOWN: {
-		return acquireBolt(getBolt());
+		return acquireBolt(segundo);
 		break;
 	}
 	case SYSCALL_PROCESS: {

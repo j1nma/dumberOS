@@ -65,6 +65,10 @@ int send(char *, int pid);
 char * receive();
 
 /* Mutual exclusion */
-int down();
+int down(void * bolt);
 
-int up();
+int up(void * bolt);
+
+void * createBolt();
+
+void freeBolt(void * bolt);
