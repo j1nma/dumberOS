@@ -61,7 +61,6 @@ In order to show compliance with all the previous requirements, several applicat
 Mandatory applications
 - **sh**: user shell to run applications. A simple mechanism determines whether or not to forego the foreground to the process that is executed, for example, bash yields the foreground when an & is added at the end of a command.
 - **ps**: shows the list of processes with their properties, PID, name, state, foreground, reserved memory, etc.
-- **prodcons**: shows a resolution for the consumer problem of bound buffer. You can increase / decrease in runtime the number of consumers and producers.
 - **help**: displays a list of all available commands.
 - Some extra practical applications are added to demonstrate the functioning of each of the capabilities of the system (e.g., an application attempts to access an invalid zone, and is blocked by the kernel).
 

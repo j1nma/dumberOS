@@ -6,7 +6,6 @@ int x;
 
 void processThatAcquires() {
 
-	
 	int pid = getPid();
 
 	printf("Hi! I am process %d acquiring bolt...\n", pid);
@@ -49,7 +48,7 @@ void processMutualExclusionSetup() {
 
 	up(bolt);
 
-	
+
 
 	for (int i = 0; i < 20000000; i++);
 

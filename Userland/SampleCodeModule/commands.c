@@ -29,10 +29,10 @@ int parseCommand(char * commandName) {
 		return COMMAND_IPC;
 	else if ( strcmp(commandName, "mutex") == 0 )
 		return COMMAND_MUTEX;
+	else if ( strcmp(commandName, "mmutex") == 0 )
+		return COMMAND_MULTI_MUTEX;
 	else if ( strcmp(commandName, "ps") == 0 )
 		return COMMAND_PS;
-	else if ( strcmp(commandName, "prodcons") == 0 )
-		return COMMAND_PRODCONS;
 	else if ( strcmp(commandName, "memorytest") == 0  || strcmp(commandName, "mt") == 0 )
 		return COMMAND_MEMORYTEST;
 	else if ( strcmp(commandName, "shared_mem") == 0  || strcmp(commandName, "sm") == 0 )
@@ -98,7 +98,6 @@ int runCommand(int command, char **params, char *postcommand) {
 		printf("%s\n", man_ipc);
 		printf("%s\n", man_mutex);
 		printf("%s\n", man_ps);
-		printf("%s\n", man_prodcons);
 		printf("%s\n", man_memorytest);
 		printf("%s\n", man_shared_mem);
 		printf("\n");
@@ -125,6 +124,10 @@ int runCommand(int command, char **params, char *postcommand) {
 		processMutualExclusionSetup();
 		break;
 	}
+	case COMMAND_MULTI_MUTEX: {
+		processMultiMutualExclusionSetup();
+		break;
+	}
 	case COMMAND_PS: {
 		if (strcmp(params[1], "test") == 0) {
 			processListing();
@@ -136,14 +139,6 @@ int runCommand(int command, char **params, char *postcommand) {
 			killListing();
 		}
 
-		break;
-	}
-	case COMMAND_PRODCONS: {
-		//TO-DO
-		break;
-	}
-	case COMMAND_MEMPROTECTION: {
-		//TO-DO
 		break;
 	}
 	case COMMAND_MEMORYTEST: {
@@ -209,12 +204,12 @@ void printManPage (char * commandString) {
 		printf("%s\n", man_mutex);
 		break;
 	}
-	case COMMAND_PS: {
-		printf("%s\n", man_ps);
+	case COMMAND_MULTI_MUTEX: {
+		printf("%s\n", man_multi_mutex);
 		break;
 	}
-	case COMMAND_PRODCONS: {
-		printf("%s\n", man_prodcons);
+	case COMMAND_PS: {
+		printf("%s\n", man_ps);
 		break;
 	}
 	case COMMAND_MEMORYTEST: {

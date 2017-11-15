@@ -12,6 +12,6 @@ char * man_echo = "echo - write arguments to the standard output";
 char * man_ipc = "ipc - message passing application";
 char * man_mutex = "mutex - mutual exclusion application";
 char * man_ps = "ps - shows list of processes with their properties. Usage: ps ['test']";
-char * man_prodcons = "prodcons - producer-consumer solution. Usage: prodcons {producers} {consumers}";
 char * man_memorytest = "memorytest - runs memory test code.";
 char * man_shared_mem = "shared_mem - tests shared memory between processes.";
+char * man_multi_mutex = "mmutex - test that shows multiple mutex running at the same time with several processes";

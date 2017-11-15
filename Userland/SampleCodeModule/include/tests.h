@@ -13,6 +13,10 @@ void processMutualExclusion();
 
 void processMutualExclusionSetup();
 
+void processThatAcquiresMulti();
+
+void processMultiMutualExclusionSetup();
+
 /* Process killing */
 void processKilled();
 
