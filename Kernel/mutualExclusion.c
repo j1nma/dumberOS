@@ -5,7 +5,7 @@
 
 int * newBolt() {
 	int * ptr = (int*)(malloc(sizeof(int)));
-	*ptr = 0; //TODO:  1
+	*ptr = 0; 
 	return ptr;
 }
 
